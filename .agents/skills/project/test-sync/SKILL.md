@@ -5,6 +5,8 @@ depends_on:
   - registry://skills.code-fix
 name: test-sync
 description: 新增或修改 packages/**/src、apps/**/src、fixtures/airp/** 时，同步 Unit/Package/E2E 测试、case 与 fixture，并跑 pnpm test 直至通过。Triggers：改校验逻辑、诊断码/码表条目、schema、pipeline、CLI、fixture、补测试、test sync、测试同步。
+metadata:
+  internal: true
 ---
 
 # 测试同步（post-change）

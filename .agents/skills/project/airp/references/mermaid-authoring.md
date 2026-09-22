@@ -15,7 +15,7 @@
 
 2. **Stadium** — always: `id@{ shape: stadium, label: "Label text" }`.
 
-3. **Paths and file names in nodes** — always quote: `D1["skills/airp/schemas/"]`.
+3. **Paths and file names in nodes** — always quote: `D1["path/to/schemas/"]`.
 
 4. **Edge labels with special characters** — quoted edges: `A -->|"O(1) lookup"| B`.
 
@@ -37,5 +37,5 @@ Re-run validation (see `SKILL.md`). If Mermaid parse fails, fix `source` per the
 | Bad | Good |
 |-----|------|
 | `SK1[/airp Skill]` | `SK1["/airp Skill"]` |
-| `D1[skills/airp/foo]` | `D1["skills/airp/foo"]` |
+| `D1[path/to/foo]` | `D1["path/to/foo"]` |
 | `id([/cmd])` | `id@{ shape: stadium, label: "/cmd" }` |

@@ -747,7 +747,7 @@
           "overview": {
             "type": "mermaid",
             "diagramKind": "flowchart",
-            "source": "flowchart TB\n  Skill[\"skills/airp\"] --> Doc[\"*.airp.json\"]\n  Doc --> Validate[\"@airp/validate\"]\n  Doc --> Renderer[\"@airp/renderer\"]\n  Renderer --> HTML[\"html\"]\n  Renderer --> MD[\"markdown\"]"
+            "source": "flowchart TB\n  Skill[\"/airp Skill\"] --> Doc[\"*.airp.json\"]\n  Doc --> Validate[\"@airp/validate\"]\n  Doc --> Renderer[\"@airp/renderer\"]\n  Renderer --> HTML[\"html\"]\n  Renderer --> MD[\"markdown\"]"
           },
           "modules": [
             {

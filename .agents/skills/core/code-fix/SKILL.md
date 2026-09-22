@@ -4,6 +4,8 @@ depends_on:
   - registry://shared.delivery-prerequisites
 name: code-fix
 description: 凡新增或修改受仓库质量脚本约束的源码文件（例如 `*.ts`、`*.tsx`、`*.js`、`*.jsx`、`*.mjs`、`*.cjs` 等），交付前须对本次变更涉及的 workspace 包执行 `pnpm fix` 直至通过。Triggers：改代码、pnpm fix、自动修复、ultracite fix、交付前检查。
+metadata:
+  internal: true
 ---
 
 # pnpm fix（post-change）
