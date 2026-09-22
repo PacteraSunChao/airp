@@ -1,0 +1,1844 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "AIRP 语义积木完整图鉴",
+    "subtitle": "基于 document.schema.json v1.1.0 封闭 catalog 的全量渲染样例",
+    "kind": "architecture",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "createdAt": "2026-09-17T11:00:00.000Z",
+    "updatedBy": "毛松 <song.mao@gientech.com>",
+    "updatedAt": "2026-09-27T16:00:00.000Z",
+    "tags": [
+      "samples"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "packages/protocol/src/schemas/1.1.0/document.schema.json",
+        "label": "AIRP Document Schema v1.1.0",
+        "@id": "u3l4br0znf"
+      },
+      {
+        "type": "url",
+        "value": "https://github.com/maosong-ai/airp",
+        "label": "AIRP 仓库",
+        "@id": "uwiu15y4hc"
+      },
+      {
+        "type": "path",
+        "value": ".docs/pre-design/airp-block-gallery.html",
+        "label": "HTML 视觉稿",
+        "@id": "x4kded9z0l"
+      },
+      {
+        "type": "url",
+        "value": "https://github.com/maosong-ai/airp",
+        "label": "AIRP 仓库",
+        "@id": "42acg4ybdj"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "importance": "hero",
+      "metrics": [
+        {
+          "title": "积木块类型",
+          "value": 46,
+          "unit": "种",
+          "description": "schema 登记的全部 Block type",
+          "tone": "accent",
+          "delta": "封闭 catalog",
+          "@id": "kbjrqfv0jc"
+        },
+        {
+          "title": "Schema",
+          "value": "1.0.0",
+          "description": "document.schema.json",
+          "tone": "neutral",
+          "@id": "cydpkatl81"
+        },
+        {
+          "title": "渲染目标",
+          "value": 2,
+          "description": "html 与 markdown",
+          "status": "pass",
+          "@id": "vv9yzcb6mr"
+        },
+        {
+          "title": "样例覆盖",
+          "value": "100",
+          "unit": "%",
+          "description": "类型与关键字段全覆盖",
+          "tone": "positive",
+          "delta": "含多状态",
+          "@id": "11rxkaex3c"
+        }
+      ],
+      "badges": [
+        {
+          "label": "演示样例",
+          "tone": "accent",
+          "@id": "g9jzxwcdns"
+        },
+        {
+          "label": "Schema 对齐",
+          "status": "pass",
+          "@id": "wqxmd19noy"
+        },
+        {
+          "label": "46 Blocks",
+          "tone": "neutral",
+          "@id": "hsevzmzjlg"
+        }
+      ],
+      "@id": "4ungdui643"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "1. 文档架构与排版基础",
+      "lead": "展示文档结构、RichText、布局原语、引用与语义提示。",
+      "children": [
+        {
+          "type": "section",
+          "level": 2,
+          "title": "1.1 结构、层级与排版",
+          "children": [
+            {
+              "type": "lead",
+              "text": "**AIRP（AI Report Protocol）**是面向自动化模型输出而设计的封闭语义积木协议。本章节定义技术文档层级、文本内联标记与排版语义基础，保证无论在紧凑移动端还是宽屏审阅器下均保持高辨识度与极简纯净的研读质感。",
+              "@id": "ymdq4b0cnk"
+            },
+            {
+              "type": "group",
+              "title": "标题字阶样例",
+              "importance": "reference",
+              "children": [
+                {
+                  "type": "heading",
+                  "level": 1,
+                  "text": "Heading level 1",
+                  "importance": "primary",
+                  "@id": "z80e5rr07n"
+                },
+                {
+                  "type": "heading",
+                  "level": 2,
+                  "text": "Heading level 2",
+                  "@id": "s19pe8qsff"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Heading level 3",
+                  "@id": "t63xfpibsf"
+                },
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "Heading level 4",
+                  "@id": "1lcqp0t49z"
+                },
+                {
+                  "type": "heading",
+                  "level": 5,
+                  "text": "Heading level 5",
+                  "@id": "grgnjr2aax"
+                },
+                {
+                  "type": "heading",
+                  "level": 6,
+                  "text": "Heading level 6",
+                  "@id": "na1fsnjp6a"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "以上六个字阶对应 `heading.level` 1–6；章节标题仍由 `section.level`（1–4）驱动 TOC 与排版。",
+                  "@id": "ftg6wpczrq"
+                }
+              ],
+              "@id": "a58augtgdp"
+            },
+            {
+              "type": "heading",
+              "importance": "primary",
+              "level": 4,
+              "text": "规范层级体系与 RichText (Heading & Paragraph)",
+              "@id": "bd95ho662y"
+            },
+            {
+              "type": "paragraph",
+              "text": "文档内的自然文本段落使用 `paragraph`；RichText 仅支持**strong**、`inline code` 与 [link](#sec-data)（结构化 InlineNode：`text` / `code` / `strong` / `link`）。",
+              "@id": "kyakj6f5x8"
+            },
+            {
+              "type": "group",
+              "importance": "secondary",
+              "title": "视觉分组容器",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "group 无 `level`；它通过 `children` 包含任意 Block。",
+                  "@id": "hbksct007v"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "section 通过 `level`、`title` 与 `children` 形成文档大纲。",
+                  "@id": "qf1v51usy0"
+                }
+              ],
+              "@id": "e80z2a1yjy"
+            },
+            {
+              "type": "divider",
+              "label": "规范断点 / Protocol Breakpoint",
+              "@id": "p4zfyfjny8"
+            },
+            {
+              "type": "spacer",
+              "size": "sm",
+              "@id": "art0i26bbi"
+            },
+            {
+              "type": "spacer",
+              "size": "md",
+              "@id": "fjfxxvw3g0"
+            },
+            {
+              "type": "spacer",
+              "size": "lg",
+              "@id": "pifztkj2qg"
+            },
+            {
+              "type": "section",
+              "level": 4,
+              "title": "字段级注释（section level 4）",
+              "importance": "reference",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "用于展示 section.level = 4 的最深章节层级与 TOC 缩进。",
+                  "@id": "umpars9oa6"
+                }
+              ],
+              "@id": "burmhf0jbl"
+            }
+          ],
+          "@id": "vd3fv9ykuw"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "1.2 引用与语义提示",
+          "children": [
+            {
+              "type": "pullQuote",
+              "text": "“没有严格 Schema 约束的自动化报告，无异于在沙滩上构建企业级决策资产。”",
+              "attribution": "AIRP 架构治理白皮书",
+              "@id": "vac9cw81y1"
+            },
+            {
+              "type": "blockquote",
+              "text": "“协议制定者的首要职责不是添加更多自由度，而是构建一条足够窄、但绝对稳固的确定性通道。”",
+              "@id": "cxg0selil8"
+            },
+            {
+              "type": "callout",
+              "variant": "info",
+              "title": "Protocol Info",
+              "body": "RichText 字符串支持 **strong**、`code` 与 [link](https://json-schema.org/)。",
+              "@id": "54l4ulifff"
+            },
+            {
+              "type": "callout",
+              "variant": "tip",
+              "title": "LocalizedString 提示",
+              "body": "对象形态的 LocalizedString 必须包含默认 locale 对应的键。",
+              "@id": "10ektqrz2t"
+            },
+            {
+              "type": "callout",
+              "variant": "success",
+              "title": "Schema 对齐完成",
+              "body": "tip 与 success 是两个独立的 callout 实例。",
+              "@id": "c1gkdh6jdw"
+            },
+            {
+              "type": "callout",
+              "variant": "warning",
+              "title": "Schema Compatibility Notice",
+              "body": "不要在 RichText 中注入 schema 未声明的内联节点。",
+              "@id": "4kr9as6rc3"
+            },
+            {
+              "type": "callout",
+              "variant": "danger",
+              "title": "禁止动态脚本",
+              "body": "渲染前必须拦截脚本标签与危险 URL。",
+              "@id": "mn9kpidie1"
+            }
+          ],
+          "@id": "206o0s26oy"
+        }
+      ],
+      "importance": "primary",
+      "@id": "ma8smwfkjn"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "2. 数据、度量与对比矩阵",
+      "lead": "展示表格、清单、comparison、collection、keyValueList 与 statusBoard。",
+      "children": [
+        {
+          "type": "section",
+          "level": 3,
+          "title": "2.1 结构化数据与方案对比",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "结构化指标数据表 (Metrics Table)",
+              "@id": "vdxoylrmw7"
+            },
+            {
+              "type": "paragraph",
+              "text": "支持列级数据类型声明、左/中/右对齐格式化及行内状态标签的高保真表格容器，支持 `richText` 单元格渲染。",
+              "@id": "1l03vwwccn"
+            },
+            {
+              "type": "table",
+              "caption": "模块观测指标",
+              "importance": "primary",
+              "columns": [
+                {
+                  "key": "endpoint",
+                  "label": "Module Endpoint",
+                  "cellKind": "code",
+                  "align": "start",
+                  "@id": "0tv7qxh7ha"
+                },
+                {
+                  "key": "latency",
+                  "label": "Latency (p99)",
+                  "cellKind": "number",
+                  "align": "end",
+                  "@id": "cyexq3p6l2"
+                },
+                {
+                  "key": "errorMargin",
+                  "label": "Error Margin",
+                  "cellKind": "number",
+                  "align": "end",
+                  "@id": "483o59rnmh"
+                },
+                {
+                  "key": "status",
+                  "label": "Status",
+                  "cellKind": "status",
+                  "align": "center",
+                  "@id": "1323qj7oup"
+                },
+                {
+                  "key": "throughput",
+                  "label": "Throughput",
+                  "cellKind": "number",
+                  "align": "end",
+                  "@id": "zfpoxerk3u"
+                },
+                {
+                  "key": "badge",
+                  "label": "标签",
+                  "cellKind": "badge",
+                  "align": "center",
+                  "@id": "nn7b4jlwkp"
+                },
+                {
+                  "key": "doc",
+                  "label": "文档",
+                  "cellKind": "link",
+                  "align": "start",
+                  "@id": "pliwznqjvn"
+                }
+              ],
+              "rows": [
+                {
+                  "endpoint": "/api/v1/infer/semantic-tree",
+                  "latency": 42.8,
+                  "errorMargin": "0.002%",
+                  "status": "pass",
+                  "throughput": 14200,
+                  "badge": "core",
+                  "doc": "https://github.com/maosong-ai/airp",
+                  "@id": "rdmd153kqp"
+                },
+                {
+                  "endpoint": "/api/v1/spec/validate-schema",
+                  "latency": 12.1,
+                  "errorMargin": "0.000%",
+                  "status": "pass",
+                  "throughput": 48900,
+                  "badge": "core",
+                  "doc": "https://github.com/maosong-ai/airp",
+                  "@id": "6433ifrq17"
+                },
+                {
+                  "endpoint": "/api/v1/telemetry/anomalies",
+                  "latency": 188.4,
+                  "errorMargin": "0.145%",
+                  "status": "warning",
+                  "throughput": 3120,
+                  "badge": "core",
+                  "doc": "https://github.com/maosong-ai/airp",
+                  "@id": "ey5d2bvzoa"
+                }
+              ],
+              "footerRow": {
+                "endpoint": "Cluster Summary (Total 3 endpoints)",
+                "latency": "Avg 81.1 ms",
+                "errorMargin": "< 0.05%",
+                "status": "neutral",
+                "throughput": 66220,
+                "badge": "—",
+                "doc": "",
+                "@id": "icmeg3ixgw"
+              },
+              "@id": "2gobd8i6kc"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "合规审计核查清单 (Checklist)",
+              "@id": "ral4adez35"
+            },
+            {
+              "type": "paragraph",
+              "text": "每项展示核查标签、补充说明和当前状态。",
+              "@id": "27ao246bhx"
+            },
+            {
+              "type": "checklist",
+              "items": [
+                {
+                  "label": "Schema Rigor: 零 Any-Type 声明",
+                  "checked": true,
+                  "status": "pass",
+                  "note": "全部 **46 种积木块**严格遵循 `closed property maps` 约束。",
+                  "@id": "vmflux3pzs"
+                },
+                {
+                  "label": "双端渲染一致性 (Dual-Target Equality)",
+                  "checked": true,
+                  "status": "done",
+                  "note": "`CommonMark` 与 `HTML5` 管线词法对齐验收完成。",
+                  "@id": "kx1xls8h2n"
+                },
+                {
+                  "label": "WASM 边缘沙箱离线构建核心",
+                  "checked": false,
+                  "status": "in_progress",
+                  "note": "核心编译库移植至 Go/WASM，正在调优内存复用与启动开销。",
+                  "@id": "2aiwda0tlu"
+                },
+                {
+                  "label": "FIPS-140 密码学合规认证",
+                  "checked": false,
+                  "status": "pending",
+                  "note": "等待安全审计委员会完成生产账本签名证书轮转审批。",
+                  "@id": "ha741fqrfj"
+                },
+                {
+                  "label": "遗留 Draft-07 fixture 仍混入 CI 缓存",
+                  "checked": false,
+                  "status": "warning",
+                  "note": "不影响主线校验；需在下个迭代清理以免误报。",
+                  "@id": "ft5c2x8tvp"
+                },
+                {
+                  "label": "外部签名服务 SLA 未就绪",
+                  "checked": false,
+                  "status": "blocked",
+                  "note": "发布门禁依赖第三方；在凭证轮转前标记为 blocked。",
+                  "@id": "if1voyz18g"
+                },
+                {
+                  "label": "Schema 校验失败样本",
+                  "checked": false,
+                  "status": "fail",
+                  "@id": "2pb8mkulwa"
+                },
+                {
+                  "label": "部分 locale 缺键",
+                  "checked": false,
+                  "status": "partial",
+                  "@id": "a8h5gky0de"
+                },
+                {
+                  "label": "部分 locale 缺键",
+                  "checked": false,
+                  "status": "neutral",
+                  "@id": "cyilkgstd5"
+                },
+                {
+                  "label": "部分 locale 缺键",
+                  "checked": false,
+                  "status": "skipped",
+                  "@id": "lmicugd6df"
+                }
+              ],
+              "@id": "8cpd1c89s9"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "方案对比 (comparison)",
+              "@id": "lrfa9ksfir"
+            },
+            {
+              "type": "paragraph",
+              "text": "`comparison` 仅有 **before / after** 两侧。两侧均为 bulletList 时可呈现为两列表格；N 方能力矩阵应使用 `table`。",
+              "@id": "10eq3349au"
+            },
+            {
+              "type": "comparison",
+              "labelBefore": "Before",
+              "labelAfter": "After",
+              "before": [
+                {
+                  "type": "bulletList",
+                  "items": [
+                    "前端反序列化存在高 **解析失败风险**与不可控的幻觉排版",
+                    "缺乏严格契约，跨终端无法统一样式渲染",
+                    "零协议约束成本，生成链路短"
+                  ],
+                  "@id": "b5wt2f94kw"
+                }
+              ],
+              "after": [
+                {
+                  "type": "bulletList",
+                  "items": [
+                    "**确定性** HTML / Markdown 编译",
+                    "**Ajv 门禁**在渲染前消除结构幻觉",
+                    "积木块级 ID 与遥测颗粒度"
+                  ],
+                  "@id": "49nxgl4po0"
+                }
+              ],
+              "@id": "kdtw6bntmh"
+            },
+            {
+              "type": "comparison",
+              "labelBefore": "之前 (Before)",
+              "labelAfter": "之后 (After)",
+              "before": [
+                {
+                  "type": "bulletList",
+                  "items": [
+                    "临时 Markdown",
+                    "无 schema",
+                    "排版依赖模型运气"
+                  ],
+                  "@id": "p6h4lttni1"
+                }
+              ],
+              "after": [
+                {
+                  "type": "bulletList",
+                  "items": [
+                    "类型化 `*.airp.json`",
+                    "校验 + 渲染流水线",
+                    "封闭 catalog 确定性输出"
+                  ],
+                  "@id": "reyo3mjohd"
+                }
+              ],
+              "@id": "4l7o488ko1"
+            }
+          ],
+          "@id": "ouj0aq4grb"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "2.2 摘要集合与状态",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "度量与卡片集群 (Collection)",
+              "@id": "try64fvdcp"
+            },
+            {
+              "type": "collection",
+              "variant": "metric",
+              "title": "度量与卡片集群",
+              "importance": "primary",
+              "items": [
+                {
+                  "title": "冷启动解析时延",
+                  "value": 1.84,
+                  "unit": "ms/doc",
+                  "delta": "较 v2.3.0 优化 ↑ 38%",
+                  "tone": "positive",
+                  "@id": "2oredjoq4k"
+                },
+                {
+                  "title": "内存占用峰值",
+                  "value": 14.2,
+                  "unit": "MB",
+                  "tone": "neutral",
+                  "description": "轻量无 GC 抖动",
+                  "meta": {
+                    "strategy": "zero-copy"
+                  },
+                  "@id": "ezglmm0bfw"
+                },
+                {
+                  "title": "跨终端还原保真度",
+                  "value": 99.98,
+                  "unit": "%",
+                  "status": "pass",
+                  "description": "通过 1,200+ 像素级回归测试用例",
+                  "@id": "scjge2djci"
+                }
+              ],
+              "@id": "ph1ixo5414"
+            },
+            {
+              "type": "collection",
+              "variant": "chip",
+              "items": [
+                {
+                  "title": "tone accent",
+                  "tone": "accent",
+                  "@id": "xjpgtsczvg"
+                },
+                {
+                  "title": "status done",
+                  "status": "done",
+                  "@id": "4xp65o6un9"
+                }
+              ],
+              "@id": "ljchdgpy39"
+            },
+            {
+              "type": "collection",
+              "variant": "panel",
+              "items": [
+                {
+                  "title": "嵌套面板",
+                  "description": "CollectionItem.children 可包含其他 Block。",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "text": "这是 panel 内嵌的 paragraph。",
+                      "@id": "l23rp6qucc"
+                    }
+                  ],
+                  "@id": "5c0cuwa2ya"
+                }
+              ],
+              "@id": "bjzd6uuww7"
+            },
+            {
+              "type": "collection",
+              "variant": "compact",
+              "items": [
+                {
+                  "title": "高密度摘要",
+                  "value": "ready",
+                  "tone": "positive",
+                  "@id": "pglg3s26fy"
+                }
+              ],
+              "@id": "u7udtgwqwc"
+            },
+            {
+              "type": "collection",
+              "variant": "card",
+              "items": [
+                {
+                  "title": "通用卡片",
+                  "description": "card variant",
+                  "@id": "o82k9jmce4"
+                }
+              ],
+              "@id": "d90ds3pb35"
+            },
+            {
+              "type": "collection",
+              "variant": "stat",
+              "items": [
+                {
+                  "title": "Stat 示例",
+                  "value": 46,
+                  "unit": "blocks",
+                  "@id": "7c4j3uw8cb"
+                }
+              ],
+              "@id": "sqviwa6t27"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "键值元数据列表 (Key-Value List)",
+              "@id": "hmqusk3w69"
+            },
+            {
+              "type": "keyValueList",
+              "layout": "inline",
+              "items": [
+                {
+                  "key": "schemaVersion",
+                  "value": "`1.0.0`",
+                  "@id": "2a7q4djoz6"
+                },
+                {
+                  "key": "parserEngine",
+                  "value": "Ajv 2020-12",
+                  "@id": "fsrw4pku2n"
+                },
+                {
+                  "key": "renderTargets",
+                  "value": "HTML 与 Markdown",
+                  "@id": "gm6tj389zj"
+                },
+                {
+                  "key": "audit",
+                  "value": "**VALID**",
+                  "@id": "qxeo10gjpu"
+                }
+              ],
+              "@id": "xvj6ytw7f5"
+            },
+            {
+              "type": "keyValueList",
+              "layout": "stacked",
+              "items": [
+                {
+                  "key": "layout",
+                  "value": "`stacked` — 键值分行",
+                  "@id": "0myfzwu5fp"
+                },
+                {
+                  "key": "适用场景",
+                  "value": "键较长或值含多行说明时",
+                  "@id": "4c7p6ewig5"
+                }
+              ],
+              "@id": "fhz03hnmlr"
+            },
+            {
+              "type": "keyValueList",
+              "layout": "auto",
+              "items": [
+                {
+                  "key": "layout",
+                  "value": "`auto` — 由渲染器按视口与条目数选择",
+                  "@id": "r21raxa6mu"
+                },
+                {
+                  "key": "条目数",
+                  "value": "2",
+                  "@id": "1cj6vcdnok"
+                }
+              ],
+              "@id": "atuz1vj59i"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "系统状态看板 (Status Board)",
+              "@id": "a4iuao00rh"
+            },
+            {
+              "type": "statusBoard",
+              "items": [
+                {
+                  "label": "Schema 静态校验",
+                  "status": "pass",
+                  "detail": "全部契约通过",
+                  "@id": "cd0l67q15m"
+                },
+                {
+                  "label": "暗色对比度",
+                  "status": "pass",
+                  "detail": "WCAG AAA",
+                  "@id": "iyi7t7rapr"
+                },
+                {
+                  "label": "Mermaid SSR",
+                  "status": "in_progress",
+                  "detail": "复杂图降级策略评审中",
+                  "@id": "h99kt86sux"
+                },
+                {
+                  "label": "旧版直连解析器",
+                  "status": "fail",
+                  "detail": "已拒绝合入",
+                  "@id": "k6308nt21o"
+                },
+                {
+                  "label": "虚拟滚动",
+                  "status": "pending",
+                  "detail": "待排期",
+                  "@id": "dppboz3gy7"
+                },
+                {
+                  "label": "离线字体",
+                  "status": "skipped",
+                  "detail": "明确不做",
+                  "@id": "jez3pfcb59"
+                },
+                {
+                  "label": "多语言切换",
+                  "status": "blocked",
+                  "detail": "等宿主插槽",
+                  "@id": "1x18pto2ht"
+                },
+                {
+                  "label": "附录折叠默认态",
+                  "status": "partial",
+                  "detail": "仅部分浏览器验证",
+                  "@id": "xkiebmp0z3"
+                },
+                {
+                  "label": "导出体积预算",
+                  "status": "warning",
+                  "detail": "接近上限",
+                  "@id": "q5qo60igv2"
+                },
+                {
+                  "label": "文档元信息",
+                  "status": "neutral",
+                  "detail": "无额外告警",
+                  "@id": "6dawsrwpi3"
+                },
+                {
+                  "label": "发布清单",
+                  "status": "done",
+                  "detail": "已归档",
+                  "@id": "7jjmc9d4p8"
+                }
+              ],
+              "@id": "c947hm25qa"
+            }
+          ],
+          "@id": "qadxy508k1"
+        }
+      ],
+      "@id": "wopt4nx7a7"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "3. 代码、工程与拓扑架构",
+      "lead": "展示源码、代码差分、文件树、文件变更、Mermaid、架构总览与 API。",
+      "children": [
+        {
+          "type": "section",
+          "level": 3,
+          "title": "3.1 源码与文件变更",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "多语言结构化代码块 (Code Block)",
+              "@id": "ze1dyya5x8"
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "schema/validator.ts",
+              "code": "export async function validateAIRPBlock(node: BlockNode) {\n  const schema = await registry.resolve(node.type);\n  if (!schema) {\n    throw new UnsupportedBlockError(node.type);\n  }\n  // Validate against the closed block catalog.\n  return ajv.validate(schema, node.payload);\n}",
+              "highlightLines": [
+                3,
+                4,
+                5
+              ],
+              "maxLines": 8,
+              "@id": "wx8fb3pdvh"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "代码演进差分 (Code Diff)",
+              "@id": "z4cubkcv5l"
+            },
+            {
+              "type": "paragraph",
+              "text": "带文件名、行号与细致增删配色的代码差分块，清晰体现**安全门禁校验**的接入。",
+              "@id": "dbkvlpgvhb"
+            },
+            {
+              "type": "codeDiff",
+              "filename": "pipeline/report-engine.go",
+              "language": "go",
+              "unified": "@@ -10,2 +10,4 @@\n func RenderBlock(b *airp.BlockNode) ([]byte, error) {\n-  return json.Marshal(b.RawData)\n+  if err := airp.StrictValidator.Check(b); err != nil {\n+    return nil, fmt.Errorf(\"block schema violation: %w\", err)\n+  }\n+  return b.CompileTarget(airp.TargetHTML)",
+              "@id": "a72lj5xv4q"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "代码差分（before / after）",
+              "@id": "zet9vbgh28"
+            },
+            {
+              "type": "codeDiff",
+              "filename": "emit/block.ts",
+              "language": "typescript",
+              "before": "export function emit(block: Block): string {\n  return JSON.stringify(block);\n}\n",
+              "after": "export function emit(block: Block, ctx: EmitContext): string {\n  return ctx.skins.render(block);\n}\n",
+              "@id": "8c9e9h2keb"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "架构文件树与文件变更清单",
+              "@id": "uze585e3la"
+            },
+            {
+              "type": "fileTree",
+              "caption": "架构文件树",
+              "root": {
+                "name": "spec",
+                "change": "unchanged",
+                "children": [
+                  {
+                    "name": "schema",
+                    "change": "modified",
+                    "children": [
+                      {
+                        "name": "document.schema.json",
+                        "change": "unchanged",
+                        "annotation": "AIRP v1.0.0 SSOT",
+                        "@id": "1kbrema7im"
+                      },
+                      {
+                        "name": "blocks.md",
+                        "change": "modified",
+                        "@id": "tdsnqp5psa"
+                      }
+                    ],
+                    "@id": "it8ynpglvb"
+                  },
+                  {
+                    "name": "compiler",
+                    "change": "unchanged",
+                    "children": [
+                      {
+                        "name": "html-renderer.go",
+                        "change": "unchanged",
+                        "@id": "cdvsssnyqf"
+                      },
+                      {
+                        "name": "markdown-renderer.go",
+                        "change": "unchanged",
+                        "@id": "mynp8kkj68"
+                      }
+                    ],
+                    "@id": "xmi4kf1jxf"
+                  },
+                  {
+                    "name": "legacy",
+                    "change": "deleted",
+                    "annotation": "计划移除的旧入口",
+                    "children": [
+                      {
+                        "name": "legacy-renderer.ts",
+                        "change": "deleted",
+                        "@id": "iplewr7yyk"
+                      }
+                    ],
+                    "@id": "j1dodibjpw"
+                  },
+                  {
+                    "name": "README.md",
+                    "change": "added",
+                    "annotation": "新增图鉴说明",
+                    "@id": "1efk3zxk35"
+                  },
+                  {
+                    "name": "docs",
+                    "change": "renamed",
+                    "annotation": "由 notes/ 重命名",
+                    "children": [
+                      {
+                        "name": "gallery.md",
+                        "change": "added",
+                        "@id": "fcf6n0uk7m"
+                      }
+                    ],
+                    "@id": "qaqhdxgxjd"
+                  }
+                ],
+                "@id": "mbqbiowbts"
+              },
+              "@id": "ykbpmql00e"
+            },
+            {
+              "type": "fileChangeList",
+              "items": [
+                {
+                  "path": "packages/protocol/document.schema.json",
+                  "change": "modified",
+                  "note": "同步字段定义",
+                  "sizeBefore": "11 KB",
+                  "sizeAfter": "12 KB",
+                  "@id": "cnko20x8t3"
+                },
+                {
+                  "path": "test/unit/block-gallery.test.ts",
+                  "change": "added",
+                  "sizeAfter": "4 KB",
+                  "@id": "lp0v7bi1da"
+                },
+                {
+                  "path": "legacy/draft07-shim.go",
+                  "change": "deleted",
+                  "sizeBefore": "9 KB",
+                  "@id": "e30cvpfrpa"
+                },
+                {
+                  "path": "renderer/styles.css",
+                  "change": "renamed",
+                  "note": "重命名为 tokens.css",
+                  "sizeBefore": "12 KB",
+                  "sizeAfter": "9 KB",
+                  "@id": "4z19ygoayb"
+                }
+              ],
+              "@id": "4hj68rsqdk"
+            }
+          ],
+          "@id": "4g2910aszf"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "3.2 图表与架构总览",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "AIRP 验证与渲染流程",
+              "@id": "qpa3qqy91u"
+            },
+            {
+              "type": "mermaid",
+              "diagramKind": "flowchart",
+              "title": "AIRP 验证与渲染流程",
+              "source": "flowchart LR\n  A[\"LLM Output\"] --> B[\"AIRP Validate\"]\n  B --> C[\"Renderer\"]\n  C --> D[\"HTML\"]\n  C --> E[\"Markdown\"]",
+              "complexity": "simple",
+              "@id": "o98nfomj1z"
+            },
+            {
+              "type": "mermaid",
+              "diagramKind": "sequence",
+              "complexity": "complex",
+              "title": "校验—渲染—导出时序（复杂图）",
+              "source": "sequenceDiagram\n  participant Agent\n  participant Validate\n  participant Render\n  participant Export\n  Agent->>Validate: document.airp.json\n  Validate->>Render: AirpDocument\n  Render->>Export: HTML string\n  Export-->>Agent: standalone file",
+              "@id": "mmmezyjtrl"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "系统架构总览",
+              "@id": "mu70yg3sk6"
+            },
+            {
+              "type": "architectureOverview",
+              "overview": {
+                "type": "mermaid",
+                "diagramKind": "flowchart",
+                "title": "系统架构总览",
+                "source": "flowchart LR\n  S[\"Skill Engine<br/>LLM Output<br/>仅生成 + 校验\"] -->|\"*.airp.json\"| V[\"@airp/validate<br/>Ajv 2020-12 Core<br/>Schema 封闭类型<br/>i18n 与唯一 ID 门禁<br/>Mermaid parse 守卫\"]\n  V -->|\"Validated\"| R[\"@airp/renderer<br/>Compiler Kernel<br/>封闭 46 Block Catalog<br/>RichText 语义转译<br/>静态 AST 缓存加速\"]\n  R --> H[\"HTML5<br/>Interactive\"]\n  R --> M[\"Markdown<br/>CommonMark\"]",
+                "complexity": "medium",
+                "@id": "yixp77lsfh"
+              },
+              "modules": [
+                {
+                  "title": "Skill 智能生成模块",
+                  "description": "仅生成并校验 AIRP 文档。",
+                  "badges": [
+                    {
+                      "label": "Ingress",
+                      "tone": "accent",
+                      "@id": "xqbfbbavsj"
+                    }
+                  ],
+                  "meta": {
+                    "output": "*.airp.json"
+                  },
+                  "@id": "480ym7y10l"
+                },
+                {
+                  "title": "@airp/validate 门禁核心",
+                  "description": "执行 schema、i18n、唯一 ID 与 Mermaid 解析检查。",
+                  "status": "pass",
+                  "meta": {
+                    "gate": "Strict Zero-Tolerance"
+                  },
+                  "@id": "jy28m0ev8l"
+                },
+                {
+                  "title": "@airp/renderer 编译引擎",
+                  "description": "确定性输出 HTML 与 Markdown。",
+                  "tone": "accent",
+                  "badges": [
+                    {
+                      "label": "Egress",
+                      "tone": "accent",
+                      "@id": "ouc99jm9wo"
+                    }
+                  ],
+                  "meta": {
+                    "catalog": "46 Block Catalog"
+                  },
+                  "@id": "0ar5nn8ban"
+                }
+              ],
+              "@id": "qkbfg6t3wn"
+            }
+          ],
+          "@id": "p7pacwtn90"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "3.3 API 清单",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "RESTful 接口清单 (API Inventory)",
+              "@id": "z4clg3i7cc"
+            },
+            {
+              "type": "apiInventory",
+              "endpoints": [
+                {
+                  "method": "POST",
+                  "path": "/v1/render/ast",
+                  "summary": "解析并转换为 HTML AST",
+                  "status": "pass",
+                  "@id": "fq90kge6ic"
+                },
+                {
+                  "method": "GET",
+                  "path": "/v1/schema/draft-2020-12",
+                  "summary": "获取契约定义",
+                  "status": "done",
+                  "@id": "cbct5ug9ky"
+                },
+                {
+                  "method": "PUT",
+                  "path": "/v1/cache/prewarm",
+                  "summary": "预热模版缓存",
+                  "status": "in_progress",
+                  "@id": "5z1qyhsoh9"
+                },
+                {
+                  "method": "PATCH",
+                  "path": "/v1/render/partial",
+                  "summary": "局部重渲（实验）",
+                  "status": "pending",
+                  "@id": "h3agnz1lpy"
+                },
+                {
+                  "method": "DELETE",
+                  "path": "/v1/cache/{key}",
+                  "summary": "失效缓存条目",
+                  "status": "neutral",
+                  "@id": "gxb4xnmxl9"
+                }
+              ],
+              "@id": "lc0gartezy"
+            }
+          ],
+          "@id": "z4q20didsl"
+        }
+      ],
+      "@id": "4w3xrgi6kc"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "4. 决策、风险与演进规划",
+      "lead": "展示流程、决策、风险、假设、约束、开放问题、时间线、路线图与验证结果。",
+      "children": [
+        {
+          "type": "section",
+          "level": 3,
+          "title": "4.1 执行流程与架构决策",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "流程执行指示 (Flow Steps)",
+              "@id": "u32z4tz9vh"
+            },
+            {
+              "type": "flowSteps",
+              "steps": [
+                {
+                  "title": "接收 IR",
+                  "description": "读取 document.airp.json",
+                  "status": "done",
+                  "@id": "tv4xgzyo18"
+                },
+                {
+                  "title": "Schema 校验",
+                  "description": "Draft 2020-12 严格模式",
+                  "status": "done",
+                  "@id": "mcmjj10olm"
+                },
+                {
+                  "title": "块皮发射",
+                  "description": "按 type 分派 HTML",
+                  "status": "in_progress",
+                  "@id": "a1bl6yf5nf"
+                },
+                {
+                  "title": "组装壳与 TOC",
+                  "description": "header / footer / page-toc",
+                  "status": "pending",
+                  "@id": "d1u3lkpqdw"
+                },
+                {
+                  "title": "导出单文件",
+                  "description": "内联样式与 sprite",
+                  "status": "blocked",
+                  "@id": "kqq5u1ycpd"
+                }
+              ],
+              "@id": "xqft2utq84"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "架构决策记录 (Architectural Decision Record)",
+              "@id": "uud86i1qiq"
+            },
+            {
+              "type": "paragraph",
+              "text": "标准化 Context、Options 对比、Chosen 与 Rationale 四段式工程决策容器。",
+              "@id": "76qjj5y83q"
+            },
+            {
+              "type": "decision",
+              "title": "采用 JSON Schema Draft 2020-12 作为 document 唯一契约",
+              "status": "accepted",
+              "context": "Draft-07 缺少当前递归块树所需的能力。",
+              "options": [
+                {
+                  "label": "继续使用 Draft-07",
+                  "pros": "旧工具兼容较广",
+                  "cons": "与现码 schema 冲突",
+                  "@id": "s1ntailmqi"
+                },
+                {
+                  "label": "采用 Draft 2020-12",
+                  "pros": "与 v1.0.0 schema 一致",
+                  "cons": "需要升级校验栈",
+                  "@id": "mon9h4ni3i"
+                }
+              ],
+              "chosen": "采用 Draft 2020-12",
+              "rationale": "封闭 catalog 与严格属性映射以当前 schema 为真源。",
+              "@id": "q7odi7ieo0"
+            },
+            {
+              "type": "decision",
+              "title": "是否引入虚拟滚动",
+              "context": "超大文档 DOM 节点过多。",
+              "options": [
+                {
+                  "label": "虚拟滚动",
+                  "pros": "内存可控",
+                  "cons": "实现复杂",
+                  "@id": "gzu7dfqs00"
+                },
+                {
+                  "label": "分页拉取",
+                  "pros": "实现简单",
+                  "cons": "打断阅读流",
+                  "@id": "e3sp06n8zp"
+                }
+              ],
+              "status": "proposed",
+              "@id": "3lmzdiu3b7"
+            },
+            {
+              "type": "decision",
+              "title": "浏览器内运行 Mermaid",
+              "chosen": "不做",
+              "rationale": "离线与 CSP 约束优先；SSR 出 SVG。",
+              "status": "rejected",
+              "@id": "wqbt71ejb7"
+            },
+            {
+              "type": "decision",
+              "title": "阅读器内语言切换",
+              "status": "deferred",
+              "rationale": "改由宿主插槽驱动重渲。",
+              "@id": "z38wggtc2i"
+            },
+            {
+              "type": "decision",
+              "title": "内嵌 Web 字体方案",
+              "status": "superseded",
+              "rationale": "已被系统字体策略取代。",
+              "@id": "lwwab3aco0"
+            }
+          ],
+          "@id": "1s37enfw1q"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "4.2 风险、假设与约束",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "系统风险与缓解措施 (Risk Management)",
+              "@id": "0pwvohzcze"
+            },
+            {
+              "type": "risk",
+              "title": "Markdown 与 HTML 块皮肤不完全对齐",
+              "description": "不同输出目标可能采用不同的降级表达。",
+              "severity": "high",
+              "likelihood": "possible",
+              "mitigation": "以 schema 字段为准维护双目标 golden 快照。",
+              "owner": "Renderer WG",
+              "status": "open",
+              "@id": "99ny4wz7fg"
+            },
+            {
+              "type": "assumption",
+              "statement": "模型输出可在单次响应中生成通过 Ajv 的 document 树。",
+              "validated": true,
+              "@id": "n6910qaezw"
+            },
+            {
+              "type": "assumption",
+              "statement": "所有终端均预装相同 Web 字体。",
+              "validated": false,
+              "@id": "p87vqjqqst"
+            },
+            {
+              "type": "constraint",
+              "rule": "禁止渲染 schema 未登记的 block type；未知 major schemaVersion 必须硬失败。",
+              "scope": "renderer-target-html",
+              "nonNegotiable": true,
+              "@id": "dpj2kfmv3y"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "开放性待决问题 (Open Questions)",
+              "@id": "cem79147da"
+            },
+            {
+              "type": "openQuestion",
+              "question": "是否允许在富文本单元格内嵌套次级表格？",
+              "blocking": true,
+              "@id": "a9eidekinc"
+            },
+            {
+              "type": "openQuestion",
+              "question": "tabs 默认激活面板索引是否应进入 schema？",
+              "blocking": false,
+              "@id": "wj3q653vbj"
+            },
+            {
+              "type": "risk",
+              "title": "WASM 加速路径未验证",
+              "description": "离线 HTML 中引入 WASM 的体积与兼容性未知。",
+              "severity": "medium",
+              "likelihood": "possible",
+              "mitigation": "本阶段不引入；仅保留调研记录。",
+              "owner": "platform-team",
+              "status": "accepted",
+              "@id": "x9rkfwi28c"
+            },
+            {
+              "type": "risk",
+              "title": "原始 HTML 直插 DOM",
+              "description": "绕过 AST 校验插入字符串。",
+              "severity": "critical",
+              "likelihood": "likely",
+              "mitigation": "硬失败并熔断。",
+              "owner": "security",
+              "status": "mitigated",
+              "@id": "sfgdh4d9a2"
+            },
+            {
+              "type": "risk",
+              "title": "旧 CDN 字体依赖",
+              "description": "外链字体导致离线失败。",
+              "severity": "low",
+              "likelihood": "certain",
+              "mitigation": "改为系统字体。",
+              "owner": "renderer",
+              "status": "closed",
+              "@id": "wwx9of1sem"
+            }
+          ],
+          "@id": "s4zcp8kobk"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "4.3 演进规划与验证",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "项目里程碑 (Timeline)",
+              "@id": "4bwoy7pbke"
+            },
+            {
+              "type": "timeline",
+              "events": [
+                {
+                  "date": "2025-Q1",
+                  "title": "AIRP v1.0.0 schema 确立",
+                  "description": "封闭 Block catalog 完成。",
+                  "status": "done",
+                  "@id": "wjpogxmms7"
+                },
+                {
+                  "date": "2025-Q2",
+                  "title": "跨目标一致性验证",
+                  "status": "in_progress",
+                  "description": "里程碑说明",
+                  "@id": "v7ensec1ut"
+                },
+                {
+                  "date": "2026-09-17",
+                  "title": "预设计图鉴落地",
+                  "description": "HTML 与 document.airp.json 对齐 schema 全量字段。",
+                  "status": "in_progress",
+                  "@id": "x97f4xmm0b"
+                }
+              ],
+              "@id": "z8oez0jpfv"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "演进路线图 (Roadmap)",
+              "@id": "1ollabs9wn"
+            },
+            {
+              "type": "roadmap",
+              "phases": [
+                {
+                  "title": "WebAssembly 离线校验核",
+                  "timeframe": "2026 Q2",
+                  "goals": [
+                    "46 种 Block 可渲",
+                    "深浅色自适应"
+                  ],
+                  "status": "done",
+                  "@id": "671q4x82b4"
+                },
+                {
+                  "title": "多 locale UI 字符串表",
+                  "timeframe": "2026 Q3",
+                  "goals": [
+                    "Notion 式 TOC",
+                    "块皮统一"
+                  ],
+                  "status": "in_progress",
+                  "@id": "mz8raptdu3"
+                },
+                {
+                  "title": "宿主插槽与 VS Code",
+                  "timeframe": "2026 Q4",
+                  "goals": [
+                    "extraAppHeader 注入",
+                    "语言重渲"
+                  ],
+                  "status": "pending",
+                  "@id": "cauh1vsr0i"
+                }
+              ],
+              "@id": "ndobcb8uqb"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "需求追溯矩阵 (Requirement Trace)",
+              "@id": "yxt5tshwvz"
+            },
+            {
+              "type": "requirementTrace",
+              "items": [
+                {
+                  "reqId": "REQ-01",
+                  "summary": "静态 schema 门禁",
+                  "status": "pass",
+                  "evidence": "AIRP validation pipeline",
+                  "gap": "无",
+                  "@id": "tbd27460xh"
+                },
+                {
+                  "reqId": "REQ-02",
+                  "summary": "HTML 与 Markdown 输出",
+                  "status": "partial",
+                  "evidence": "双目标 renderer",
+                  "gap": "视觉表达允许不同",
+                  "@id": "vsxpkun7gz"
+                }
+              ],
+              "@id": "bbacin7ml1"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "测试套件门禁结果 (Test Result)",
+              "@id": "w3lsc4g0pt"
+            },
+            {
+              "type": "testResult",
+              "suites": [
+                {
+                  "name": "unit",
+                  "passed": 284,
+                  "failed": 0,
+                  "skipped": 2,
+                  "notes": "跳过平台相关用例",
+                  "@id": "jp0kbe128k"
+                },
+                {
+                  "name": "package",
+                  "passed": 96,
+                  "failed": 0,
+                  "skipped": 0,
+                  "@id": "4oi22k3jyl"
+                },
+                {
+                  "name": "e2e",
+                  "passed": 30,
+                  "failed": 1,
+                  "skipped": 1,
+                  "notes": "1 例截图漂移待修",
+                  "@id": "bbdnmc6uir"
+                }
+              ],
+              "@id": "3x9ep4pemb"
+            }
+          ],
+          "@id": "v3nl2khf9w"
+        }
+      ],
+      "@id": "l58e31bu1v"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "5. 列表、词汇与辅助引用",
+      "lead": "展示列表、术语、链接、引用、媒体、交互容器、附录与代理备注。",
+      "children": [
+        {
+          "type": "section",
+          "level": 3,
+          "title": "5.1 列表与术语",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "规范设计原则 (Bullet List)",
+              "@id": "qtns9wdojk"
+            },
+            {
+              "type": "bulletList",
+              "items": [
+                "**封闭性**：禁止解析未经 Schema 登记的非受控节点。",
+                "**确定性**：相同的 JSON 输入在任何终端必须输出完全一致的 DOM 树。",
+                "**无状态性**：每个积木块必须能脱离上下文独立静态序列化。"
+              ],
+              "@id": "g7dxb8u5c0"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "推荐接入步骤 (Numbered List)",
+              "@id": "8w3jmofq8e"
+            },
+            {
+              "type": "numberedList",
+              "items": [
+                "下载并引用最新的 `document.schema.json` 标准声明。",
+                "在模型输出提示词（Prompt）中声明采用 **AIRP 结构化约束**。",
+                "集成客户端 `Ajv` 门禁拦截模块，完成解析与页面挂载。"
+              ],
+              "@id": "1txdsclwpy"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "术语对照 (definitionList)",
+              "@id": "1whyoz7exr"
+            },
+            {
+              "type": "definitionList",
+              "items": [
+                {
+                  "term": "Block",
+                  "definition": "`document.blocks[]` 中由 `type` 判别的联合成员。",
+                  "@id": "89qbqimv1p"
+                },
+                {
+                  "term": "RichText",
+                  "definition": "普通字符串或 `InlineNode[]`。",
+                  "@id": "wi0qlt8751"
+                }
+              ],
+              "@id": "r1pgdjerd3"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "词汇表",
+              "@id": "1v968iw22v"
+            },
+            {
+              "type": "glossary",
+              "terms": [
+                {
+                  "term": "AIRP",
+                  "definition": "AI Report Protocol，面向 agent 生成技术报告的结构化 IR。",
+                  "@id": "k2ww0ufk30"
+                },
+                {
+                  "term": "SSOT",
+                  "definition": "Single Source of Truth；本图鉴以 v1.0.0 schema 为真源。",
+                  "@id": "ck6arpx7bo"
+                }
+              ],
+              "@id": "az8bodkk67"
+            }
+          ],
+          "@id": "xqs6s2bqqo"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "5.2 资源、引用与媒体",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "规范参考资源 (Link List)",
+              "@id": "f4al4gd33w"
+            },
+            {
+              "type": "linkList",
+              "title": "规范参考资源",
+              "links": [
+                {
+                  "href": "https://json-schema.org/draft/2020-12",
+                  "label": "JSON Schema Draft 2020-12",
+                  "description": "AIRP schema 使用的 JSON Schema draft。",
+                  "@id": "3xlis3hnwz"
+                },
+                {
+                  "href": "https://mermaid.js.org/",
+                  "label": "Mermaid",
+                  "description": "图表语法参考。",
+                  "@id": "gfzb56ja5r"
+                }
+              ],
+              "@id": "y3reds1b4o"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "文献与规范引用 (Citation)",
+              "@id": "lytjg6fcu5"
+            },
+            {
+              "type": "citation",
+              "items": [
+                {
+                  "source": "JSON Schema: A Media Type for Describing JSON Documents",
+                  "locator": "Draft 2020-12",
+                  "@id": "d4g5cfknd4"
+                },
+                {
+                  "source": "CommonMark Spec",
+                  "locator": "0.31.2",
+                  "@id": "2gl1jt2kj3"
+                }
+              ],
+              "@id": "orsc6ttxy0"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "技术架构配图 (Image)",
+              "@id": "zsnn0z5sgx"
+            },
+            {
+              "type": "image",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22640%22%20height%3D%22280%22%20viewBox%3D%220%200%20640%20280%22%3E%3Crect%20width%3D%22640%22%20height%3D%22280%22%20fill%3D%22%23f1f5f9%22/%3E%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22560%22%20height%3D%22200%22%20rx%3D%2212%22%20fill%3D%22%23e2e8f0%22%20stroke%3D%22%2394a3b8%22/%3E%3Ctext%20x%3D%22320%22%20y%3D%22145%22%20text-anchor%3D%22middle%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23334155%22%3EAST%20Pipeline%20Topology%20%28sample%29%3C/text%3E%3C/svg%3E",
+              "alt": "AST 管线拓扑示意",
+              "caption": "图：高并发无头服务端渲染管线拓扑（样例图）",
+              "@id": "uge5ovzq63"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "安全内嵌卡片 (Embed)",
+              "@id": "jegvmeniid"
+            },
+            {
+              "type": "embed",
+              "url": "https://github.com/maosong-ai/airp",
+              "title": "AIRP 仓库",
+              "@id": "g45v9jcxc3"
+            }
+          ],
+          "@id": "75en5dfeif"
+        },
+        {
+          "type": "section",
+          "level": 3,
+          "title": "5.3 交互容器与附录",
+          "children": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "折叠技术细节 (Collapsible)",
+              "@id": "o4ap0qbq5l"
+            },
+            {
+              "type": "collapsible",
+              "summary": "端到端依赖校验明细（默认折叠）",
+              "defaultOpen": false,
+              "importance": "secondary",
+              "children": [
+                {
+                  "type": "keyValueList",
+                  "layout": "stacked",
+                  "items": [
+                    {
+                      "key": "Buffer Pool Size",
+                      "value": "`64 KB`",
+                      "@id": "m3znputfnk"
+                    },
+                    {
+                      "key": "Recursion Max Depth",
+                      "value": "`16`",
+                      "@id": "b1s279kbve"
+                    },
+                    {
+                      "key": "Escape Policy",
+                      "value": "`HTML-Safe`",
+                      "@id": "07dy5a0tub"
+                    }
+                  ],
+                  "@id": "f465psogb7"
+                }
+              ],
+              "@id": "ov3ab95u7h"
+            },
+            {
+              "type": "collapsible",
+              "summary": "默认展开的补充说明",
+              "defaultOpen": true,
+              "importance": "secondary",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "此折叠块 defaultOpen 为 true，用于展示次要但仍希望默认可见的补充信息。",
+                  "@id": "tggr08efkl"
+                }
+              ],
+              "@id": "oaoct422h9"
+            },
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "多目标标签页 (Tabs)",
+              "@id": "p56y6m6z9e"
+            },
+            {
+              "type": "tabs",
+              "panels": [
+                {
+                  "label": "HTML Target",
+                  "children": [
+                    {
+                      "type": "code",
+                      "language": "html",
+                      "code": "<section class=\"airp-block\" data-type=\"table\">...</section>",
+                      "@id": "gb4sl31saf"
+                    }
+                  ],
+                  "@id": "6v8j3gyjsx"
+                },
+                {
+                  "label": "Markdown Target",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "text": "结构化内容按 CommonMark 可表达能力降级。",
+                      "@id": "jb74ue5gfy"
+                    }
+                  ],
+                  "@id": "3qj65fmiey"
+                }
+              ],
+              "@id": "9rr6ttusol"
+            },
+            {
+              "type": "agentNote",
+              "text": "该文档从 HTML 视觉稿反推，并以 v1.0.0 schema 进行约束。",
+              "visible": true,
+              "@id": "tc3yxt875a"
+            },
+            {
+              "type": "agentNote",
+              "text": "内部审计说明：visible 为 false 时，人类可见 HTML 应省略此块。",
+              "visible": false,
+              "@id": "8k78ievnxd"
+            },
+            {
+              "type": "appendix",
+              "title": "附录 A：Schema 真源",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "SSOT：`packages/protocol/src/schemas/1.0.0/document.schema.json`。",
+                  "@id": "n91fhodl6z"
+                },
+                {
+                  "type": "callout",
+                  "variant": "info",
+                  "title": "验证要求",
+                  "body": "交付前必须通过 schema、i18n、唯一 ID 与 Mermaid 语法验证。",
+                  "@id": "2er1v00yz6"
+                }
+              ],
+              "@id": "xyeq7nv5t0"
+            }
+          ],
+          "@id": "zq46d99d1n"
+        }
+      ],
+      "@id": "tvbqwp3mny"
+    }
+  ]
+}

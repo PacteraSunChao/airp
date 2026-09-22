@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "1.1.0 rejects authors",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z",
+    "authors": [
+      "AIRP"
+    ]
+  },
+  "i18n": {
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Should fail Ajv.",
+      "@id": "87zeuhjzur"
+    }
+  ]
+}

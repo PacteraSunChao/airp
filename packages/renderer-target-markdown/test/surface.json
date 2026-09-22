@@ -1,0 +1,12 @@
+{
+  "tiers": ["Unit", "Package"],
+  "caseDriven": true,
+  "usesFixtures": true,
+  "cases": [
+    {
+      "tier": "Package",
+      "file": "render-cases.ts",
+      "export": "renderCases"
+    }
+  ]
+}

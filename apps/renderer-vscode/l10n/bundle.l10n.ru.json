@@ -1,0 +1,15 @@
+{
+  "AIRP Renderer": "AIRP Renderer",
+  "Open a *.airp.json file to render": "Откройте файл *.airp.json для рендера",
+  "Open a *.airp.json Renderer view to edit source": "Откройте вид Renderer для *.airp.json, чтобы редактировать исходник",
+  "Render failed": "Ошибка рендера",
+  "Render succeeded": "Рендер выполнен",
+  "AIRP document was deleted": "Документ AIRP был удалён",
+  "Export failed": "Ошибка экспорта",
+  "Render failed. See diagnostics below or open the Output channel.": "Ошибка рендера. См. диагностику ниже или откройте канал Output.",
+  "Open Output": "Открыть Output",
+  "Edit Source": "Редактировать исходник",
+  "Export": "Экспорт",
+  "HTML": "HTML",
+  "Markdown": "Markdown"
+}

@@ -1,0 +1,12 @@
+{
+  "tiers": ["Unit", "Package"],
+  "caseDriven": true,
+  "usesFixtures": true,
+  "cases": [
+    {
+      "tier": "Package",
+      "file": "pipeline-cases.ts",
+      "export": "pipelineCases"
+    }
+  ]
+}

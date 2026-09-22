@@ -1,0 +1,13 @@
+src/**
+test/**
+scripts/**
+node_modules/**
+.turbo/**
+**/*.map
+**/*.ts
+esbuild.mjs
+tsconfig.json
+vitest.config.ts
+.gitignore
+*.vsix
+icon.svg

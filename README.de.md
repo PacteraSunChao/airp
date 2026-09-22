@@ -1,141 +1,108 @@
-# AIRP — AI Report Protocol (KI-Berichtsprotokoll)
+# AIRP — AI Report Protocol
 
 [🇺🇸 English](./README.md) | [🇨🇳 中文](./README.cn.md) | [🇯🇵 日本語](./README.ja.md) | [🇰🇷 한국어](./README.ko.md) | [🇩🇪 Deutsch](./README.de.md) | [🇫🇷 Français](./README.fr.md) | [🇷🇺 Русский](./README.ru.md) | [🇪🇸 Español](./README.es.md) | [🇧🇷 Português (Brasil)](./README.pt-BR.md) | [🇮🇹 Italiano](./README.it.md)
 
 ![AIRP screen capture](./screen-capture.png "AIRP screen capture")
 
-**Verwandeln Sie die Ausgaben von KI/Agenten in strukturierte Berichte, die validierbar, renderbar und langfristig wartbar sind.**
+**Berichte von der KI besser lesbar machen—und leichter änderbar.**
 
-Beim Erstellen von Konzepten, Retrospektiven oder Audit-Unterlagen in Cursor, Copilot, Claude Code und ähnlichen Umgebungen lassen sich Chat-Verläufe selten direkt ausliefern: Das Layout ist instabil, die Suche schwierig, und ein erneutes Exportieren in anderer Sprache oder einem anderen Format ist mühsam. AIRP nutzt ein einheitliches **JSON Schema**, um die Berichtsstruktur zu definieren (ähnlich wie bei Notion aus mehreren **Block**-Inhaltstypen), erzeugt zuerst eine strukturierte Quelldatei **`.airp.json`** und exportiert anschließend über einen **Renderer** **HTML** (Lesen/Präsentation) oder **Markdown** (Dokumentations-Workflows / Weiterbearbeitung).
+Lass die KI Markdown schreiben, und oft wird’s flach und zerfahren. HTML sieht besser aus, ist aber lang, frisst Tokens und lässt sich später schlecht anfassen. AIRPs Ansatz: Die KI schreibt zuerst eine `*.airp.json`-Quelle, du öffnest sie mit der **AIRP-Renderer**-Erweiterung als ordentliches HTML. Zum Weitergeben exportierst du HTML oder Markdown.
 
-Repository: `https://github.com/maosong-ai/airp`
+Die Quelle ist wie Notion in **Blöcken (Blocks)** organisiert—aktuell **46** Stück (Hero-Metriken, Vergleich, Entscheidung, Timeline, Mermaid, Architekturüberblick usw.). Jeder Block hat sein eigenes Layout. Pläne, Reviews, Retros und Audits wirken klarer und werden keine Textwand.
 
-## Für wen ist es gedacht
+## So läuft ein Bericht
 
-| Rolle | Typische Berichte |
-|---|---|
-| Projektmanager / Produkt | Projektbeschreibungen, Meilenstein-Retrospektiven, Risiken und To-dos |
-| Operations / Business | Kampagnenzusammenfassungen, Benchmark-Analysen, Entscheidungen und Follow-ups |
-| Interne Revision / Qualitätssicherung | Schweregrade, Evidenzketten, Korrektur- und Verifikations-Checklisten |
-| Entwicklung / Architektur | Migrationspläne, technische Reviews, Test- und Änderungsbeschreibungen |
+Schreiben und Lesen bleiben getrennt. Die `*.airp.json` in der Mitte folgt JSON Schema—Erzeugung und Validierung nehmen sie als Wahrheit:
 
-## Kernfunktionen im Überblick
+| Wer | Was es tut |
+| --- | --- |
+| **`/airp` Skill** | KI lässt die Quelle erzeugen oder ändern und validiert sie |
+| **VS-Code-Erweiterung** | Im Editor lesen; HTML / Markdown exportieren |
 
-| Funktion | Beschreibung |
-|---|---|
-| **Strukturierte Quelldateien** | `.airp.json` organisiert Inhalte gemäß Schema; automatische Validierung nach der Generierung reduziert Fälle, in denen ein Bericht „vollständig wirkt, aber Abschnitte fehlen“ |
-| **Trennung von Inhalt und Darstellung** | Nur die Quelldatei pflegen; HTML / Markdown werden vom Renderer exportiert—Layout ändern, ohne den Inhalt neu zu schreiben |
-| **Mehrsprachigkeit (i18n)** | Eine Quelldatei kann Texte in mehreren Sprachen tragen (`i18n.locales`); Sprache beim Export oder beim Durchsuchen wählen; die Oberfläche unterstützt u. a. Chinesisch, Englisch, Japanisch, Koreanisch, Deutsch, Französisch, Russisch, Spanisch, Portugiesisch und Italienisch |
-| **Themes und Layout** | Beim HTML-Export lassen sich Hell-/Dunkel-Themes und andere Erscheinungsoptionen umschalten, **ohne den Inhalt zu ändern** |
-| **Erweiterbar** | Künftig u. a. PDF, Excel, Notion und weitere Exportziele |
+Was das konkret bringt:
+
+- Fehlende Felder oder Abschnitte scheitern an der Validierung—weniger halbfertige Ablieferungen.
+- Die Quelle passt zu Git und Diffs; HTML / Markdown sind nur das, was Menschen lesen.
+- Klare Blockgrenzen machen das Modell stabiler und brauchen meist weniger Tokens als eine handgeschriebene HTML-Seite.
 
 ## Schnellstart
 
-**1. Skill installieren**
+### 1. VS-Code-Erweiterung installieren
+
+**AIRP Renderer** aus dem [Marketplace](https://marketplace.visualstudio.com/items?itemName=airp.airp-renderer-vscode) installieren (Erweiterungs-ID: `airp.airp-renderer-vscode`).
+
+Beliebige `*.airp.json` öffnen zum Lesen—oder HTML / Markdown exportieren. Braucht einen VS-Code-kompatiblen Editor (z. B. Cursor).
+
+### 2. `/airp` Skill installieren
+
+Nur vorhandene Quellen lesen? Die Erweiterung reicht. Den Skill brauchst du, wenn die KI neue Berichte schreiben soll:
 
 ```bash
 npx skills add maosong-ai/airp
 ```
 
-**2. Befehle und Ausgaben**
+Im Chat `/airp <Thema>` eingeben. Der Skill erzeugt und validiert eine Quelle (Standardordner: `.docs/airp/`). Danach mit der Erweiterung öffnen und lesen. Optional: `--locale de-DE`, `--out <Verzeichnis>`.
 
-| Befehl | Ausgabe | Zweck |
-|---|---|---|
-| `/airp` | `*.airp.json` | Strukturierte Quelldatei generieren und validieren (Archiv, Suche, Nachbearbeitung, Re-Export) |
-| `/airp-dashboard` | Lokales Dashboard | Quelldatei im Browser vorschauen; HTML / Markdown u. a. auch online exportieren |
-| `/airp-html` | `*.html` | Vorhandene Quelldatei als Einzeldatei-Webseite rendern—zum Teilen und Präsentieren |
-| `/airp-markdown` | `*.md` | Markdown für ein gewähltes Locale exportieren—z. B. für Yuque, Feishu, GitHub |
+## Sprachen
 
-**3. Empfohlener Ablauf**
+Unterstützte Dokumentsprachen: English (`en-US`), 简体中文 (`zh-CN`), 日本語 (`ja-JP`), 한국어 (`ko-KR`), Deutsch (`de-DE`), Français (`fr-FR`), Русский (`ru-RU`), Español (`es-ES`), Português Brasil (`pt-BR`), Italiano (`it-IT`). Beim Schreiben mit `/airp --locale …` wählen.
 
-```
-/airp  →  Quelldatei  →  /airp-html      →  HTML      # externes Lesen, Präsentation
-/airp  →  Quelldatei  →  /airp-markdown  →  Markdown  # Dokumentation, Weiterbearbeitung
-```
+## Was als Nächstes kommt
 
-**4. Ausgabeverzeichnis**
+Heute schon da: Skill erzeugt / validiert Quellen; Erweiterung liest und exportiert HTML / Markdown. Geplant:
 
-Standard: `.docs/airp/` im Projekt; mit `--out <dir>` ein anderes Verzeichnis angeben.
+| Richtung | Kurz |
+| --- | --- |
+| **Visuelles Bearbeiten** | Inhalt in der Erweiterung ändern—nicht für jede Änderung den Skill bemühen |
+| **Mehr Exportformate** | PDF dazu (Druck, Archiv) |
+| **Mehrseitig / Mehrblatt** | Lange Berichte nach Abschnitt oder Blatt teilen, nicht alles auf eine Seite |
 
-## Workflow
+## Lokale Entwicklung und Build
 
-```mermaid
-flowchart LR
-  A[KI/Agent generiert Inhalt] --> B[Strukturierte Quelldatei<br/>.airp.json]
-  B --> C{AIRP JSON Schema Validierung}
-  C -- bestanden --> D[Renderer]
-  C -- fehlgeschlagen --> E[Korrigieren und neu generieren]
-  D --> H[HTML]
-  D --> M[Markdown]
-  D -. geplant .-> P[PDF / Excel / Notion …]
+Für Leute, die am Repo mitarbeiten. Für den Alltag mit VS-Code-Erweiterung und Skill musst du dieses Repo nicht klonen.
+
+Umgebung: Node.js **20.19+**, pnpm **10.17+**.
+
+```bash
+pnpm install
 ```
 
-## Warum „Quelldatei + Renderer“
+**Validate-CLI** (`airp-validate`)
 
-Das **JSON Schema** von AIRP (`airp-document.schema.json`) ist die **Single Source of Truth (SSOT)** für Generierung und Validierung:
+```bash
+# ausprobieren
+pnpm validate-cli:sample
 
-- **Validierbar**: Felder und Abschnitte sind eingeschränkt; bei Validierungsfehlern gilt der Bericht als unvollständig—keine Schein-Lieferungen.
-- **Wiederverwendbar**: Quelldateien eignen sich für Versionsvergleich, Suche und Automatisierung; HTML / Markdown sind für menschliches Lesen gedacht.
-- **Stabiler und kontextsparender für KI**: Klare Block-Grenzen; bei langen Berichten driftet die Struktur seltener ab als bei frei geschriebenem HTML, und bei gleicher Informationsdichte ist der Umfang meist kompakter.
-- **Mehrere Formate ohne Doppelarbeit**: Quelldatei einmal anpassen, Web oder Dokumente bei Bedarf exportieren.
+# Build → apps/validate-cli/dist/cli.mjs
+pnpm exec turbo run build --filter=@airp/validate-cli
+```
 
-Der Berichtskörper wird aus verschiedenen **Blocks** zusammengesetzt (z. B. Abschnitt `section`, Tabelle `table`, Risiko `risk`, Diagramm `mermaid` usw.). Die vollständige Typenliste steht im Schema; im Alltag reicht es, den Berichtstyp zu nennen (z. B. „Audit-Bericht“, „Projekt-Retrospektive“)—`/airp` wählt passende Block-Kombinationen.
+**Render-CLI** (`airp-render`)
 
-### Inhaltsmodule (nach Zweck)
+```bash
+# ausprobieren
+pnpm renderer-cli:sample
 
-| Kategorie | Typische Blocks |
-|---|---|
-| Einleitung und Zusammenfassung | `hero`, `lead`, `pullQuote` |
-| Fließtext und Layout | `section`, `paragraph`, `table`, `callout`, verschiedene Listen |
-| Ablauf und Diagramme | `flowSteps`, `mermaid`, `timeline`, `roadmap` |
-| Entscheidungen und Risiken | `comparison`, `decision`, `risk`, `assumption`, `openQuestion` |
-| Ausführung und Verifikation | `checklist`, `statusBoard`, `testResult`, `requirementTrace` |
-| Anhang und Referenzen | `collapsible`, `tabs`, `appendix`, `glossary`, `citation` |
+# Build → apps/renderer-cli/dist/cli.mjs
+pnpm exec turbo run build --filter=@airp/renderer-cli
+```
 
-## Häufige Fragen
+**VS-Code-Erweiterung**
 
-### Welche Datei soll ich behalten?
+Repo in VS Code öffnen, F5 (oder **Launch AIRP Renderer**) für den Extension Development Host.
 
-| Ziel | Empfehlung |
-|---|---|
-| Team-Archiv, maschinelle Verarbeitung, späterer Re-Export | `.airp.json` (Quelldatei) |
-| Teilen per E-Mail/IM, Präsentation zum Lesen | `.html` |
-| Bearbeitung in der Dokumentation, Anbindung an Markdown-Toolchains | `.md` (`/airp-markdown` + Locale) |
+```bash
+# Build
+pnpm exec turbo run build --filter=airp-renderer-vscode
 
-### Wie funktioniert Mehrsprachigkeit?
-
-- Sprachen im Prompt angeben (z. B. „/airp <Prompt> auf Chinesisch, Japanisch und Englisch generieren“) → die Quelldatei enthält Texte für alle drei Locales.
-- Wenn nicht angegeben (z. B. „/airp <Prompt>“) → der Skill erzeugt eine Einzel-Locale-Quelldatei in der **aktuellen Gesprächssprache**.
-
-### AIRP vs HTML vs Markdown
-
-Diese Formate schließen sich nicht aus: **HTML / Markdown sind Exportformate zum Lesen.**
-
-| Vergleich | AIRP (`.airp.json`) | KI schreibt direkt HTML | KI schreibt direkt Markdown |
-|---|---|---|---|
-| **Rolle** | Strukturierte Quelldatei + Schema-Validierung | Fertige Präsentationsseite | Fertiges Dokument |
-| **Strukturvorgaben** | Blocks + Schema, nach Generierung validierbar | Abhängig vom Prompt; lange Seiten verlieren leicht Blocks, Layout driftet | Abhängig von Schreibgewohnheiten; bei langen Texten schwankt die Hierarchie |
-| **Mehrsprachigkeit** | Mehrsprachige Textstruktur in einer Datei | Oft separate Vollseiten oder manuelles Kopieren | Oft mehrere `.md`-Dateien |
-| **Export in mehrere Formate** | Gleiche Quelldatei → HTML / Markdown (und künftig PDF/Excel usw.) | Nach Markdown umschreiben oder verlustbehaftete Konvertierung | Nach HTML umschreiben oder Styling nachziehen |
-| **Lesen für Menschen** | Rendern mit `/airp-html` oder `/airp-markdown` | Einzeldatei öffnen, volles Layout | Plattform rendert; starker Plain-Text-Charakter |
-| **Nachbearbeitung** | KI bearbeitet die Quelldatei direkt; oder Markdown exportieren für Teiländerungen | HTML-Bearbeitung ist aufwändig | Am natürlichsten in Dokumenten-Tools |
-| **Archiv / Suche / Diff** | Strukturiert, stabile Felder | Tags und Styles vermischt, Semantik schwer extrahierbar | Textfreundlich, Felder nicht vereinheitlicht |
-| **Mehrfache KI-Runden** | Block-Felder ändern, klare Grenzen | Viele Tags, lange Dateien, leicht übersehene Änderungen | Mittel; Struktur durch Disziplin |
-| **Token / Kontext** | Modulares JSON, weniger Redundanz | Gleicher Inhalt, größerer Footprint | Mittel |
-| **Layout und Theme** | Renderer-Schicht wechseln, Quelldatei unverändert | Styles in der Datei eingebettet | Abhängig von der Zielplattform |
-| **Besonders geeignet für** | Formelle Berichte, Mehrsprachigkeit, iterative Teams, einheitliche Vorlagen | Einmalige Einzelseiten, starke Präsentation | Kurze Texte, Notizen, finales Markdown-Deliverable |
-| **Weniger geeignet für** | Zwei-drei Sätze, kein Archiv nötig | Starke Validierung, Mehrsprachigkeit, Multi-Format-Pipeline | Starkes Schema, Ein-Klick-Mehrsprach-Export |
-
-> **Fazit**: AIRP nutzen, wenn Konsistenz, prüfbare Struktur und „ein Inhalt, viele Exporte“ wichtig sind; HTML oder Markdown direkt, wenn das Endformat feststeht und nur eine Version gebraucht wird.
-
-## Geplante Erweiterungen
-
-- Verschlüsselung für Quelldateien und Exporte
-- Export mit mehreren Sheet-Seiten
-- Renderer für PDF, Excel, Notion usw.
+# Paket → apps/renderer-vscode/dist/airp-renderer-vscode-<version>.vsix
+pnpm --filter=airp-renderer-vscode package
+```
 
 ---
 
 ## Lizenz
 
 MIT
+
+[AIRP](https://github.com/maosong-ai/airp) | Copyright (c) 2026 毛松 <maosong-life@outlook.com>

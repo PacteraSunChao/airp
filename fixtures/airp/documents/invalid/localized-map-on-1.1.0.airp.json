@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "1.1.0 rejects LocalizedString maps",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": {
+        "en": "Should fail Ajv."
+      },
+      "@id": "takelfyq6m"
+    }
+  ]
+}

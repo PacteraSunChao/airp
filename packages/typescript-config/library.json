@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "AIRP Library",
+  "extends": "./base.json",
+  "exclude": ["node_modules", "dist"]
+}

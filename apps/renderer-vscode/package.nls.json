@@ -1,0 +1,9 @@
+{
+  "airp.renderer.displayName": "AIRP Renderer",
+  "airp.renderer.description": "Render a single *.airp.json document in a Webview",
+  "airp.renderer.customEditor.displayName": "AIRP Renderer",
+  "airp.renderer.command.open": "Open Renderer",
+  "airp.renderer.command.editSource": "Edit Source",
+  "airp.renderer.configuration.title": "AIRP Renderer",
+  "airp.renderer.configuration.rerenderDelay": "Delay in milliseconds after an AIRP document changes before it is rendered again."
+}

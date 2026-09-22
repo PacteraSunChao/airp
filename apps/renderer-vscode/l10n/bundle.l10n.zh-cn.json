@@ -1,0 +1,15 @@
+{
+  "AIRP Renderer": "AIRP 渲染器",
+  "Open a *.airp.json file to render": "请打开 *.airp.json 文件以进行渲染",
+  "Open a *.airp.json Renderer view to edit source": "请打开 *.airp.json 的渲染器视图以编辑源文件",
+  "Render failed": "渲染失败",
+  "Render succeeded": "渲染成功",
+  "AIRP document was deleted": "AIRP 文档已删除",
+  "Export failed": "导出失败",
+  "Render failed. See diagnostics below or open the Output channel.": "渲染失败。请查看下方诊断信息或打开输出通道。",
+  "Open Output": "打开输出",
+  "Edit Source": "编辑源文件",
+  "Export": "导出",
+  "HTML": "HTML",
+  "Markdown": "Markdown"
+}

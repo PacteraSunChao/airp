@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": "Mermaid ok",
+    "kind": "architecture",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "mermaid",
+      "diagramKind": "flowchart",
+      "source": "flowchart LR\n  A-->B"
+    },
+    {
+      "type": "architectureOverview",
+      "overview": {
+        "type": "mermaid",
+        "source": "flowchart TB\n  API-->DB"
+      },
+      "modules": [
+        {
+          "title": "API",
+          "description": "HTTP edge"
+        }
+      ]
+    }
+  ]
+}

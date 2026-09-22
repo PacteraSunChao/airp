@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": "Unknown block fixture",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "notARealBlock",
+      "text": "nope"
+    }
+  ]
+}

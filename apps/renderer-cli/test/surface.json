@@ -1,0 +1,6 @@
+{
+  "tiers": ["E2E", "Unit"],
+  "caseDriven": true,
+  "usesFixtures": true,
+  "cases": [{ "tier": "E2E", "file": "cli-cases.ts", "export": "cliCases" }]
+}

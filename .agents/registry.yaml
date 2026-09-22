@@ -1,0 +1,97 @@
+version: 1
+
+rules:
+  rules-meta:
+    checklists:
+      rules-meta: .agents/rules/core/rules-meta/checklists/rules-meta.md
+    path: .agents/rules/core/rules-meta/README.md
+    references:
+      agents-md: .agents/rules/core/rules-meta/references/agents-md.md
+      delivery-prerequisites: .agents/rules/core/rules-meta/references/delivery-prerequisites.md
+      directory-layout: .agents/rules/core/rules-meta/references/directory-layout.md
+      doc-ids-and-links: .agents/rules/core/rules-meta/references/doc-ids-and-links.md
+      frontmatter: .agents/rules/core/rules-meta/references/frontmatter.md
+      registry-yaml: .agents/rules/core/rules-meta/references/registry-yaml.md
+  code-styles:
+    checklists:
+      biome-style-guards: .agents/rules/core/code-styles/checklists/biome-style-guards.md
+      comments-language: .agents/rules/core/code-styles/checklists/comments-language.md
+      module-placement: .agents/rules/core/code-styles/checklists/module-placement.md
+      naming: .agents/rules/core/code-styles/checklists/naming.md
+    path: .agents/rules/core/code-styles/README.md
+    rules:
+      biome-style-guards: .agents/rules/core/code-styles/rules/biome-style-guards.md
+      comments-language: .agents/rules/core/code-styles/rules/comments-language.md
+      module-placement: .agents/rules/core/code-styles/rules/module-placement.md
+      naming: .agents/rules/core/code-styles/rules/naming.md
+  technology-stack:
+    path: .agents/rules/project/technology-stack/README.md
+  package-boundaries:
+    path: .agents/rules/project/package-boundaries/README.md
+    checklists:
+      before-new-symbol: .agents/rules/project/package-boundaries/checklists/before-new-symbol.md
+      near-duplicate-convergence: .agents/rules/project/package-boundaries/checklists/near-duplicate-convergence.md
+    rules:
+      dependency-dag: .agents/rules/project/package-boundaries/rules/dependency-dag.md
+      near-duplicate-convergence: .agents/rules/project/package-boundaries/rules/near-duplicate-convergence.md
+      package-roles: .agents/rules/project/package-boundaries/rules/package-roles.md
+      utils-admission: .agents/rules/project/package-boundaries/rules/utils-admission.md
+      workspace-layout: .agents/rules/project/package-boundaries/rules/workspace-layout.md
+  failure-channels:
+    path: .agents/rules/project/failure-channels/README.md
+    checklists:
+      before-failure-channels-change: .agents/rules/project/failure-channels/checklists/before-failure-channels-change.md
+    rules:
+      channels: .agents/rules/project/failure-channels/rules/channels.md
+      codes: .agents/rules/project/failure-channels/rules/codes.md
+      ctx-payload: .agents/rules/project/failure-channels/rules/ctx-payload.md
+      human-output: .agents/rules/project/failure-channels/rules/human-output.md
+      types: .agents/rules/project/failure-channels/rules/types.md
+  protocol:
+    path: .agents/rules/project/protocol/README.md
+    rules:
+      document-field-naming: .agents/rules/project/protocol/rules/document-field-naming.md
+  schema-version-routing:
+    path: .agents/rules/project/schema-version-routing/README.md
+    checklists:
+      before-version-routing-change: .agents/rules/project/schema-version-routing/checklists/before-version-routing-change.md
+    rules:
+      routing-discipline: .agents/rules/project/schema-version-routing/rules/routing-discipline.md
+  renderer:
+    path: .agents/rules/project/renderer/README.md
+    rules:
+      html-components: .agents/rules/project/renderer/rules/html-components.md
+      html-icons: .agents/rules/project/renderer/rules/html-icons.md
+      html-locale: .agents/rules/project/renderer/rules/html-locale.md
+      html-styles: .agents/rules/project/renderer/rules/html-styles.md
+      locale-format: .agents/rules/project/renderer/rules/locale-format.md
+      mermaid-svg: .agents/rules/project/renderer/rules/mermaid-svg.md
+      missing-object-hard-fail: .agents/rules/project/renderer/rules/missing-object-hard-fail.md
+      target-options: .agents/rules/project/renderer/rules/target-options.md
+  testing:
+    path: .agents/rules/project/testing/README.md
+    rules:
+      assertion-style: .agents/rules/project/testing/rules/assertion-style.md
+      case-model: .agents/rules/project/testing/rules/case-model.md
+      fixtures: .agents/rules/project/testing/rules/fixtures.md
+      layers: .agents/rules/project/testing/rules/layers.md
+
+skills:
+  code-fix:
+    checklists:
+      post-change-fix: .agents/skills/core/code-fix/checklists/post-change-fix.md
+    path: .agents/skills/core/code-fix/SKILL.md
+    rules:
+      post-change-fix: .agents/skills/core/code-fix/rules/post-change-fix.md
+  test-sync:
+    checklists:
+      post-change-test: .agents/skills/project/test-sync/checklists/post-change-test.md
+    path: .agents/skills/project/test-sync/SKILL.md
+    rules:
+      change-sync-matrix: .agents/skills/project/test-sync/rules/change-sync-matrix.md
+
+shared:
+  delivery-prerequisites:
+    path: .agents/shared/delivery-prerequisites.md
+  terminology:
+    path: .agents/shared/terminology.md

@@ -1,0 +1,1366 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": {
+      "en": "AIRP Block Gallery",
+      "zh-CN": "AIRP 积木块图鉴"
+    },
+    "subtitle": {
+      "en": "One chapter per block type (schema 1.0.0)",
+      "zh-CN": "按章节覆盖全部积木块类型（schema 1.0.0）"
+    },
+    "kind": "generic",
+    "authors": ["AIRP"],
+    "tags": ["sample", "gallery", "blocks", "phase-6"],
+    "createdAt": "2026-09-14T14:40:19.553Z",
+    "updatedAt": "2026-09-14T14:46:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "zh-CN",
+    "locales": ["zh-CN", "en"]
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "id": "gallery-hero",
+      "metrics": [
+        {
+          "title": {
+            "en": "Block types",
+            "zh-CN": "积木块类型"
+          },
+          "value": 46,
+          "description": "schema 登记的全部 Block type"
+        },
+        {
+          "title": {
+            "en": "Schema",
+            "zh-CN": "Schema"
+          },
+          "value": "1.0.0",
+          "description": "document.schema.json"
+        },
+        {
+          "title": {
+            "en": "Targets",
+            "zh-CN": "渲染目标"
+          },
+          "value": 2,
+          "unit": {
+            "en": "html · md",
+            "zh-CN": "html · md"
+          },
+          "description": "封闭 catalog：html | markdown"
+        }
+      ],
+      "badges": [
+        {
+          "label": {
+            "en": "Demo sample",
+            "zh-CN": "演示样例"
+          },
+          "tone": "accent"
+        },
+        {
+          "label": {
+            "en": "Not a test fixture",
+            "zh-CN": "非测试合同"
+          },
+          "tone": "neutral"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-hero",
+      "level": 2,
+      "title": {
+        "en": "hero",
+        "zh-CN": "hero"
+      },
+      "lead": "文档开篇的顶层 `hero`（指标与徽章）即是本章演示实例；请滚回页顶查看。",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "Scroll to the top of the report to see the `hero` block."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-section",
+      "level": 2,
+      "title": {
+        "en": "section",
+        "zh-CN": "section"
+      },
+      "lead": "本章本身即是 `section`（level 2）。下方嵌套一个子 section。",
+      "children": [
+        {
+          "type": "section",
+          "id": "section-nested",
+          "level": 3,
+          "title": {
+            "en": "Nested section",
+            "zh-CN": "嵌套 section"
+          },
+          "children": [
+            {
+              "type": "paragraph",
+              "text": "嵌套 `section` 的子内容。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-group",
+      "level": 2,
+      "title": {
+        "en": "group",
+        "zh-CN": "group"
+      },
+      "lead": "视觉分组，通常不进入目录权重。",
+      "children": [
+        {
+          "type": "group",
+          "id": "demo-group",
+          "title": {
+            "en": "Grouped items",
+            "zh-CN": "分组内容"
+          },
+          "children": [
+            {
+              "type": "paragraph",
+              "text": "`group` 内第一个子块。"
+            },
+            {
+              "type": "paragraph",
+              "text": "`group` 内第二个子块。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-divider",
+      "level": 2,
+      "title": {
+        "en": "divider",
+        "zh-CN": "divider"
+      },
+      "lead": "带标签的分隔线。",
+      "children": [
+        {
+          "type": "divider",
+          "label": {
+            "en": "Break",
+            "zh-CN": "分段"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-spacer",
+      "level": 2,
+      "title": {
+        "en": "spacer",
+        "zh-CN": "spacer"
+      },
+      "lead": "垂直间距控制。",
+      "children": [
+        {
+          "type": "spacer",
+          "size": "md"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-heading",
+      "level": 2,
+      "title": {
+        "en": "heading",
+        "zh-CN": "heading"
+      },
+      "lead": "独立标题块。",
+      "children": [
+        {
+          "type": "heading",
+          "id": "demo-heading",
+          "level": 3,
+          "text": {
+            "en": "Standalone heading",
+            "zh-CN": "独立标题"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-paragraph",
+      "level": 2,
+      "title": {
+        "en": "paragraph",
+        "zh-CN": "paragraph"
+      },
+      "lead": "正文；支持轻量 Markdown（**粗体**、`code`、链接）。",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "段落示例：**粗体**、`code`、以及 [链接](https://example.com)。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-lead",
+      "level": 2,
+      "title": {
+        "en": "lead",
+        "zh-CN": "lead"
+      },
+      "lead": "主题导语（RichText）。",
+      "children": [
+        {
+          "type": "lead",
+          "text": "导语在更密的块之前交代上下文。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-pull-quote",
+      "level": 2,
+      "title": {
+        "en": "pullQuote",
+        "zh-CN": "pullQuote"
+      },
+      "lead": "强调引用。",
+      "children": [
+        {
+          "type": "pullQuote",
+          "text": {
+            "en": "Correct > simple > consistent > complete.",
+            "zh-CN": "正确 > 简单 > 一致 > 完整。"
+          },
+          "attribution": {
+            "en": "AIRP iron rules",
+            "zh-CN": "AIRP 铁律"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-blockquote",
+      "level": 2,
+      "title": {
+        "en": "blockquote",
+        "zh-CN": "blockquote"
+      },
+      "lead": "引用段落。",
+      "children": [
+        {
+          "type": "blockquote",
+          "text": "引用材料，可含 **强调**。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-callout",
+      "level": 2,
+      "title": {
+        "en": "callout",
+        "zh-CN": "callout"
+      },
+      "lead": "变体提示框。",
+      "children": [
+        {
+          "type": "callout",
+          "variant": "tip",
+          "title": {
+            "en": "Tip",
+            "zh-CN": "提示"
+          },
+          "body": "导出前先跑 `airp-validate`。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-bullet-list",
+      "level": 2,
+      "title": {
+        "en": "bulletList",
+        "zh-CN": "bulletList"
+      },
+      "lead": "无序列表。",
+      "children": [
+        {
+          "type": "bulletList",
+          "items": ["校验", "导出 HTML", "导出 Markdown"]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-numbered-list",
+      "level": 2,
+      "title": {
+        "en": "numberedList",
+        "zh-CN": "numberedList"
+      },
+      "lead": "有序列表。",
+      "children": [
+        {
+          "type": "numberedList",
+          "items": ["编写文档", "校验", "渲染"]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-checklist",
+      "level": 2,
+      "title": {
+        "en": "checklist",
+        "zh-CN": "checklist"
+      },
+      "lead": "可勾选清单。",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "Schema 通过",
+              "checked": true,
+              "note": "Ajv"
+            },
+            {
+              "label": "Mermaid 语法",
+              "checked": true
+            },
+            {
+              "label": "人眼通览",
+              "checked": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-definition-list",
+      "level": 2,
+      "title": {
+        "en": "definitionList",
+        "zh-CN": "definitionList"
+      },
+      "lead": "术语定义列表。",
+      "children": [
+        {
+          "type": "definitionList",
+          "items": [
+            {
+              "term": {
+                "en": "AIRP",
+                "zh-CN": "AIRP"
+              },
+              "definition": "AI Report Protocol — 单文件语义报告 IR。"
+            },
+            {
+              "term": {
+                "en": "Block",
+                "zh-CN": "积木块"
+              },
+              "definition": "`blocks` 下的类型化文档单元。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-table",
+      "level": 2,
+      "title": {
+        "en": "table",
+        "zh-CN": "table"
+      },
+      "lead": "对齐表格。",
+      "children": [
+        {
+          "type": "table",
+          "caption": {
+            "en": "Sample metrics",
+            "zh-CN": "示例指标"
+          },
+          "columns": [
+            {
+              "key": "name",
+              "label": {
+                "en": "Name",
+                "zh-CN": "名称"
+              }
+            },
+            {
+              "key": "value",
+              "label": {
+                "en": "Value",
+                "zh-CN": "值"
+              },
+              "align": "end"
+            },
+            {
+              "key": "status",
+              "label": {
+                "en": "Status",
+                "zh-CN": "状态"
+              },
+              "cellKind": "status"
+            }
+          ],
+          "rows": [
+            {
+              "name": {
+                "en": "Validate",
+                "zh-CN": "校验"
+              },
+              "value": "OK",
+              "status": "pass"
+            },
+            {
+              "name": {
+                "en": "Export",
+                "zh-CN": "导出"
+              },
+              "value": "OK",
+              "status": "pass"
+            }
+          ],
+          "footerRow": {
+            "name": {
+              "en": "Total",
+              "zh-CN": "合计"
+            },
+            "value": "2",
+            "status": "done"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-comparison",
+      "level": 2,
+      "title": {
+        "en": "comparison",
+        "zh-CN": "comparison"
+      },
+      "lead": "前后对比两栏。",
+      "children": [
+        {
+          "type": "comparison",
+          "labelBefore": {
+            "en": "Before",
+            "zh-CN": "之前"
+          },
+          "labelAfter": {
+            "en": "After",
+            "zh-CN": "之后"
+          },
+          "before": [
+            {
+              "type": "bulletList",
+              "items": ["临时 Markdown", "无 schema"]
+            }
+          ],
+          "after": [
+            {
+              "type": "bulletList",
+              "items": ["类型化 `*.airp.json`", "校验 + 渲染流水线"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-collection",
+      "level": 2,
+      "title": {
+        "en": "collection",
+        "zh-CN": "collection"
+      },
+      "lead": "卡片或指标集合。",
+      "children": [
+        {
+          "type": "collection",
+          "variant": "metric",
+          "title": {
+            "en": "Pipeline",
+            "zh-CN": "流水线"
+          },
+          "items": [
+            {
+              "title": {
+                "en": "Validate",
+                "zh-CN": "校验"
+              },
+              "value": "pass",
+              "description": "Ajv + i18n + ids + Mermaid parse"
+            },
+            {
+              "title": {
+                "en": "HTML",
+                "zh-CN": "HTML"
+              },
+              "value": "ready",
+              "description": "阅读器壳 + SVG viewer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-key-value-list",
+      "level": 2,
+      "title": {
+        "en": "keyValueList",
+        "zh-CN": "keyValueList"
+      },
+      "lead": "元数据键值对。",
+      "children": [
+        {
+          "type": "keyValueList",
+          "items": [
+            {
+              "key": {
+                "en": "schemaVersion",
+                "zh-CN": "schemaVersion"
+              },
+              "value": "1.0.0"
+            },
+            {
+              "key": {
+                "en": "defaultLocale",
+                "zh-CN": "defaultLocale"
+              },
+              "value": "zh-CN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-status-board",
+      "level": 2,
+      "title": {
+        "en": "statusBoard",
+        "zh-CN": "statusBoard"
+      },
+      "lead": "状态看板。",
+      "children": [
+        {
+          "type": "statusBoard",
+          "items": [
+            {
+              "label": {
+                "en": "Schema",
+                "zh-CN": "Schema"
+              },
+              "status": "pass",
+              "detail": "document.schema.json"
+            },
+            {
+              "label": {
+                "en": "Mermaid",
+                "zh-CN": "Mermaid"
+              },
+              "status": "pass",
+              "detail": "parse 门禁"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-code",
+      "level": 2,
+      "title": {
+        "en": "code",
+        "zh-CN": "code"
+      },
+      "lead": "代码片段。",
+      "children": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "hello.ts",
+          "code": "export const greeting = \"AIRP\";\n"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-code-diff",
+      "level": 2,
+      "title": {
+        "en": "codeDiff",
+        "zh-CN": "codeDiff"
+      },
+      "lead": "前后 diff。",
+      "children": [
+        {
+          "type": "codeDiff",
+          "filename": "hello.ts",
+          "language": "typescript",
+          "before": "const greeting = \"hi\";\n",
+          "after": "export const greeting = \"AIRP\";\n"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-file-tree",
+      "level": 2,
+      "title": {
+        "en": "fileTree",
+        "zh-CN": "fileTree"
+      },
+      "lead": "目录树。",
+      "children": [
+        {
+          "type": "fileTree",
+          "caption": {
+            "en": "Sample layout",
+            "zh-CN": "示例布局"
+          },
+          "root": {
+            "name": "airp",
+            "children": [
+              {
+                "name": "packages",
+                "children": [
+                  {
+                    "name": "protocol",
+                    "annotation": {
+                      "en": "schema",
+                      "zh-CN": "协议"
+                    }
+                  },
+                  {
+                    "name": "validate",
+                    "annotation": {
+                      "en": "gates",
+                      "zh-CN": "门禁"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": ".docs",
+                "children": [
+                  {
+                    "name": "samples",
+                    "annotation": {
+                      "en": "demos",
+                      "zh-CN": "演示"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-file-change-list",
+      "level": 2,
+      "title": {
+        "en": "fileChangeList",
+        "zh-CN": "fileChangeList"
+      },
+      "lead": "变更文件列表。",
+      "children": [
+        {
+          "type": "fileChangeList",
+          "items": [
+            {
+              "path": ".docs/samples/block-gallery.airp.json",
+              "change": "added",
+              "note": "阶段 6 演示报告"
+            },
+            {
+              "path": ".docs/init.md",
+              "change": "modified",
+              "note": "标记阶段 6 完成"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-mermaid",
+      "level": 2,
+      "title": {
+        "en": "mermaid",
+        "zh-CN": "mermaid"
+      },
+      "lead": "图源码；HTML 导出为 SVG + svg-viewer。",
+      "children": [
+        {
+          "type": "mermaid",
+          "diagramKind": "flowchart",
+          "title": {
+            "en": "Validate then render",
+            "zh-CN": "先校验再渲染"
+          },
+          "complexity": "simple",
+          "source": "flowchart LR\n  Doc[\"*.airp.json\"] --> V[\"airp-validate\"]\n  V --> R[\"airp-render export\"]\n  R --> H[\"HTML\"]\n  R --> M[\"Markdown\"]"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-architecture-overview",
+      "level": 2,
+      "title": {
+        "en": "architectureOverview",
+        "zh-CN": "architectureOverview"
+      },
+      "lead": "总览图 + 模块卡片。",
+      "children": [
+        {
+          "type": "architectureOverview",
+          "overview": {
+            "type": "mermaid",
+            "diagramKind": "flowchart",
+            "source": "flowchart TB\n  Skill[\"skills/airp\"] --> Doc[\"*.airp.json\"]\n  Doc --> Validate[\"@airp/validate\"]\n  Doc --> Renderer[\"@airp/renderer\"]\n  Renderer --> HTML[\"html\"]\n  Renderer --> MD[\"markdown\"]"
+          },
+          "modules": [
+            {
+              "title": {
+                "en": "Skill",
+                "zh-CN": "Skill"
+              },
+              "description": "仅生成 + 校验"
+            },
+            {
+              "title": {
+                "en": "Validate",
+                "zh-CN": "Validate"
+              },
+              "description": "Ajv · i18n · ids · Mermaid parse"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-flow-steps",
+      "level": 2,
+      "title": {
+        "en": "flowSteps",
+        "zh-CN": "flowSteps"
+      },
+      "lead": "带状态的步骤流。",
+      "children": [
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": {
+                "en": "Author",
+                "zh-CN": "撰写"
+              },
+              "status": "done",
+              "description": "编写 `*.airp.json`"
+            },
+            {
+              "title": {
+                "en": "Validate",
+                "zh-CN": "校验"
+              },
+              "status": "done",
+              "description": "`airp-validate`"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-decision",
+      "level": 2,
+      "title": {
+        "en": "decision",
+        "zh-CN": "decision"
+      },
+      "lead": "已记录决策。",
+      "children": [
+        {
+          "type": "decision",
+          "id": "dec-gallery",
+          "title": {
+            "en": "Samples vs fixtures",
+            "zh-CN": "样例与合同分离"
+          },
+          "status": "accepted",
+          "context": "阶段 **6** 需要给人看的图鉴。",
+          "chosen": {
+            "en": "Keep demos under `.docs/samples/`",
+            "zh-CN": "演示放在 `.docs/samples/`"
+          },
+          "rationale": "fixtures 保持稳定合同输入；samples 可随时改。",
+          "options": [
+            {
+              "label": {
+                "en": "Reuse fixtures as demos",
+                "zh-CN": "复用 fixture 当演示"
+              },
+              "pros": "少一份重复",
+              "cons": "演示与测试耦合"
+            },
+            {
+              "label": {
+                "en": "Separate samples dir",
+                "zh-CN": "独立 samples 目录"
+              },
+              "pros": "边界清晰",
+              "cons": "多维护一份文档"
+            },
+            {
+              "label": {
+                "en": "Reuse fixtures as demos",
+                "zh-CN": "复用 fixture 当演示"
+              },
+              "pros": "少一份重复",
+              "cons": "演示与测试耦合"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-risk",
+      "level": 2,
+      "title": {
+        "en": "risk",
+        "zh-CN": "risk"
+      },
+      "lead": "风险条目。",
+      "children": [
+        {
+          "type": "risk",
+          "id": "risk-sample-drift",
+          "title": {
+            "en": "Sample drift",
+            "zh-CN": "样例漂移"
+          },
+          "severity": "low",
+          "likelihood": "possible",
+          "status": "open",
+          "description": "schema 演进可能快于本图鉴。",
+          "mitigation": "schema 变更后重新校验 samples。"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-assumption",
+      "level": 2,
+      "title": {
+        "en": "assumption",
+        "zh-CN": "assumption"
+      },
+      "lead": "陈述假设。",
+      "children": [
+        {
+          "type": "assumption",
+          "statement": "读者使用 `--locale zh-CN` 或 `en` 导出。",
+          "validated": true
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-constraint",
+      "level": 2,
+      "title": {
+        "en": "constraint",
+        "zh-CN": "constraint"
+      },
+      "lead": "硬约束。",
+      "children": [
+        {
+          "type": "constraint",
+          "rule": "不得将 `.docs/samples/` 接入自动化合同测试。",
+          "nonNegotiable": true
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-open-question",
+      "level": 2,
+      "title": {
+        "en": "openQuestion",
+        "zh-CN": "openQuestion"
+      },
+      "lead": "待决问题。",
+      "children": [
+        {
+          "type": "openQuestion",
+          "question": "后续图鉴是否在 JSON 旁附带预导出 HTML？",
+          "blocking": false
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-timeline",
+      "level": 2,
+      "title": {
+        "en": "timeline",
+        "zh-CN": "timeline"
+      },
+      "lead": "时间线。",
+      "children": [
+        {
+          "type": "timeline",
+          "events": [
+            {
+              "date": "2026-09-14",
+              "title": {
+                "en": "Phases 0–5",
+                "zh-CN": "阶段 0–5"
+              },
+              "status": "done",
+              "description": "从协议到 test-kit 落地"
+            },
+            {
+              "date": "2026-09-14",
+              "title": {
+                "en": "Phase 6",
+                "zh-CN": "阶段 6"
+              },
+              "status": "done",
+              "description": "本图鉴样例"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-roadmap",
+      "level": 2,
+      "title": {
+        "en": "roadmap",
+        "zh-CN": "roadmap"
+      },
+      "lead": "路线图。",
+      "children": [
+        {
+          "type": "roadmap",
+          "phases": [
+            {
+              "title": {
+                "en": "Foundation",
+                "zh-CN": "基础"
+              },
+              "timeframe": {
+                "en": "Done",
+                "zh-CN": "已完成"
+              },
+              "status": "done",
+              "goals": ["Protocol", "Validate", "Skill"]
+            },
+            {
+              "title": {
+                "en": "Render",
+                "zh-CN": "渲染"
+              },
+              "timeframe": {
+                "en": "Done",
+                "zh-CN": "已完成"
+              },
+              "status": "done",
+              "goals": ["Markdown", "HTML", "Mermaid SVG", "CLI"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-requirement-trace",
+      "level": 2,
+      "title": {
+        "en": "requirementTrace",
+        "zh-CN": "requirementTrace"
+      },
+      "lead": "需求追溯。",
+      "children": [
+        {
+          "type": "requirementTrace",
+          "items": [
+            {
+              "reqId": "REQ-P6-1",
+              "summary": {
+                "en": "Cover every Block type in one sample",
+                "zh-CN": "一份样例覆盖全部积木块类型"
+              },
+              "status": "pass",
+              "evidence": ".docs/samples/block-gallery.airp.json"
+            },
+            {
+              "reqId": "REQ-P6-2",
+              "summary": {
+                "en": "Validate + export for human review",
+                "zh-CN": "可校验并导出供人眼通览"
+              },
+              "status": "pass",
+              "evidence": "airp-validate / airp-render export"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-test-result",
+      "level": 2,
+      "title": {
+        "en": "testResult",
+        "zh-CN": "testResult"
+      },
+      "lead": "测试结果汇总。",
+      "children": [
+        {
+          "type": "testResult",
+          "suites": [
+            {
+              "name": "unit",
+              "passed": 120,
+              "failed": 0,
+              "skipped": 0,
+              "notes": "图鉴示意数字"
+            },
+            {
+              "name": "package",
+              "passed": 40,
+              "failed": 0,
+              "skipped": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-api-inventory",
+      "level": 2,
+      "title": {
+        "en": "apiInventory",
+        "zh-CN": "apiInventory"
+      },
+      "lead": "HTTP 接口清单。",
+      "children": [
+        {
+          "type": "apiInventory",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/health",
+              "summary": {
+                "en": "Health",
+                "zh-CN": "健康检查"
+              },
+              "status": "done"
+            },
+            {
+              "method": "POST",
+              "path": "/reports",
+              "summary": {
+                "en": "Create report",
+                "zh-CN": "创建报告"
+              },
+              "status": "pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-link-list",
+      "level": 2,
+      "title": {
+        "en": "linkList",
+        "zh-CN": "linkList"
+      },
+      "lead": "外链列表。",
+      "children": [
+        {
+          "type": "linkList",
+          "title": {
+            "en": "References",
+            "zh-CN": "参考"
+          },
+          "links": [
+            {
+              "href": "https://mermaid.js.org/",
+              "label": {
+                "en": "Mermaid docs",
+                "zh-CN": "Mermaid 文档"
+              },
+              "description": "图语法参考"
+            },
+            {
+              "href": "https://example.com/airp",
+              "label": {
+                "en": "AIRP home",
+                "zh-CN": "AIRP 主页"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-glossary",
+      "level": 2,
+      "title": {
+        "en": "glossary",
+        "zh-CN": "glossary"
+      },
+      "lead": "术语表。",
+      "children": [
+        {
+          "type": "glossary",
+          "terms": [
+            {
+              "term": {
+                "en": "svg-viewer",
+                "zh-CN": "svg-viewer"
+              },
+              "definition": "导出 Mermaid SVG 的平移缩放外壳。"
+            },
+            {
+              "term": {
+                "en": "LocalizedString",
+                "zh-CN": "LocalizedString"
+              },
+              "definition": "字符串或按 locale 键控的对象。"
+            },
+            {
+              "term": {
+                "en": "LocalizedString",
+                "zh-CN": "LocalizedString"
+              },
+              "definition": "字符串或按 locale 键控的对象。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-citation",
+      "level": 2,
+      "title": {
+        "en": "citation",
+        "zh-CN": "citation"
+      },
+      "lead": "引用著录。",
+      "children": [
+        {
+          "type": "citation",
+          "items": [
+            {
+              "id": "c1",
+              "source": "AIRP document.schema.json 1.0.0",
+              "locator": "$defs.Block"
+            },
+            {
+              "id": "c2",
+              "source": ".docs/init.md",
+              "locator": "Phase 6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-image",
+      "level": 2,
+      "title": {
+        "en": "image",
+        "zh-CN": "image"
+      },
+      "lead": "外联图片 URL（离线裂图可接受）。",
+      "children": [
+        {
+          "type": "image",
+          "src": "https://example.com/airp-gallery.png",
+          "alt": {
+            "en": "Gallery placeholder",
+            "zh-CN": "图鉴占位图"
+          },
+          "caption": {
+            "en": "Placeholder URL — offline break is acceptable.",
+            "zh-CN": "占位 URL；离线裂图可接受。"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-embed",
+      "level": 2,
+      "title": {
+        "en": "embed",
+        "zh-CN": "embed"
+      },
+      "lead": "可点外链（不抓取、不内嵌第三方页）。",
+      "children": [
+        {
+          "type": "embed",
+          "url": "https://example.com/airp-demo",
+          "title": {
+            "en": "External demo page",
+            "zh-CN": "外部演示页"
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-collapsible",
+      "level": 2,
+      "title": {
+        "en": "collapsible",
+        "zh-CN": "collapsible"
+      },
+      "lead": "次要或长内容折叠。",
+      "children": [
+        {
+          "type": "collapsible",
+          "summary": {
+            "en": "Extra notes",
+            "zh-CN": "补充说明"
+          },
+          "defaultOpen": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "text": "`collapsible` 内部内容。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-tabs",
+      "level": 2,
+      "title": {
+        "en": "tabs",
+        "zh-CN": "tabs"
+      },
+      "lead": "多视角标签页。",
+      "children": [
+        {
+          "type": "tabs",
+          "panels": [
+            {
+              "label": {
+                "en": "HTML",
+                "zh-CN": "HTML"
+              },
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "使用 `--target html` 导出。"
+                }
+              ]
+            },
+            {
+              "label": {
+                "en": "Markdown",
+                "zh-CN": "Markdown"
+              },
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "使用 `--target markdown` 导出。"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "block-agent-note",
+      "level": 2,
+      "title": {
+        "en": "agentNote",
+        "zh-CN": "agentNote"
+      },
+      "lead": "仅 `visible: true` 进入人读 HTML/Markdown。",
+      "children": [
+        {
+          "type": "agentNote",
+          "visible": true,
+          "text": "可见的代理备注 — 给人读。"
+        },
+        {
+          "type": "agentNote",
+          "visible": false,
+          "text": "隐藏的代理备注 — 渲染产物中省略。"
+        }
+      ]
+    },
+    {
+      "type": "appendix",
+      "title": {
+        "en": "appendix",
+        "zh-CN": "appendix"
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "本顶层 `appendix` 即是 `appendix` 积木块类型的一章。"
+        },
+        {
+          "type": "callout",
+          "variant": "info",
+          "title": {
+            "en": "How to render",
+            "zh-CN": "如何渲染"
+          },
+          "body": "`airp-validate --input .docs/samples/block-gallery.airp.json`，再 `airp-render export --input … --out … --locale zh-CN`。"
+        }
+      ]
+    }
+  ]
+}

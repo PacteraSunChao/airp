@@ -1,0 +1,15 @@
+{
+  "AIRP Renderer": "AIRP Renderer",
+  "Open a *.airp.json file to render": "Abra un archivo *.airp.json para renderizar",
+  "Open a *.airp.json Renderer view to edit source": "Abra una vista Renderer de *.airp.json para editar el origen",
+  "Render failed": "Error al renderizar",
+  "Render succeeded": "Renderizado correcto",
+  "AIRP document was deleted": "Se eliminó el documento AIRP",
+  "Export failed": "Error al exportar",
+  "Render failed. See diagnostics below or open the Output channel.": "Error al renderizar. Consulte los diagnósticos abajo o abra el canal de salida.",
+  "Open Output": "Abrir salida",
+  "Edit Source": "Editar origen",
+  "Export": "Exportar",
+  "HTML": "HTML",
+  "Markdown": "Markdown"
+}

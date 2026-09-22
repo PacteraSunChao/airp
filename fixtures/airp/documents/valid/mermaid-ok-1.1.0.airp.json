@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "Mermaid ok 1.1.0",
+    "kind": "architecture",
+    "createdAt": "2026-09-21T00:00:00.000Z",
+    "createdBy": "AIRP"
+  },
+  "i18n": {
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "type": "mermaid",
+      "@id": "mmmmmmmmmm",
+      "diagramKind": "flowchart",
+      "source": "flowchart LR\n  A-->B"
+    },
+    {
+      "type": "architectureOverview",
+      "@id": "aaaaaaaaaa",
+      "overview": {
+        "type": "mermaid",
+        "@id": "oooooooooo",
+        "source": "flowchart TB\n  API-->DB"
+      },
+      "modules": [
+        {
+          "@id": "nnnnnnnnnn",
+          "title": "API",
+          "description": "HTTP edge"
+        }
+      ]
+    },
+    {
+      "type": "collapsible",
+      "@id": "cccccccccc",
+      "summary": "Notes",
+      "children": [
+        {
+          "type": "paragraph",
+          "@id": "pppppppppp",
+          "text": "Inside collapsible."
+        }
+      ]
+    },
+    {
+      "type": "tabs",
+      "@id": "tttttttttt",
+      "panels": [
+        {
+          "@id": "qqqqqqqqqq",
+          "label": "First",
+          "children": [
+            {
+              "type": "paragraph",
+              "@id": "rrrrrrrrrr",
+              "text": "First panel."
+            }
+          ]
+        },
+        {
+          "@id": "ssssssssss",
+          "label": "Second",
+          "children": [
+            {
+              "type": "paragraph",
+              "@id": "uuuuuuuuuu",
+              "text": "Second panel."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

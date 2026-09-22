@@ -1,0 +1,26 @@
+{
+  "name": "@airp/test-kit",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./paths": "./src/paths.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "check": "pnpm typecheck && pnpm dlx ultracite@7.4.2 check",
+    "fix": "pnpm typecheck && pnpm dlx ultracite@7.4.2 fix"
+  },
+  "devDependencies": {
+    "@airp/typescript-config": "workspace:*",
+    "tsx": "^4.22.4",
+    "vitest": "4.1.11"
+  }
+}

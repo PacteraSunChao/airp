@@ -1,0 +1,9 @@
+{
+  "airp.renderer.displayName": "AIRP レンダラー",
+  "airp.renderer.description": "単一の *.airp.json ドキュメントを Webview でレンダリングします",
+  "airp.renderer.customEditor.displayName": "AIRP レンダラー",
+  "airp.renderer.command.open": "レンダラーを開く",
+  "airp.renderer.command.editSource": "ソースを編集",
+  "airp.renderer.configuration.title": "AIRP レンダラー",
+  "airp.renderer.configuration.rerenderDelay": "AIRP ドキュメントの変更後、再レンダリングするまでの待ち時間（ミリ秒）。"
+}

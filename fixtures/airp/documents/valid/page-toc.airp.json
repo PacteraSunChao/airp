@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": { "en": "Page TOC sample", "zh-CN": "本页目录样例" },
+    "kind": "generic",
+    "createdAt": "2026-09-21T00:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "zh-CN"]
+  },
+  "blocks": [
+    {
+      "type": "section",
+      "id": "overview",
+      "level": 1,
+      "title": { "en": "Overview", "zh-CN": "概览" },
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "Top-level section body."
+        },
+        {
+          "type": "section",
+          "id": "details",
+          "level": 2,
+          "title": { "en": "Details", "zh-CN": "细节" },
+          "children": [
+            {
+              "type": "paragraph",
+              "text": "Nested level-2 body."
+            },
+            {
+              "type": "section",
+              "id": "notes",
+              "level": 3,
+              "title": { "en": "Notes", "zh-CN": "备注" },
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "Nested level-3 body."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "closing",
+      "level": 1,
+      "title": { "en": "Closing", "zh-CN": "收尾" },
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "Second top-level section."
+        }
+      ]
+    }
+  ]
+}

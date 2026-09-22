@@ -1,0 +1,445 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "@airp/validate-cli npm 发布方案",
+    "subtitle": "从仓库根目录向 npmjs 公共 registry 发布校验 CLI 的标准流程",
+    "kind": "plan-review",
+    "createdAt": "2026-09-21T10:01:38.239Z",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "tags": [
+      "npm",
+      "validate-cli",
+      "publish",
+      "@airp"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "apps/validate-cli/package.json",
+        "label": "包清单与 publishConfig",
+        "@id": "z82naekd59"
+      },
+      {
+        "type": "path",
+        "value": "apps/validate-cli/tsdown.config.ts",
+        "label": "打包与依赖外置策略",
+        "@id": "tvmjv3oikl"
+      },
+      {
+        "type": "path",
+        "value": "apps/validate-cli/src/cli.ts",
+        "label": "bin 元数据 version",
+        "@id": "st2we92cc9"
+      },
+      {
+        "type": "path",
+        "value": "skills/airp/SKILL.md",
+        "label": "消费方安装约定",
+        "@id": "nmz47i8j8p"
+      },
+      {
+        "type": "url",
+        "value": "https://www.npmjs.com/package/@airp/validate-cli",
+        "label": "npmjs 包页",
+        "@id": "4asts7gaj1"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "在 npm 组织 `@airp` 下，以公共包 `@airp/validate-cli`（bin `airp-validate`）为唯一发布物；发布前对齐版本、跑通质量门禁、用 dry-run 核对 tarball，再从 monorepo 根执行 `pnpm --filter` 发布。",
+      "@id": "mezxvis3dk"
+    },
+    {
+      "type": "hero",
+      "metrics": [
+        {
+          "title": "包名",
+          "value": "@airp/validate-cli",
+          "@id": "ydh6i647ok"
+        },
+        {
+          "title": "当前版本",
+          "value": "1.1.0",
+          "status": "pass",
+          "@id": "h011nweq0j"
+        },
+        {
+          "title": "access",
+          "value": "public",
+          "status": "pass",
+          "@id": "6cuxwrsgoy"
+        },
+        {
+          "title": "Node",
+          "value": ">=20.19",
+          "status": "pass",
+          "@id": "mhjbb20v39"
+        }
+      ],
+      "@id": "1svpng442s"
+    },
+    {
+      "type": "section",
+      "title": "范围与结论",
+      "lead": "只发布校验 CLI；其它 `@airp/*` workspace 包不单独上架。",
+      "children": [
+        {
+          "type": "decision",
+          "title": "可发布包边界",
+          "context": "`apps/validate-cli` 声明 `publishConfig.access: \"public\"` 且无 `private`；`apps/renderer-cli` 为 `private: true`，不在本方案发布清单内。",
+          "options": [
+            {
+              "label": "仅发布 @airp/validate-cli",
+              "pros": "与 Skill / npx 消费面一致；workspace 逻辑打进 CLI bundle，无需先发内部库。",
+              "cons": "库包不可被外部直接依赖（本阶段不需要）。",
+              "@id": "t7qragb49g"
+            },
+            {
+              "label": "同步发布全部 @airp/*",
+              "pros": "外部可按包引用。",
+              "cons": "扩大表面积与版本协调成本，超出当前 CLI 消费模型。",
+              "@id": "8a5kxqzi21"
+            }
+          ],
+          "chosen": "仅发布 @airp/validate-cli",
+          "rationale": "Skill 与 `validate-airp.mjs` 只依赖已发布 CLI（PATH 或 `npx @airp/validate-cli`）；tsdown 将 `/^@airp\\//` alwaysBundle，运行时不需要已发布的 `@airp/validate` 等库包。",
+          "status": "accepted",
+          "@id": "33lneihbs4"
+        },
+        {
+          "type": "decision",
+          "title": "依赖进包策略",
+          "context": "`tsdown.config.ts`：`alwaysBundle: [/^@airp\\//]`；`neverBundle: [\"jsdom\", \"mermaid\", \"citty\"]`；`ajv` / `ajv-formats` 作为 npm `dependencies` 外置解析。",
+          "chosen": "workspace 打进 dist；第三方运行时依赖外置",
+          "rationale": "jsdom/mermaid 需保留磁盘资源与 Node 可解析子路径；Ajv 同理。发布物 `files: [\"dist\"]`，安装方只拉 npm 运行时依赖。",
+          "status": "accepted",
+          "@id": "p133swfc90"
+        },
+        {
+          "type": "constraint",
+          "rule": "每次发布前，`apps/validate-cli/package.json` 的 `version` 与 `src/cli.ts` 中 `meta.version` 必须同值。",
+          "scope": "版本号",
+          "nonNegotiable": true,
+          "@id": "zayv8awbza"
+        },
+        {
+          "type": "constraint",
+          "rule": "npm 同一版本号不可覆盖；升版后才能再次 `publish`。",
+          "scope": "registry",
+          "nonNegotiable": true,
+          "@id": "z2y8g1228b"
+        },
+        {
+          "type": "constraint",
+          "rule": "发布账号必须对 npm 组织 `@airp` 具备 publish 权限；scoped 包使用 `access public`（包内已配置 `publishConfig`）。",
+          "scope": "权限",
+          "nonNegotiable": true,
+          "@id": "0eb6nm1rsp"
+        },
+        {
+          "type": "statusBoard",
+          "items": [
+            {
+              "label": "npmjs @airp 组织",
+              "status": "pass",
+              "detail": "已注册；包页可访问",
+              "@id": "4xcuyjuezt"
+            },
+            {
+              "label": "@airp/validate-cli@1.1.0",
+              "status": "pass",
+              "detail": "registry latest",
+              "@id": "btam9q19hz"
+            },
+            {
+              "label": "CLI meta.version 与 package version 对齐",
+              "status": "fail",
+              "detail": "`package.json` 为 `1.1.0`，`src/cli.ts` `meta.version` 仍为 `0.1.0`；下一次发版前必须改齐",
+              "@id": "qrz1qi0rqf"
+            },
+            {
+              "label": "CI 自动发布",
+              "status": "skipped",
+              "detail": "仓库无发布流水线；标准路径为手动 `pnpm publish`",
+              "@id": "0hw9qfnjqd"
+            }
+          ],
+          "@id": "5ybx0yzklq"
+        }
+      ],
+      "@id": "2rrgifznej"
+    },
+    {
+      "type": "section",
+      "title": "包事实",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "name",
+              "value": "`@airp/validate-cli`",
+              "@id": "9de36fqate"
+            },
+            {
+              "key": "bin",
+              "value": "`airp-validate` → `./dist/cli.mjs`",
+              "@id": "87h1raw67s"
+            },
+            {
+              "key": "files",
+              "value": "`dist` only",
+              "@id": "94u8v92jp3"
+            },
+            {
+              "key": "engines.node",
+              "value": "`>=20.19`",
+              "@id": "map9uai5sd"
+            },
+            {
+              "key": "prepublishOnly",
+              "value": "`pnpm build`（tsdown）",
+              "@id": "b6oh7l6qfg"
+            },
+            {
+              "key": "运行时 dependencies",
+              "value": "`ajv`、`ajv-formats`、`citty`、`jsdom`、`mermaid`",
+              "@id": "c3kivmquki"
+            },
+            {
+              "key": "路径",
+              "value": "`apps/validate-cli/`",
+              "@id": "ekwsoqyd8f"
+            }
+          ],
+          "@id": "8tx01bybah"
+        },
+        {
+          "type": "table",
+          "caption": "发布命令对照",
+          "columns": [
+            {
+              "key": "step",
+              "label": "步骤",
+              "@id": "qj9o0bp3bc"
+            },
+            {
+              "key": "command",
+              "label": "命令",
+              "@id": "x4qv18rscb"
+            },
+            {
+              "key": "cwd",
+              "label": "工作目录",
+              "@id": "24usd1oghh"
+            }
+          ],
+          "rows": [
+            {
+              "step": "登录",
+              "command": "`npm login` 或 `pnpm login`",
+              "cwd": "任意",
+              "@id": "x4837xbg9e"
+            },
+            {
+              "step": "身份确认",
+              "command": "`npm whoami`",
+              "cwd": "任意",
+              "@id": "ltawvc4qu5"
+            },
+            {
+              "step": "质量门禁",
+              "command": "`pnpm --filter @airp/validate-cli fix` 与 `pnpm --filter @airp/validate-cli test`",
+              "cwd": "仓库根",
+              "@id": "hp41e28gts"
+            },
+            {
+              "step": "dry-run 打包",
+              "command": "`pnpm --filter @airp/validate-cli pack --dry-run`",
+              "cwd": "仓库根",
+              "@id": "n1lsib1rws"
+            },
+            {
+              "step": "正式发布",
+              "command": "`pnpm --filter @airp/validate-cli publish --access public`",
+              "cwd": "仓库根",
+              "@id": "tdsxw5xamg"
+            },
+            {
+              "step": "安装抽查",
+              "command": "`npx --yes @airp/validate-cli --help`",
+              "cwd": "任意干净环境",
+              "@id": "btszivm60y"
+            }
+          ],
+          "@id": "97dykz6q0e"
+        }
+      ],
+      "@id": "aw2z8u55sq"
+    },
+    {
+      "type": "section",
+      "title": "发布流程",
+      "lead": "每次升版发布按下列顺序执行；失败即停，不跳过 dry-run。",
+      "children": [
+        {
+          "type": "mermaid",
+          "diagramKind": "flowchart",
+          "title": "发布主路径",
+          "complexity": "simple",
+          "source": "flowchart LR\n  Auth[\"npm login / whoami\"] --> Align[\"对齐 version\"]\n  Align --> Gate[\"fix + test\"]\n  Gate --> Pack[\"pack --dry-run\"]\n  Pack --> Pub[\"pnpm publish\"]\n  Pub --> Verify[\"npx / airp-validate 抽查\"]",
+          "@id": "4jqw1f8wd9"
+        },
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": "权限与登录",
+              "description": "对 `@airp` 有 publish 权限的账号执行 `npm login`（或 `pnpm login`），再用 `npm whoami` 确认。",
+              "@id": "gf5v9q1l5x"
+            },
+            {
+              "title": "对齐版本",
+              "description": "将 `apps/validate-cli/package.json` `version` 与 `src/cli.ts` `meta.version` 设为同一新版本号（semver）。当前 registry latest 为 `1.1.0`，下一版必须高于它。",
+              "@id": "a8rc1be2uf"
+            },
+            {
+              "title": "质量门禁",
+              "description": "仓库根执行 `pnpm --filter @airp/validate-cli fix` 与 `pnpm --filter @airp/validate-cli test`。需要全仓一致时再跑根目录 `pnpm fix` 与 `pnpm test`。",
+              "@id": "5fx78tgi10"
+            },
+            {
+              "title": "核对 tarball",
+              "description": "`pnpm --filter @airp/validate-cli pack --dry-run`：内容应含 `package.json` 与 `dist/`，不含 `src/`、测试与未打包 workspace 源码。",
+              "@id": "l16ngjdb3w"
+            },
+            {
+              "title": "发布",
+              "description": "`pnpm --filter @airp/validate-cli publish --access public`。`prepublishOnly` 会再执行 `pnpm build`。仅演练时加 `--dry-run`。",
+              "@id": "alngrj372r"
+            },
+            {
+              "title": "消费验证",
+              "description": "`npx --yes @airp/validate-cli --help`；或 `npm i -g @airp/validate-cli` 后跑 `airp-validate --input <file.airp.json>`。",
+              "@id": "oaljt63i60"
+            }
+          ],
+          "@id": "717wvxts20"
+        },
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "`npm whoami` 属于 `@airp` 且可 publish",
+              "checked": false,
+              "status": "pending",
+              "@id": "5uq77bghtq"
+            },
+            {
+              "label": "`package.json` version == `cli.ts` meta.version，且高于 registry latest",
+              "checked": false,
+              "status": "pending",
+              "note": "当下两者不一致：`1.1.0` vs `0.1.0`",
+              "@id": "i265z6b2t7"
+            },
+            {
+              "label": "`pnpm --filter @airp/validate-cli fix` 通过",
+              "checked": false,
+              "status": "pending",
+              "@id": "lvzvjtjbnt"
+            },
+            {
+              "label": "`pnpm --filter @airp/validate-cli test` 通过",
+              "checked": false,
+              "status": "pending",
+              "@id": "x2web9p7q1"
+            },
+            {
+              "label": "`pack --dry-run` 仅见 dist + package 元数据",
+              "checked": false,
+              "status": "pending",
+              "@id": "kwmt3wxt6l"
+            },
+            {
+              "label": "`publish --access public` 成功",
+              "checked": false,
+              "status": "pending",
+              "@id": "mx9illm2zz"
+            },
+            {
+              "label": "`npx @airp/validate-cli` 可执行",
+              "checked": false,
+              "status": "pending",
+              "@id": "c4353zq8hp"
+            }
+          ],
+          "@id": "kw9tw5slv3"
+        }
+      ],
+      "@id": "wy8lfy4gb6"
+    },
+    {
+      "type": "section",
+      "title": "消费约定",
+      "lead": "与 `skills/airp` 对齐：优先 PATH 上的 `airp-validate`，否则 `npx`。",
+      "children": [
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": "install",
+          "code": "npm i -g @airp/validate-cli\n# 或一次性\nnpx --yes @airp/validate-cli --input path/to/file.airp.json",
+          "@id": "v99w2aiufw"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            "Skill 脚本：`skills/airp/scripts/validate-airp.mjs` 先调 `airp-validate`，失败再 `npx --yes @airp/validate-cli`。",
+            "运行时环境：Node `>=20.19`。",
+            "本方案不覆盖 `@airp/renderer-cli` 发布。"
+          ],
+          "@id": "rgh7fi6224"
+        }
+      ],
+      "@id": "sb7cf4jnjg"
+    },
+    {
+      "type": "section",
+      "title": "风险与门禁缺口",
+      "children": [
+        {
+          "type": "risk",
+          "title": "CLI 展示版本与包版本漂移",
+          "description": "`airp-validate --help` / citty `meta.version` 与 npm 包版本脱节，误导排查与支持。",
+          "severity": "medium",
+          "likelihood": "likely",
+          "mitigation": "发版 checklist 强制双处同值；优先在下一次 bump 时改齐。",
+          "status": "open",
+          "@id": "2v6j0rscmb"
+        },
+        {
+          "type": "risk",
+          "title": "纯手动发布",
+          "description": "无 CI 门禁与凭证隔离时，易漏测或用错账号。",
+          "severity": "low",
+          "likelihood": "possible",
+          "mitigation": "严格按本文件 checklist；后续若加 CI，以同一命令序列为真源。",
+          "status": "accepted",
+          "@id": "7r6hkcwc2g"
+        },
+        {
+          "type": "assumption",
+          "statement": "发布执行者使用本仓库根目录的 pnpm workspace（`pnpm@10.24.0`），不从孤立拷贝目录发布。",
+          "validated": true,
+          "@id": "rd7r9glnfw"
+        }
+      ],
+      "@id": "u8579uxllp"
+    }
+  ]
+}

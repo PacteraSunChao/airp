@@ -1,0 +1,31 @@
+{
+  "name": "@airp/diagnostics",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./diagnostic-codes": "./src/diagnostic-codes.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "check": "pnpm typecheck && pnpm dlx ultracite@7.4.2 check",
+    "fix": "pnpm typecheck && pnpm dlx ultracite@7.4.2 fix"
+  },
+  "dependencies": {
+    "@airp/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@airp/test-kit": "workspace:*",
+    "@airp/typescript-config": "workspace:*",
+    "vitest": "4.1.11"
+  }
+}

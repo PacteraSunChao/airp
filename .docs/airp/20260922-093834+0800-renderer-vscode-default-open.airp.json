@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "renderer-vscode 默认打开渲染视图",
+    "subtitle": "打开 AIRP 文档即见渲染结果；源文档按需编辑",
+    "kind": "architecture",
+    "createdAt": "2026-09-22T01:38:34.490Z",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "updatedAt": "2026-09-22T01:48:49.101Z",
+    "updatedBy": "毛松 <song.mao@gientech.com>",
+    "tags": [
+      "renderer-vscode",
+      "vscode",
+      "custom-editor",
+      "ux"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode",
+        "label": "目标包",
+        "@id": "apz9lyz3uo"
+      },
+      {
+        "type": "path",
+        "value": ".agents/shared/terminology.md",
+        "label": "术语表",
+        "@id": "7m7b230hdh"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "打开 `*.airp.json` 默认进入 **渲染视图**（Custom Editor）；需要时 **Edit Source** 打开源文档。命令与文案只用 Renderer / 渲染视图；全仓禁止 Preview 字样。",
+      "@id": "2ui841jahj"
+    },
+    {
+      "type": "section",
+      "title": "最终形态",
+      "lead": "结论先于细节。",
+      "@id": "n9smhtrimd",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "默认打开",
+              "value": "`customEditors` + `CustomReadonlyEditorProvider`；`priority` 为 default，打开即渲染视图",
+              "@id": "cwnmg24nb0"
+            },
+            {
+              "key": "源文档",
+              "value": "Edit Source / Open With → Text Editor；需要时 Beside 并排",
+              "@id": "nzsdz0dqn8"
+            },
+            {
+              "key": "命令",
+              "value": "`airp.renderer.open`（Open Renderer）；`airp.renderer.editSource`（Edit Source）",
+              "@id": "q3npxus4lu"
+            },
+            {
+              "key": "源码优先",
+              "value": "用户用 `workbench.editorAssociations` 将 `*.airp.json` 关联到默认文本编辑器；不另造扩展设置",
+              "@id": "39hylj90fc"
+            },
+            {
+              "key": "实现落点",
+              "value": "`apps/renderer-vscode`；复用 `RenderSession` / Worker / watch / export",
+              "@id": "p2br1usxe7"
+            }
+          ],
+          "@id": "d2nic90i6p"
+        },
+        {
+          "type": "decision",
+          "title": "默认打开方式",
+          "chosen": "Custom Editor 默认渲染视图",
+          "rationale": "主产物是阅读结果；打开即见渲染。源文档经 Edit Source / Open With 可达。不另做自动双栏打开。",
+          "status": "accepted",
+          "@id": "lwid7qaq4m"
+        },
+        {
+          "type": "constraint",
+          "rule": "全仓标识符、用户可见文案与文档内容禁止 Preview 字样（第三方 lockfile 包名除外）。",
+          "scope": "仓库用语",
+          "nonNegotiable": true,
+          "@id": "ljou1z2fle"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "产品行为",
+      "@id": "d7glxxvndu",
+      "children": [
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "intent",
+              "label": "意图",
+              "@id": "6wmh99acpl"
+            },
+            {
+              "key": "behavior",
+              "label": "行为",
+              "@id": "357jroibsz"
+            }
+          ],
+          "rows": [
+            {
+              "intent": "打开文档",
+              "behavior": "渲染视图",
+              "@id": "o2qipl9w9v"
+            },
+            {
+              "intent": "改 JSON",
+              "behavior": "Edit Source 或 Open With → Text Editor；可 Beside",
+              "@id": "83ae0n2is9"
+            },
+            {
+              "intent": "在文本编辑器要看渲染",
+              "behavior": "Open Renderer（标题栏 / 命令）",
+              "@id": "tetnd8z86i"
+            },
+            {
+              "intent": "默认总开源文档",
+              "behavior": "`workbench.editorAssociations` 指向文本编辑器",
+              "@id": "qzirr2zgef"
+            }
+          ],
+          "@id": "hkw5ex5slk"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "不做",
+      "@id": "tstzvc9gel",
+      "children": [
+        {
+          "type": "constraint",
+          "rule": "不以标题栏图标为唯一入口。",
+          "scope": "发现路径",
+          "nonNegotiable": true,
+          "@id": "jxj6x1l8mu"
+        },
+        {
+          "type": "constraint",
+          "rule": "不禁止打开源文档；须保留 Edit Source / Open With。",
+          "scope": "源文档可达性",
+          "nonNegotiable": true,
+          "@id": "8hcmm2xnaq"
+        },
+        {
+          "type": "constraint",
+          "rule": "不默认强制每个文件占满双栏。",
+          "scope": "分栏策略",
+          "nonNegotiable": true,
+          "@id": "zl0o5ensvw"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "实施阶段",
+      "lead": "按序连续落地；阶段间不停、不另开窗口；每阶段最小变更 + 测试通过；阶段间不留兼容层。完成后把对应清单 `checked` / `status` 标为完成。",
+      "@id": "ukqloal20w",
+      "children": [
+        {
+          "type": "roadmap",
+          "phases": [
+            {
+              "title": "阶段 0 — 术语",
+              "goals": [
+                "在 `registry://shared.terminology` 登记渲染视图 / Open Renderer / Edit Source，并写明禁止 Preview"
+              ],
+              "status": "done",
+              "@id": "2zae4reb4a"
+            },
+            {
+              "title": "阶段 1 — renderer-vscode 最终形态",
+              "goals": [
+                "Custom Editor 默认渲染视图、Open Renderer / Edit Source、清掉范围内 Preview 字样；包级 fix + test 通过"
+              ],
+              "status": "done",
+              "@id": "2e2gvxf1fy"
+            }
+          ],
+          "@id": "ho3apb894v"
+        },
+        {
+          "type": "section",
+          "title": "阶段 0 — 术语",
+          "lead": "规范先于代码。只改术语表；不改扩展实现。",
+          "@id": "u2zdy0hdta",
+          "children": [
+            {
+              "type": "checklist",
+              "items": [
+                {
+                  "label": "术语表增加：渲染视图（规范英名 `Renderer view`）、Open Renderer（`airp.renderer.open`）、Edit Source（`airp.renderer.editSource`）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "of385khqil"
+                },
+                {
+                  "label": "术语表写明：禁止 Preview 作为本产品用语（第三方 lockfile 包名除外）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "i5ggcxn7yv"
+                },
+                {
+                  "label": "`pnpm check-agents-registry` 通过（若仅改 `terminology.md` 正文且未动 registry 结构，仍确认无登记遗漏）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "vmy2hend4y"
+                },
+                {
+                  "label": "本阶段完成：将 roadmap「阶段 0」与本清单全部标为 `done` / `checked: true`",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "thxj3hw91w"
+                }
+              ],
+              "@id": "9562t3pzge"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "阶段 1 — renderer-vscode 最终形态",
+          "lead": "一次落到最终形态；不拆成改名与 Custom Editor 两段。",
+          "@id": "65vo8gjuwb",
+          "children": [
+            {
+              "type": "checklist",
+              "items": [
+                {
+                  "label": "`contributes.customEditors` + `CustomReadonlyEditorProvider`；打开 `*.airp.json` 默认渲染视图",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "p4qgo5ly74"
+                },
+                {
+                  "label": "命令 `airp.renderer.open` / `airp.renderer.editSource`；菜单与状态栏挂到最终 ID；符号与文案无 Preview",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "qer6bgy805"
+                },
+                {
+                  "label": "渲染视图内提供 Edit Source；复用 `RenderSession` / Worker / watch / export",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "4kic0d5iyp"
+                },
+                {
+                  "label": "清除任务范围内文件中的 Preview 字样（含 `renderer-vscode` 与相关文档 / sample）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "q93oxmay8a"
+                },
+                {
+                  "label": "`pnpm --filter airp-renderer-vscode fix` 与该包测试通过；同步 Unit/Package 测试与 case（`registry://skills.test-sync`）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "y3frx8y10j"
+                },
+                {
+                  "label": "本阶段完成：将 roadmap「阶段 1」与本清单全部标为 `done` / `checked: true`",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "cknotckdsg"
+                }
+              ],
+              "@id": "ba98ktt9rl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "收尾",
+      "lead": "全部实施阶段完成后执行；不是实施阶段。",
+      "@id": "521ayn1qew",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "根目录 `pnpm fix` 与 `pnpm test` 全仓通过",
+              "checked": true,
+              "status": "done",
+              "@id": "x8e8rohtxj"
+            },
+            {
+              "label": "本收尾完成：本清单标为 `done` / `checked: true`",
+              "checked": true,
+              "status": "done",
+              "@id": "jk4kgu0wok"
+            }
+          ],
+          "@id": "lqom71vprs"
+        }
+      ]
+    },
+    {
+      "type": "constraint",
+      "rule": "PR 仅人手动一次；禁止写入实施阶段；禁止 AI 代提 PR。",
+      "scope": "发布过程",
+      "nonNegotiable": true,
+      "@id": "cz0mqkbroz"
+    },
+    {
+      "type": "agentNote",
+      "visible": false,
+      "text": "执行者：按阶段 0 → 1 → 收尾连续做完；每阶段结束更新本文件 roadmap/checklist 标记。不提 PR。不写兼容层或 deprecated 别名。",
+      "@id": "p16y0x11s9"
+    }
+  ]
+}

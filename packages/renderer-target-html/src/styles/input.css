@@ -1,0 +1,319 @@
+@import "tailwindcss";
+@import "./svg-viewer.css";
+@import "./tokens.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant group-open (&:is(:where(.group)[open] *));
+
+@source "../**/*.ts";
+
+@layer components {
+  html {
+    scroll-behavior: smooth;
+    /* Sticky app header is h-14 (3.5rem); keep fragment targets visible below it. */
+    scroll-padding-top: 5rem;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    margin: 0;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    color: var(--text-main);
+    background-color: var(--bg-page);
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+    @apply font-sans antialiased;
+  }
+
+  body {
+    @apply flex min-h-screen flex-col;
+  }
+
+  ::selection {
+    @apply bg-sky-500/20 text-sky-700 dark:text-sky-300;
+  }
+
+  .html-icon-sprite {
+    @apply pointer-events-none absolute h-0 w-0 overflow-hidden;
+  }
+
+  a {
+    @apply text-link underline decoration-sky-400/50 underline-offset-4 transition-colors hover:text-link-hover;
+  }
+
+  /*
+   * Chrome controls (theme toggle, source menu, code copy, collapsible, …).
+   * Hover must win over inline theme `style` (bg/color/border), so use !important.
+   */
+  .airp-interactive {
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .airp-interactive:hover {
+    color: var(--link) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--link) 18%,
+      var(--bg-surface)
+    ) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--link) 55%,
+      var(--border-color)
+    ) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--link) 25%, transparent);
+  }
+
+  .airp-interactive:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--link) 55%, transparent);
+    outline-offset: 2px;
+  }
+
+  /* Hide native disclosure marker so chevron/custom chrome stays clean. */
+  .airp-interactive::-webkit-details-marker,
+  summary.airp-interactive::marker {
+    display: none;
+    content: "";
+  }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.725rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    border-radius: 9999px;
+  }
+
+  .status-badge[data-status="pass"],
+  .status-badge[data-status="done"] {
+    color: #059669;
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+  }
+
+  html.dark .status-badge[data-status="pass"],
+  html.dark .status-badge[data-status="done"] {
+    color: #34d399;
+    background-color: rgba(6, 78, 59, 0.3);
+    border-color: rgba(5, 150, 105, 0.4);
+  }
+
+  .status-badge[data-status="warning"] {
+    color: #d97706;
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+  }
+
+  html.dark .status-badge[data-status="warning"] {
+    color: #fbbf24;
+    background-color: rgba(120, 53, 15, 0.3);
+    border-color: rgba(217, 119, 6, 0.4);
+  }
+
+  .status-badge[data-status="fail"] {
+    color: #dc2626;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+
+  html.dark .status-badge[data-status="fail"] {
+    color: #f87171;
+    background-color: rgba(127, 29, 29, 0.3);
+    border-color: rgba(220, 38, 38, 0.4);
+  }
+
+  .status-badge[data-status="in_progress"] {
+    color: #2563eb;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+  }
+
+  html.dark .status-badge[data-status="in_progress"] {
+    color: #60a5fa;
+    background-color: rgba(30, 58, 138, 0.3);
+    border-color: rgba(37, 99, 235, 0.4);
+  }
+
+  .status-badge[data-status="pending"],
+  .status-badge[data-status="neutral"] {
+    color: #64748b;
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+  }
+
+  html.dark .status-badge[data-status="pending"],
+  html.dark .status-badge[data-status="neutral"] {
+    color: #94a3b8;
+    background-color: rgba(30, 41, 59, 0.5);
+    border-color: rgba(71, 85, 105, 0.4);
+  }
+
+  .status-badge[data-status="blocked"] {
+    color: #db2777;
+    background-color: #fdf2f8;
+    border: 1px solid #fbcfe8;
+  }
+
+  html.dark .status-badge[data-status="blocked"] {
+    color: #f472b6;
+    background-color: rgba(131, 24, 67, 0.3);
+    border-color: rgba(219, 39, 119, 0.4);
+  }
+
+  .status-badge[data-status="partial"] {
+    color: #7c3aed;
+    background-color: #f5f3ff;
+    border: 1px solid #ddd6fe;
+  }
+
+  html.dark .status-badge[data-status="partial"] {
+    color: #a78bfa;
+    background-color: rgba(76, 29, 149, 0.3);
+    border-color: rgba(124, 58, 237, 0.4);
+  }
+
+  .status-badge[data-status="skipped"] {
+    color: #94a3b8;
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+  }
+
+  html.dark .status-badge[data-status="skipped"] {
+    color: #64748b;
+    background-color: #111827;
+    border-color: #334155;
+  }
+
+  /* Code shell: line numbers + Shiki dual theme */
+  [data-code-block] .line {
+    @apply relative block min-h-[1.5rem];
+  }
+
+  [data-code-block] .line::before {
+    color: var(--text-muted);
+    content: counter(airp-line);
+    counter-increment: airp-line;
+    @apply mr-4 inline-block w-6 shrink-0 text-end font-mono text-[0.7rem];
+  }
+
+  [data-code-block] pre code,
+  [data-code-block] .shiki code {
+    counter-reset: airp-line;
+    @apply grid p-0 font-mono text-xs leading-relaxed sm:text-sm;
+  }
+
+  [data-code-block] .airp-diff-add {
+    @apply bg-emerald-500/12;
+  }
+
+  [data-code-block] .airp-diff-del {
+    @apply bg-rose-500/12;
+  }
+
+  html.dark .shiki,
+  html.dark .shiki span {
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    color: var(--shiki-dark) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+
+  /* Shared float panel motion (TOC / sources / export): 160ms opacity+scale. */
+  .airp-float-panel {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(6px) scale(0.98);
+    transform-origin: top right;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease,
+      visibility 160ms ease;
+  }
+
+  .page-toc[data-page-toc-open="true"] .airp-float-panel,
+  [data-doc-sources-menu][data-open] .airp-float-panel,
+  [data-airp-export][data-open] .airp-float-panel {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Page TOC: shared top-right anchor + mini/panel crossfade */
+  .page-toc {
+    pointer-events: none;
+  }
+
+  .page-toc-shell {
+    min-width: 1.25rem;
+    min-height: 2rem;
+    pointer-events: auto;
+  }
+
+  .page-toc-mini {
+    position: relative;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transform-origin: top right;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease,
+      visibility 160ms ease;
+  }
+
+  .page-toc-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    scrollbar-color: var(--border-color) transparent;
+    scrollbar-width: thin;
+  }
+
+  .page-toc[data-page-toc-open="true"] .page-toc-mini {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(4px) scale(0.98);
+  }
+
+  .page-toc-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .page-toc-panel::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 9999px;
+  }
+
+  .page-toc-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .airp-float-panel,
+    .page-toc-mini {
+      transition: none;
+    }
+  }
+}

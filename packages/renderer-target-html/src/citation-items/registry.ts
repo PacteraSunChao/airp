@@ -1,0 +1,17 @@
+import type { SchemaVersion, VersionRegistry } from "@airp/protocol";
+import { citationItemsHtml100 } from "./v1-0-0.js";
+import { citationItemsHtml110 } from "./v1-1-0.js";
+
+export type CitationItemsHtmlEmitter = (items: unknown[]) => string;
+
+const CITATION_ITEMS_HTML = {
+  "1.0.0": citationItemsHtml100,
+  "1.1.0": citationItemsHtml110,
+} as const satisfies VersionRegistry<CitationItemsHtmlEmitter>;
+
+/** Resolve citation item HTML emitter for a supported schema version. */
+export function citationItemsHtmlFor(
+  version: SchemaVersion
+): CitationItemsHtmlEmitter {
+  return CITATION_ITEMS_HTML[version];
+}

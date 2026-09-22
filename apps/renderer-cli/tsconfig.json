@@ -1,0 +1,10 @@
+{
+  "extends": "@airp/typescript-config/app.json",
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "bin/**/*.ts",
+    "tsdown.config.ts",
+    "vitest.config.ts"
+  ]
+}

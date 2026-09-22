@@ -1,0 +1,19 @@
+{
+  "name": "@airp/repo-guard",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check-agents-registry": "tsx check-agents-registry.mjs",
+    "check-testing-surface": "tsx check-testing-surface.mjs",
+    "check-runtime-entries": "tsx check-runtime-entries.mjs",
+    "list-testing-surface": "tsx list-testing-surface.mjs",
+    "check": "pnpm dlx ultracite@7.4.2 check",
+    "fix": "pnpm dlx ultracite@7.4.2 fix"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}

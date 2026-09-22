@@ -1,0 +1,60 @@
+{
+  "name": "@airp/renderer-target-html",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.mts",
+      "import": "./dist/node/index.mjs",
+      "node": "./dist/node/index.mjs",
+      "default": "./dist/node/index.mjs"
+    },
+    "./diagnostic-codes": "./src/diagnostic-codes.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "icons:generate": "node scripts/generate-html-icons.mjs",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "check": "pnpm typecheck && pnpm dlx ultracite@7.4.2 check",
+    "fix": "pnpm typecheck && pnpm dlx ultracite@7.4.2 fix"
+  },
+  "dependencies": {
+    "@airp/diagnostics": "workspace:*",
+    "@airp/protocol": "workspace:*",
+    "@airp/renderer-contract": "workspace:*",
+    "@airp/renderer-shared": "workspace:*",
+    "@airp/utils": "workspace:*",
+    "diff": "^9.0.0",
+    "jsdom": "^26.1.0",
+    "mermaid": "11.12.0",
+    "shiki": "^4.4.3"
+  },
+  "devDependencies": {
+    "@airp/test-kit": "workspace:*",
+    "@airp/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@tsdown/css": "^0.22.3",
+    "@types/jsdom": "^21.1.7",
+    "cssnano": "^7.1.0",
+    "lucide-static": "^1.23.0",
+    "postcss": "^8.5.6",
+    "postcss-import": "^16.1.1",
+    "tailwindcss": "^4.3.2",
+    "tsdown": "^0.22.3",
+    "vitest": "4.1.11"
+  }
+}

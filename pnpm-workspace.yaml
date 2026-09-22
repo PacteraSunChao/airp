@@ -1,7 +1,10 @@
 packages:
-  - renderer
-  - tests
+  - "packages/*"
+  - "apps/*"
 
-shared-workspace-lockfile: true
-allowBuilds:
-  esbuild: true
+minimumReleaseAge: 2880
+minimumReleaseAgeExclude:
+  - "@airp/*"
+
+overrides:
+  "@types/node": "^20.19.39"

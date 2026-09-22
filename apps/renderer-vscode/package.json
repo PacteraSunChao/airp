@@ -1,0 +1,137 @@
+{
+  "name": "airp-renderer-vscode",
+  "displayName": "%airp.renderer.displayName%",
+  "description": "%airp.renderer.description%",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "publisher": "airp",
+  "icon": "icon.png",
+  "l10n": "./l10n",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maosong-ai/airp.git",
+    "directory": "apps/renderer-vscode"
+  },
+  "homepage": "https://github.com/maosong-ai/airp/tree/main/apps/renderer-vscode",
+  "bugs": {
+    "url": "https://github.com/maosong-ai/airp/issues"
+  },
+  "keywords": [
+    "airp",
+    "json",
+    "renderer",
+    "markdown",
+    "html"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20.19"
+  },
+  "main": "./dist/extension.cjs",
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": false
+    },
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "activationEvents": [
+    "workspaceContains:**/*.airp.json"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "airp.renderer",
+        "displayName": "AIRP Renderer",
+        "selector": [
+          {
+            "filenamePattern": "*.airp.json"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "airp.renderer.open",
+        "title": "Open Renderer",
+        "category": "AIRP"
+      },
+      {
+        "command": "airp.renderer.editSource",
+        "title": "Edit Source",
+        "category": "AIRP"
+      }
+    ],
+    "configuration": {
+      "title": "AIRP Renderer",
+      "properties": {
+        "airp.renderer.rerenderDelay": {
+          "type": "integer",
+          "default": 1000,
+          "minimum": 0,
+          "scope": "resource",
+          "description": "Delay in milliseconds after an AIRP document changes before it is rendered again."
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "airp.renderer.open",
+          "when": "resourceFilename =~ /\\.airp\\.json$/ && activeCustomEditorId != 'airp.renderer'",
+          "group": "navigation"
+        },
+        {
+          "command": "airp.renderer.editSource",
+          "when": "activeCustomEditorId == 'airp.renderer'",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "airp.renderer.open",
+          "when": "resourceFilename =~ /\\.airp\\.json$/ && !explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "bundle": "node esbuild.mjs",
+    "vscode:prepublish": "pnpm bundle",
+    "package": "vsce package --no-dependencies --out dist/${npm_package_name}-${npm_package_version}.vsix",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "check": "pnpm typecheck && pnpm dlx ultracite@7.4.2 check",
+    "fix": "pnpm typecheck && pnpm dlx ultracite@7.4.2 fix"
+  },
+  "dependencies": {
+    "@airp/diagnostics": "workspace:*",
+    "@airp/loader": "workspace:*",
+    "@airp/renderer": "workspace:*",
+    "@airp/utils": "workspace:*",
+    "@airp/validate": "workspace:*"
+  },
+  "devDependencies": {
+    "@airp/test-kit": "workspace:*",
+    "@airp/typescript-config": "workspace:*",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.27.0",
+    "happy-dom": "^20.0.11",
+    "vitest": "4.1.11"
+  }
+}

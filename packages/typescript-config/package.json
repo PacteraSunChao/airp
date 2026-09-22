@@ -1,0 +1,11 @@
+{
+  "name": "@airp/typescript-config",
+  "version": "1.1.2",
+  "description": "Shared TypeScript configuration for AIRP",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "*.json"
+  ]
+}

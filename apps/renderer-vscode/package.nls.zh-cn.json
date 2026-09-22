@@ -1,0 +1,9 @@
+{
+  "airp.renderer.displayName": "AIRP 渲染器",
+  "airp.renderer.description": "在 Webview 中渲染单个 *.airp.json 文档",
+  "airp.renderer.customEditor.displayName": "AIRP 渲染器",
+  "airp.renderer.command.open": "打开渲染器",
+  "airp.renderer.command.editSource": "编辑源文件",
+  "airp.renderer.configuration.title": "AIRP 渲染器",
+  "airp.renderer.configuration.rerenderDelay": "AIRP 文档变更后，再次渲染前等待的毫秒数。"
+}

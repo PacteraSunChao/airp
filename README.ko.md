@@ -1,141 +1,108 @@
-# AIRP — AI Report Protocol（AI 보고서 프로토콜）
+# AIRP — AI Report Protocol（AI 리포트 프로토콜）
 
 [🇺🇸 English](./README.md) | [🇨🇳 中文](./README.cn.md) | [🇯🇵 日本語](./README.ja.md) | [🇰🇷 한국어](./README.ko.md) | [🇩🇪 Deutsch](./README.de.md) | [🇫🇷 Français](./README.fr.md) | [🇷🇺 Русский](./README.ru.md) | [🇪🇸 Español](./README.es.md) | [🇧🇷 Português (Brasil)](./README.pt-BR.md) | [🇮🇹 Italiano](./README.it.md)
 
 ![AIRP screen capture](./screen-capture.png "AIRP screen capture")
 
-**AI/Agent의 대화 출력을 검증 가능하고, 렌더링 가능하며, 장기적으로 유지보수할 수 있는 구조화 보고서로 바꿉니다.**
+**AI가 쓴 리포트를 더 읽기 쉽게, 그리고 고치기 쉽게.**
 
-Cursor, Copilot, Claude Code 등의 환경에서 기획안, 회고, 감사 자료를 작성할 때 채팅 기록만으로는 그대로 전달하기 어렵습니다. 레이아웃이 불안정하고 검색도 어렵으며, 다른 언어나 형식으로 다시 배포하기도 번거롭습니다. AIRP는 통일된 **JSON Schema**로 보고서 구조를 제약합니다(Notion의 다양한 **Block** 콘텐츠 블록으로 구성되는 방식과 유사). 먼저 구조화 소스 파일 **`.airp.json`**을 만든 뒤 **렌더러**를 통해 **HTML**(열람/발표) 또는 **Markdown**(문서 흐름/재편집)을 보냅니다.
+AI에게 Markdown을 맡기면 밋밋하고 산만해지기 쉽습니다. HTML은 봐줄 만하지만 길고 token도 많이 먹고, 나중에 고치기도 힘듭니다. AIRP 방식은 이렇습니다. 먼저 AI가 `*.airp.json` 소스를 쓰게 하고, **AIRP Renderer** 확장으로 다듬어진 HTML로 엽니다. 밖으로 보낼 때는 HTML이나 Markdown으로 내보내면 됩니다.
 
-저장소: `https://github.com/maosong-ai/airp`
+소스는 Notion식 **블록(Block)** 으로 짜여 있고, 지금은 **46**종입니다(히어로 지표, 비교, 의사결정, 타임라인, Mermaid, 아키텍처 개요 등). 각 블록마다 레이아웃이 있어서 계획·리뷰·회고·감사 같은 리포트가 훨씬 또렷하고, 글 덩어리로 뭉개지지 않습니다.
 
-## 대상 사용자
+## 리포트는 어떻게 돌아가는가
 
-| 역할 | 대표 보고서 |
-|---|---|
-| 프로젝트 매니저 / 제품 | 착수 설명, 마일스톤 회고, 리스크 및 할 일 |
-| 운영 / 비즈니스 | 캠페인 요약, 벤치마크 분석, 의사결정 및 후속 조치 |
-| 내부 감사 / 품질 관리 | 이슈 심각도 분류, 증거 체인, 시정 및 검증 체크리스트 |
-| 개발 / 아키텍처 | 마이그레이션 계획, 기술 검토, 테스트 및 변경 설명 |
+쓰기와 읽기는 나뉩니다. 가운데 `*.airp.json`은 JSON Schema로 맞춰져 있고, 생성과 검증 모두 여기를 기준으로 합니다:
 
-## 핵심 기능 한눈에 보기
+| 누가 | 무엇을 하나 |
+| --- | --- |
+| **`/airp` Skill** | AI가 소스를 만들거나 고치게 하고, 검증까지 |
+| **VS Code 확장** | 에디터에서 읽기; HTML / Markdown 내보내기 |
 
-| 기능 | 설명 |
-|---|---|
-| **구조화 소스 파일** | `.airp.json`은 Schema에 따라 콘텐츠를 구성합니다. 생성 후 자동 검증으로 「완성된 것처럼 보이지만 실제로는 구간이 빠진」 상황을 줄입니다 |
-| **콘텐츠와 표현 분리** | 본문은 소스만 유지합니다. HTML / Markdown은 렌더러가 보냅니다. 레이아웃을 바꿀 때 본문을 다시 쓸 필요가 없습니다 |
-| **다국어(i18n)** | 하나의 소스에 다국어 문안(`i18n.locales`)을 담을 수 있습니다. 보내기·열람 시 언어를 선택합니다. UI는 중·영·일·한·독·불·러·서·포·이 등을 지원합니다 |
-| **테마와 레이아웃** | HTML 보내기에서 라이트/다크 테마 등 외관을 전환할 수 있으며, **본문은 변경하지 않습니다** |
-| **확장성** | 향후 PDF, Excel, Notion 등 보내기 방식을 추가할 예정입니다 |
+실제로 얻는 것:
+
+- 필드나 섹션이 빠지면 검증이 실패해서, 어설픈 산출물이 줄어듭니다.
+- 소스는 Git·diff에 잘 맞고, HTML / Markdown은 사람이 보는 결과물입니다.
+- 블록 경계가 분명해서 모델이 더 안정적이고, 손으로 쓴 긴 HTML보다 token도 보통 덜 씁니다.
 
 ## 빠른 시작
 
-**1. Skill 설치**
+### 1. VS Code 확장 설치
+
+[Marketplace](https://marketplace.visualstudio.com/items?itemName=airp.airp-renderer-vscode)에서 **AIRP Renderer**를 설치하세요(확장 ID: `airp.airp-renderer-vscode`).
+
+아무 `*.airp.json`이나 열면 읽을 수 있고, HTML / Markdown으로 내보낼 수도 있습니다. VS Code 호환 에디터가 필요합니다(예: Cursor).
+
+### 2. `/airp` Skill 설치
+
+이미 작성된 소스만 본다면 확장만으로 충분합니다. AI에게 새 리포트를 쓰게 할 때만 Skill을 설치하세요:
 
 ```bash
 npx skills add maosong-ai/airp
 ```
 
-**2. 명령과 산출물**
+채팅에 `/airp <주제>`를 입력하면 Skill이 소스를 생성·검증합니다(기본 폴더: `.docs/airp/`). 확장으로 열어 읽으면 됩니다. 선택: `--locale ko-KR`, `--out <디렉터리>`.
 
-| 명령 | 산출물 | 용도 |
-|---|---|---|
-| `/airp` | `*.airp.json` | 구조화 소스 파일 생성 및 검증(보관, 검색, 후처리, 재보내기) |
-| `/airp-dashboard` | 로컬 Dashboard | 브라우저에서 소스 파일을 미리보고, HTML / Markdown 등을 온라인으로 보낼 수도 있습니다 |
-| `/airp-html` | `*.html` | 기존 소스 파일을 단일 HTML 페이지로 렌더링. 공유 및 발표용 |
-| `/airp-markdown` | `*.md` | 지정 locale로 Markdown 보내기. Yuque, Feishu, GitHub 등 |
+## 다국어
 
-**3. 권장 워크플로**
+지원 문서 언어: English(`en-US`), 简体中文(`zh-CN`), 日本語(`ja-JP`), 한국어(`ko-KR`), Deutsch(`de-DE`), Français(`fr-FR`), Русский(`ru-RU`), Español(`es-ES`), Português Brasil(`pt-BR`), Italiano(`it-IT`). 리포트를 쓸 때 `/airp --locale …`로 지정하세요.
 
-```
-/airp  →  소스 파일  →  /airp-html      →  HTML      # 외부 열람, 발표
-/airp  →  소스 파일  →  /airp-markdown  →  Markdown  # 문서 라이브러리, 계속 편집
-```
+## 앞으로 할 일
 
-**4. 출력 디렉터리**
+지금 되는 것: Skill로 소스 생성 / 검증, 확장으로 HTML / Markdown 읽기·내보내기. 다음에 하려는 것:
 
-기본값: 프로젝트 내 `.docs/airp/`; `--out <dir>`로 경로를 지정할 수 있습니다.
+| 방향 | 설명 |
+| --- | --- |
+| **시각 편집** | 확장 안에서 바로 고치기. 매번 Skill을 찾을 필요 없음 |
+| **내보내기 형식 늘리기** | PDF 추가(인쇄, 보관) |
+| **여러 페이지 / 여러 시트** | 긴 리포트를 장·시트로 나누고 한 페이지에 몰아넣지 않기 |
 
-## 워크플로
+## 로컬 개발과 빌드
 
-```mermaid
-flowchart LR
-  A[AI/Agent 콘텐츠 생성] --> B[구조화 소스 파일<br/>.airp.json]
-  B --> C{AIRP JSON Schema 검증}
-  C -- 통과 --> D[렌더러]
-  C -- 실패 --> E[수정 후 재생성]
-  D --> H[HTML]
-  D --> M[Markdown]
-  D -. 계획 .-> P[PDF / Excel / Notion …]
+이 저장소를 고치는 사람을 위한 섹션입니다. 평소 VS Code 확장과 Skill만 쓴다면 클론할 필요 없습니다.
+
+환경: Node.js **20.19+**, pnpm **10.17+**.
+
+```bash
+pnpm install
 ```
 
-## 왜 「소스 파일 + 렌더링」이 필요한가
+**검증 CLI** (`airp-validate`)
 
-AIRP의 **JSON Schema**(`airp-document.schema.json`)는 생성과 검증의 **유일한 규범(SSOT)**입니다:
+```bash
+# 잠깐 돌려보기
+pnpm validate-cli:sample
 
-- **검증 가능**: 필드와 섹션에 제약이 있습니다. 검증에 실패하면 미완성으로 간주하여 가짜 납품을 방지합니다.
-- **재사용 가능**: 소스 파일은 버전 비교, 검색, 자동화에 적합합니다. HTML / Markdown은 사람이 읽기 위한 형태입니다.
-- **AI에 더 안정적·컨텍스트 절약**: Block 구조의 경계가 분명합니다. 긴 보고서는 자유롭게 작성한 HTML보다 이탈하기 어렵고, 같은 정보량에서도 보통 더 컴팩트합니다.
-- **여러 형식을 중복 작업 없이**: 소스를 한 번만 수정하고 필요에 따라 웹이나 문서로 보냅니다.
+# 빌드 → apps/validate-cli/dist/cli.mjs
+pnpm exec turbo run build --filter=@airp/validate-cli
+```
 
-보고서 본문은 여러 **Block**(예: 섹션 `section`, 표 `table`, 리스크 `risk`, 흐름도 `mermaid` 등)으로 조립됩니다. 전체 타입 목록은 Schema를 참고하세요. 일상적으로는 보고서 유형(예: 「감사 보고서」「프로젝트 회고」)만 설명하면 `/airp`가 알맞은 Block 조합을 자동으로 선택합니다.
+**렌더 CLI** (`airp-render`)
 
-### 콘텐츠 모듈(용도별 분류)
+```bash
+# 잠깐 돌려보기
+pnpm renderer-cli:sample
 
-| 범주 | 대표 Block |
-|---|---|
-| 서두와 요약 | `hero`, `lead`, `pullQuote` |
-| 본문과 레이아웃 | `section`, `paragraph`, `table`, `callout`, 각종 목록 |
-| 흐름과 도식 | `flowSteps`, `mermaid`, `timeline`, `roadmap` |
-| 의사결정과 리스크 | `comparison`, `decision`, `risk`, `assumption`, `openQuestion` |
-| 실행과 검증 | `checklist`, `statusBoard`, `testResult`, `requirementTrace` |
-| 부록과 참고 | `collapsible`, `tabs`, `appendix`, `glossary`, `citation` |
+# 빌드 → apps/renderer-cli/dist/cli.mjs
+pnpm exec turbo run build --filter=@airp/renderer-cli
+```
 
-## 자주 묻는 질문
+**VS Code 확장**
 
-### 어떤 파일을 보관해야 하나요?
+이 저장소를 VS Code로 열고 F5(또는 **Launch AIRP Renderer**)로 Extension Development Host에 들어가면 디버깅할 수 있습니다.
 
-| 목적 | 권장 보관 |
-|---|---|
-| 팀 보관, 기계 처리, 이후 재보내기 | `.airp.json`(소스 파일) |
-| 이메일/IM 공유, 발표 열람 | `.html` |
-| 문서 라이브러리 편집, Markdown 툴체인 연동 | `.md`(`/airp-markdown` + locale) |
+```bash
+# 빌드
+pnpm exec turbo run build --filter=airp-renderer-vscode
 
-### 다국어는 어떻게 사용하나요?
-
-- 프롬프트에 필요한 언어를 명시합니다(예: 「/airp <프롬프트> 중·일·영 3개 언어로 생성」) → 소스 파일에 3개 언어 문안이 포함됩니다.
-- 명시하지 않으면(예: 「/airp <프롬프트>」) → Skill이 **현재 대화 언어**로 단일 언어 소스 파일을 생성합니다.
-
-### AIRP vs HTML vs Markdown
-
-셋은 배타적이지 않습니다: **HTML / Markdown은 열람용 보내기 형태입니다.**
-
-| 비교 항목 | AIRP(`.airp.json`) | AI에 HTML을 직접 작성 | AI에 Markdown을 직접 작성 |
-|---|---|---|---|
-| **역할** | 구조화 소스 파일 + Schema 검증 | 완성된 전시 페이지 | 완성된 문서 |
-| **구조 제약** | Block + Schema, 생성 후 검증 가능 | Prompt에 의존, 긴 페이지에서 Block 누락·레이아웃 drift | 작성 습관에 의존, 긴 글에서 계층 불일치 |
-| **다국어** | 다국어 문안 구조 | 별도 전체 페이지 저장 또는 수동 복사가 흔함 | 여러 `.md`가 필요한 경우가 많음 |
-| **다형식 보내기** | 동일 소스 → HTML / Markdown(및 향후 PDF/Excel 등) | Markdown 변환은 재작성 또는 손실 변환 | HTML은 재작성 또는 스타일 추가 |
-| **사람이 읽기** | `/airp-html` 또는 `/airp-markdown`으로 렌더링 | 단일 파일을 열면 바로 열람, 레이아웃 완비 | 플랫폼 렌더링, 순수 텍스트 느낌 |
-| **재편집** | AI가 소스를 직접 수정. Markdown 보내기로 부분 수정도 가능 | HTML 수정 비용이 높음 | 문서 도구에서 가장 자연스러움 |
-| **보관 / 검색 / diff** | 구조화, 필드 안정 | 태그와 스타일 혼재, 의미 추출 어려움 | 텍스트 친화적, 필드 비통일 |
-| **AI 여러 차례 수정** | Block 필드 수정, 경계가 분명 | 태그가 많고 파일이 길어 수정을 빠뜨리기 쉬움 | 중간 수준. 구조는 자율적으로 유지 |
-| **Token / 컨텍스트** | 모듈화 JSON, 중복 적음 | 같은 내용도 부피가 커 점유가 높음 | 중간 수준 |
-| **레이아웃과 테마** | 렌더링 계층에서 전환, 소스 불변 | 스타일이 파일에 내장 | 대상 플랫폼에 따라 다름 |
-| **더 적합** | 공식 보고서, 다국어, 여러 차례 반복, 팀 통일 템플릿 | 일회성 단일 페이지, 강한 전시 | 짧은 글, 메모, Markdown이 최종본 |
-| **덜 적합** | 두세 문장, 보관 불필요 | 강한 검증, 다국어, 다형식 파이프라인 | 강한 Schema, 원클릭 다국어 보내기 |
-
-> **결론**: 「일관성 + 검사 가능한 구조 + 하나의 콘텐츠로 여러 보내기」가 필요하면 AIRP를 사용하세요. 최종 형식이 분명하고 한 버전만 필요하면 HTML 또는 Markdown을 직접 사용하면 됩니다.
-
-## 향후 계획
-
-- 소스 파일과 보내기 산출물 암호화
-- 다중 Sheet 페이지 보내기
-- PDF, Excel, Notion 등 렌더러
+# 패키지 → apps/renderer-vscode/dist/airp-renderer-vscode-<version>.vsix
+pnpm --filter=airp-renderer-vscode package
+```
 
 ---
 
 ## 라이선스
 
 MIT
+
+[AIRP](https://github.com/maosong-ai/airp) | Copyright (c) 2026 毛松 <maosong-life@outlook.com>

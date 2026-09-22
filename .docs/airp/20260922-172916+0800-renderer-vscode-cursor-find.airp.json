@@ -1,0 +1,464 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "renderer-vscode Cursor 自建查找",
+    "subtitle": "Cursor 渲染视图补洞：宿主关原生 Find，webview 固定找条搜可见文本",
+    "kind": "architecture",
+    "createdAt": "2026-09-22T09:29:16.836Z",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "tags": [
+      "renderer-vscode",
+      "cursor",
+      "webview",
+      "find"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode",
+        "label": "目标包",
+        "@id": "gb79anzwmg"
+      },
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode/src/extension.ts",
+        "label": "enableFindWidget 注册点",
+        "@id": "ptr2eq9ymc"
+      },
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode/src/webview",
+        "label": "webview 脚本",
+        "@id": "0sw1hkjw1d"
+      },
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode/src/host-injected-css.ts",
+        "label": "宿主浮层样式",
+        "@id": "6rw717kzyw"
+      },
+      {
+        "type": "url",
+        "value": "https://forum.cursor.com/t/webview-ctrl-f-search-highlight-still-not-working-extension-developer-report/145932",
+        "label": "Cursor webview Find 已知限制",
+        "@id": "jvqinrjvi2"
+      }
+    ],
+    "updatedAt": "2026-09-22T09:54:36.803Z",
+    "updatedBy": "毛松 <song.mao@gientech.com>"
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "在 **Cursor** 渲染视图用自建找条搜**当前可见**正文；**VS Code** 继续用宿主 `enableFindWidget`。不改 `.agents`，不提 PR。",
+      "@id": "nx6gv7vrng"
+    },
+    {
+      "type": "section",
+      "title": "最终形态",
+      "lead": "结论先于细节。",
+      "@id": "apg8alyhmi",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "问题",
+              "value": "Cursor 缺少 `WebFrameMain.findInFrame`；`enableFindWidget` 能出栏但搜不到。VS Code 原生 Find 正常。",
+              "@id": "xezs3frg7u"
+            },
+            {
+              "key": "范围",
+              "value": "仅 `apps/renderer-vscode`；仅 Cursor 启用自建查找",
+              "@id": "hjxqa1f43r"
+            },
+            {
+              "key": "宿主",
+              "value": "`vscode.env.appName` 大小写不敏感包含 `cursor` → `enableFindWidget: false`；否则 `true`",
+              "@id": "ohxqk9d7nv"
+            },
+            {
+              "key": "传参",
+              "value": "拼 HTML 时写入宿主标记 `data-airp-use-custom-find`（`true`/`false`）；不新增 message 类型",
+              "@id": "8uan7xkge3"
+            },
+            {
+              "key": "webview",
+              "value": "标记为 true 时拦截 ⌘F/Ctrl+F；可见文本匹配；`Range.getClientRects()` overlay 描框高亮（不改正文 DOM）",
+              "@id": "efp8caol5w"
+            },
+            {
+              "key": "落点",
+              "value": "宿主检测小模块；`host-injected-css` 找条与 overlay 样式；`src/webview/find-bar.ts` + `reader-bridge` 挂载",
+              "@id": "dw9aex7a4w"
+            }
+          ],
+          "@id": "w11gz2usr3"
+        },
+        {
+          "type": "decision",
+          "title": "是否拆阶段 0",
+          "chosen": "不设阶段 0",
+          "rationale": "无 `.agents` / 术语表变更；规范改动才需要阶段 0。",
+          "status": "accepted",
+          "@id": "vwhva4rol3"
+        },
+        {
+          "type": "decision",
+          "title": "阶段粒度",
+          "chosen": "单实施阶段一次落地",
+          "rationale": "宿主开关与找条必须同批交付；拆开会留下半成品。",
+          "status": "accepted",
+          "@id": "ncizg1rd3k"
+        },
+        {
+          "type": "decision",
+          "title": "如何把 useCustomFind 交给页面",
+          "chosen": "HTML `data-airp-use-custom-find`",
+          "rationale": "会话内不变；与 toast-copy 宿主标记同模式；无需扩展 `HostToWebviewMessage`。",
+          "status": "accepted",
+          "@id": "aboktuy0hz"
+        },
+        {
+          "type": "decision",
+          "title": "搜索与高亮",
+          "chosen": "可见文本 Range + fixed overlay 描框",
+          "rationale": "输入框保持焦点时 Selection/`window.find` 无法保留高亮；`::highlight`/`mark` 或不能画外框或改正文。overlay 不改正文、可画边框，滚动/缩放时重绘。",
+          "status": "accepted",
+          "@id": "frqljntyxy"
+        },
+        {
+          "type": "decision",
+          "title": "找条视觉",
+          "chosen": "右上固定找条 + overlay 命中框",
+          "rationale": "找条浮层 token 对齐菜单/toast；命中用 `[data-airp-find-hit]`（当前项 `data-current`）仅描框、无填充底；z-index：export 70 < overlay 75 < 找条 80 < toast 100。",
+          "status": "accepted",
+          "@id": "bxqkcsdokp"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "职责与行为",
+      "@id": "8c91ol8r9c",
+      "children": [
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "layer",
+              "label": "层",
+              "@id": "6x6c3o8hu7"
+            },
+            {
+              "key": "duty",
+              "label": "职责",
+              "@id": "bhyqzwk1kl"
+            }
+          ],
+          "rows": [
+            {
+              "layer": "扩展宿主",
+              "duty": "检测 Cursor；注册时设 `enableFindWidget`；渲染 HTML 写入 `data-airp-use-custom-find`",
+              "@id": "zr3ki8i5kb"
+            },
+            {
+              "layer": "webview JS",
+              "duty": "读标记；拦截快捷键；找条 UI；收集可见匹配；overlay 描框；滚入视口",
+              "@id": "zwz2zwc3k7"
+            }
+          ],
+          "@id": "214g49y8fp"
+        },
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "host",
+              "label": "宿主",
+              "@id": "q1d4tfn4kr"
+            },
+            {
+              "key": "findWidget",
+              "label": "enableFindWidget",
+              "@id": "szy7egezah"
+            },
+            {
+              "key": "custom",
+              "label": "自建找条",
+              "@id": "ex3cm4jzdv"
+            }
+          ],
+          "rows": [
+            {
+              "host": "Cursor",
+              "findWidget": "`false`",
+              "custom": "开",
+              "@id": "ktp01za3be"
+            },
+            {
+              "host": "VS Code 及其他",
+              "findWidget": "`true`",
+              "custom": "关",
+              "@id": "afv2kqz81t"
+            }
+          ],
+          "@id": "jvukwqpnxk"
+        },
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "action",
+              "label": "操作",
+              "@id": "34vz6ylr5o"
+            },
+            {
+              "key": "result",
+              "label": "结果",
+              "@id": "p2k8rgkyq9"
+            }
+          ],
+          "rows": [
+            {
+              "action": "⌘F / Ctrl+F（自建开）",
+              "result": "`preventDefault`；打开找条并聚焦输入",
+              "@id": "9vb6pmnia4"
+            },
+            {
+              "action": "输入 / Enter",
+              "result": "下一处匹配；overlay 描框；滚入视口；显示匹配计数",
+              "@id": "ekybvb3nsm"
+            },
+            {
+              "action": "Shift+Enter",
+              "result": "上一处",
+              "@id": "j3e7kmpt9n"
+            },
+            {
+              "action": "Esc / 关闭",
+              "result": "关找条；清空 overlay",
+              "@id": "w1oo8r4ajy"
+            },
+            {
+              "action": "隐藏 tab / `hidden` 节点",
+              "result": "不搜、不自动展开",
+              "@id": "2rqsbktf8o"
+            }
+          ],
+          "@id": "w4ml9m2icq"
+        },
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "找条布局",
+              "value": "`position: fixed` 右上；`[输入] n/m ↑ ↓ ✕`；z-index 80（overlay 75）",
+              "@id": "r03cm0zlxp"
+            },
+            {
+              "key": "材质",
+              "value": "`var(--bg-surface)`、`var(--border-color)`、`border-radius: 0.75rem`、`box-shadow: var(--shadow-float)`；字号与 export/toast 同档",
+              "@id": "xse38r2zss"
+            },
+            {
+              "key": "动效",
+              "value": "可省略；若有则仅 160ms opacity，不做菜单式 scale 展开",
+              "@id": "czvv9ol61g"
+            },
+            {
+              "key": "检测 API",
+              "value": "`vscode.env.appName.toLowerCase().includes(\"cursor\")`；webview 内不猜 UA",
+              "@id": "x8amh0xkt2"
+            }
+          ],
+          "@id": "el2wkaau9o"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "不做",
+      "@id": "d9oda1tedj",
+      "children": [
+        {
+          "type": "constraint",
+          "rule": "不搜隐藏 tab、折叠隐藏块；不自动切换 tab。",
+          "scope": "搜索范围",
+          "nonNegotiable": true,
+          "@id": "828dbf9zgy"
+        },
+        {
+          "type": "constraint",
+          "rule": "不做正则、整词、大小写敏感等高级选项。",
+          "scope": "找条能力",
+          "nonNegotiable": true,
+          "@id": "mgnq7at4vg"
+        },
+        {
+          "type": "constraint",
+          "rule": "不在 VS Code 关闭原生 Find，不强制两边统一自建。",
+          "scope": "宿主策略",
+          "nonNegotiable": true,
+          "@id": "av62iofvq1"
+        },
+        {
+          "type": "constraint",
+          "rule": "匹配高亮只用 `Range.getClientRects()` overlay 描框；不用 `window.find` Selection、CSS Highlight、或正文 `<mark>`。",
+          "scope": "匹配绘制",
+          "nonNegotiable": true,
+          "@id": "3pm1jtoghd"
+        },
+        {
+          "type": "constraint",
+          "rule": "不另造阴影/主题色；复用 `--shadow-float` 等阅读器浮层 token。",
+          "scope": "视觉",
+          "nonNegotiable": true,
+          "@id": "edrbag8gaj"
+        },
+        {
+          "type": "constraint",
+          "rule": "不新增 `HostToWebviewMessage` 传递查找开关。",
+          "scope": "协议",
+          "nonNegotiable": true,
+          "@id": "ktkir6gy7d"
+        },
+        {
+          "type": "constraint",
+          "rule": "不改 `.agents`、术语表或其它包（范围外只记、不顺手改）。",
+          "scope": "仓库边界",
+          "nonNegotiable": true,
+          "@id": "tdnfin8pgc"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "实施阶段",
+      "lead": "按序连续落地；阶段间不停；每阶段最小变更 + 测试通过；阶段间不留兼容层。完成后把对应清单 `checked` / `status` 标为完成。",
+      "@id": "fbcgzbp0ig",
+      "children": [
+        {
+          "type": "roadmap",
+          "phases": [
+            {
+              "title": "阶段 1 — Cursor 自建查找",
+              "goals": [
+                "宿主检测 + `enableFindWidget` 分支 + HTML 标记；webview 找条与可见文本搜索；包级 fix + test 通过"
+              ],
+              "status": "done",
+              "@id": "epp5xz0he0"
+            }
+          ],
+          "@id": "rwb5i5qw48"
+        },
+        {
+          "type": "section",
+          "title": "阶段 1 — Cursor 自建查找",
+          "lead": "一次落到最终形态；宿主与 webview 同批交付。",
+          "@id": "6pjbssft6j",
+          "children": [
+            {
+              "type": "checklist",
+              "items": [
+                {
+                  "label": "宿主：`appName` 检测 Cursor；`registerCustomEditorProvider` 的 `enableFindWidget` 按宿主分支",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "sgv6mqpx79"
+                },
+                {
+                  "label": "拼成功/失败 HTML 时写入 `data-airp-use-custom-find`（与 toast-copy 同级宿主标记）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "pzasa2uhhe"
+                },
+                {
+                  "label": "`host-injected-css`：右上找条 + `[data-airp-find-overlay]` / `[data-airp-find-hit]` 描框样式",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "hn7ozpsur4"
+                },
+                {
+                  "label": "`src/webview/find-bar.ts`：仅标记为 true 时挂载；⌘F/Ctrl+F、Enter/Shift+Enter、Esc；可见匹配 + `getClientRects` overlay；不改正文",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "dursnth9x6"
+                },
+                {
+                  "label": "从 `main` / `reader-bridge` 挂载找条；dispose 时卸载",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "qs33ab3mbx"
+                },
+                {
+                  "label": "Unit：检测辅助、HTML 标记、找条快捷键/显隐（happy-dom）；同步 case（`registry://skills.test-sync`）",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "if1ta9zlmm"
+                },
+                {
+                  "label": "`pnpm --filter airp-renderer-vscode fix` 与该包测试通过",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "2vv4cs7xn2"
+                },
+                {
+                  "label": "本阶段完成：将 roadmap「阶段 1」与本清单全部标为 `done` / `checked: true`",
+                  "checked": true,
+                  "status": "done",
+                  "@id": "k0jsh2m577"
+                }
+              ],
+              "@id": "m36uvrfz17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "收尾",
+      "lead": "全部实施阶段完成后执行；不是实施阶段。",
+      "@id": "figwamsfgq",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "根目录 `pnpm fix` 与 `pnpm test` 全仓通过",
+              "checked": true,
+              "status": "done",
+              "@id": "18h2awhw0k"
+            },
+            {
+              "label": "本收尾完成：本清单标为 `done` / `checked: true`",
+              "checked": true,
+              "status": "done",
+              "@id": "9evscpmqym"
+            }
+          ],
+          "@id": "10bdvsllcd"
+        }
+      ]
+    },
+    {
+      "type": "constraint",
+      "rule": "PR 仅人手动一次；禁止写入实施阶段；禁止 AI 代提 PR。",
+      "scope": "发布过程",
+      "nonNegotiable": true,
+      "@id": "e2ohlvlc7h"
+    },
+    {
+      "type": "agentNote",
+      "visible": false,
+      "text": "执行者：按阶段 1 → 收尾连续做完；每阶段结束更新本文件 roadmap/checklist 标记，并只写 `meta.updatedBy` + `meta.updatedAt`。不提 PR。不写兼容层。不改 `.agents`。",
+      "@id": "r5hj9q37r1"
+    }
+  ]
+}

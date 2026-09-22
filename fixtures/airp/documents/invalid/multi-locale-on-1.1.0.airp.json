@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "1.1.0 rejects legacy multi-locale i18n",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "zh-CN"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Should fail Ajv.",
+      "@id": "0c17gid7up"
+    }
+  ]
+}

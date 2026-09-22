@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": { "en": "Markdown sample", "zh-CN": "Markdown 样例" },
+    "subtitle": { "en": "Block coverage", "zh-CN": "积木块覆盖" },
+    "kind": "generic",
+    "authors": ["AIRP"],
+    "tags": ["markdown", "fixture"],
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "zh-CN"]
+  },
+  "blocks": [
+    {
+      "type": "section",
+      "title": { "en": "Overview", "zh-CN": "概览" },
+      "level": 2,
+      "lead": { "en": "Lead text", "zh-CN": "导语" },
+      "children": [
+        {
+          "type": "paragraph",
+          "text": { "en": "Hello **world**.", "zh-CN": "你好 **世界**。" }
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            { "en": "One", "zh-CN": "一" },
+            { "en": "Two", "zh-CN": "二" }
+          ]
+        },
+        {
+          "type": "mermaid",
+          "title": { "en": "Flow", "zh-CN": "流程" },
+          "source": "flowchart LR\n  A --> B"
+        },
+        {
+          "type": "image",
+          "src": "https://example.com/a.png",
+          "alt": { "en": "Diagram", "zh-CN": "图示" },
+          "caption": { "en": "Caption", "zh-CN": "图注" }
+        },
+        {
+          "type": "embed",
+          "url": "https://example.com/doc",
+          "title": { "en": "External doc", "zh-CN": "外部文档" }
+        },
+        {
+          "type": "agentNote",
+          "visible": true,
+          "text": { "en": "Visible note", "zh-CN": "可见备注" }
+        },
+        {
+          "type": "agentNote",
+          "visible": false,
+          "text": { "en": "Hidden note", "zh-CN": "隐藏备注" }
+        },
+        {
+          "type": "agentNote",
+          "text": { "en": "Default-hidden note", "zh-CN": "默认隐藏备注" }
+        },
+        {
+          "type": "table",
+          "columns": [
+            { "key": "name", "label": { "en": "Name", "zh-CN": "名称" } },
+            { "key": "value", "label": { "en": "Value", "zh-CN": "值" } }
+          ],
+          "rows": [
+            {
+              "name": { "en": "Alpha", "zh-CN": "甲" },
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "type": "architectureOverview",
+          "overview": {
+            "type": "mermaid",
+            "source": "flowchart TB\n  X --> Y"
+          },
+          "modules": [
+            {
+              "title": { "en": "Core", "zh-CN": "核心" },
+              "description": { "en": "Main module", "zh-CN": "主模块" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

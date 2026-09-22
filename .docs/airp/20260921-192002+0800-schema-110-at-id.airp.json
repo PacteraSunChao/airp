@@ -1,0 +1,581 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "AIRP 1.1.0：@id 与文案类型落地",
+    "subtitle": "机器句柄、PlainString / MarkdownString、版本隔离；按阶段连续实施",
+    "kind": "plan-review",
+    "createdAt": "2026-09-21T11:20:02.731Z",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "tags": [
+      "schema-1.1.0",
+      "@id",
+      "PlainString",
+      "MarkdownString",
+      "plan"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "packages/protocol/src/schemas/1.1.0/document.schema.json",
+        "label": "1.1.0 document schema",
+        "@id": "b340spsit0"
+      },
+      {
+        "type": "path",
+        "value": ".agents/rules/project/protocol/rules/document-field-naming.md",
+        "label": "协议字段命名",
+        "@id": "nor1brrnch"
+      },
+      {
+        "type": "path",
+        "value": ".agents/rules/project/schema-version-routing/rules/routing-discipline.md",
+        "label": "版本路由纪律",
+        "@id": "1ldga4basi"
+      },
+      {
+        "type": "path",
+        "value": ".agents/shared/terminology.md",
+        "label": "术语表",
+        "@id": "m0n45qagqn"
+      },
+      {
+        "type": "path",
+        "value": "skills/airp/SKILL.md",
+        "label": "AIRP Skill",
+        "@id": "fyzfo9kmon"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "在 **schema 1.1.0** 落地文档内机器句柄 `@id`、文案类型 `PlainString` / `MarkdownString`，并删除 `RichText` / `InlineNode`；**1.0.0 零改动**。实施按阶段连续推进，阶段间无兼容层；**PR 仅人手动一次，禁止写入阶段、禁止 AI 代提。**",
+      "@id": "2arxemb7ru"
+    },
+    {
+      "type": "hero",
+      "importance": "hero",
+      "metrics": [
+        {
+          "title": "目标版本",
+          "value": "1.1.0",
+          "tone": "accent",
+          "@id": "xaj9fkrw4e"
+        },
+        {
+          "title": "冻结版本",
+          "value": "1.0.0",
+          "status": "pass",
+          "@id": "jgqcdf0lyy"
+        },
+        {
+          "title": "实施阶段",
+          "value": 4,
+          "unit": "段",
+          "description": "0–3 连续落地",
+          "@id": "i9zr1o9sk6"
+        },
+        {
+          "title": "句柄字段",
+          "value": "@id",
+          "description": "[a-z0-9]{10}",
+          "@id": "mq5snrrpcu"
+        }
+      ],
+      "@id": "05ksv6sx1v"
+    },
+    {
+      "type": "section",
+      "title": "阶段完成标记",
+      "lead": "每阶段在最小 fix + 该阶段测试通过后，将对应项标为完成；全部阶段结束后再跑全仓门禁。",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "阶段 0 — `.agents` 规范与术语",
+              "checked": true,
+              "status": "done",
+              "@id": "ldj1yjj1f4"
+            },
+            {
+              "label": "阶段 1 — 1.1.0 schema + 文档实例 + skill 脚本/文案",
+              "checked": true,
+              "status": "done",
+              "@id": "93isb623rb"
+            },
+            {
+              "label": "阶段 2 — validate 1.1.0 `@id` 门禁",
+              "checked": true,
+              "status": "done",
+              "@id": "0v6b6ikgg1"
+            },
+            {
+              "label": "阶段 3 — renderer 1.1.0（HTML / Markdown）",
+              "checked": true,
+              "status": "done",
+              "@id": "4xy7ezj28v"
+            },
+            {
+              "label": "收尾 — 全仓 `pnpm fix` + `pnpm test`",
+              "checked": true,
+              "status": "done",
+              "@id": "9wd6bydg7c"
+            }
+          ],
+          "@id": "0zfdgl7reb"
+        },
+        {
+          "type": "constraint",
+          "rule": "禁止将「开 PR / 推远程 / AI 代提 PR」写入任何实施阶段；PR 仅由人手动一次完成。",
+          "scope": "交付边界",
+          "nonNegotiable": true,
+          "@id": "4pqady798v"
+        }
+      ],
+      "@id": "92he68a1ht"
+    },
+    {
+      "type": "section",
+      "title": "最终形态",
+      "lead": "只描述将存在的协议与行为；1.0.0 与 1.1.0 分轨，无混用、无 fallback。",
+      "children": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "机器句柄 `@id`",
+          "@id": "fbo7w1fau7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "item",
+              "label": "项",
+              "@id": "05bd050xt0"
+            },
+            {
+              "key": "rule",
+              "label": "规则",
+              "@id": "teo67epzi7"
+            }
+          ],
+          "rows": [
+            {
+              "item": "字段名",
+              "rule": "一律 `@id`（1.1.0 机器句柄不再使用 `id`）",
+              "@id": "hfen9qexx3"
+            },
+            {
+              "item": "格式",
+              "rule": "`^[a-z0-9]{10}$`",
+              "@id": "zgxw61jviy"
+            },
+            {
+              "item": "唯一性",
+              "rule": "单份 `*.airp.json` 内所有 `@id` 共池唯一",
+              "@id": "j9zgyrd4g7"
+            },
+            {
+              "item": "生成",
+              "rule": "skill 脚本可批量生成；VS Code 编辑器日后自写生成函数",
+              "@id": "a0jp84gwpi"
+            },
+            {
+              "item": "校验",
+              "rule": "必填 + pattern + 唯一；不自动补",
+              "@id": "y4hucje9cl"
+            },
+            {
+              "item": "HTML",
+              "rule": "可寻址节点 `id=\"{@id 值}\"`",
+              "@id": "knn0dil9xb"
+            },
+            {
+              "item": "TOC / 锚点",
+              "rule": "直接使用 `@id` 值",
+              "@id": "sd2eruxao3"
+            }
+          ],
+          "@id": "sdmx3uwx6f"
+        },
+        {
+          "type": "definitionList",
+          "items": [
+            {
+              "term": "必须有 `@id`",
+              "definition": "所有 Block（含 `divider` / `spacer` 及容器子树内每一块）；所有结构化对象——含 Badge、`meta.sourceRefs[]`、`CollectionItem`、checklist / definitionList / keyValueList / statusBoard / linkList / glossary / fileChangeList 的 item、flowSteps / timeline / roadmap 的步与事件与阶段、`decision.options[]`、`tabs.panels[]`、test suites、API endpoints、citation items、requirementTrace items（另保留业务字段 `reqId`）、`FileTreeNode`、`table.columns[]`（保留业务 `key`）、`table.rows[]`、`footerRow`、`architectureOverview.overview` 等嵌套类 Block 对象。",
+              "@id": "j9qhub3knn"
+            },
+            {
+              "term": "不需要 `@id`",
+              "definition": "纯字符串数组项（如 `bulletList` / `numberedList` 的项、`roadmap.phases[].goals`、`meta.tags`）。",
+              "@id": "brqru75aur"
+            }
+          ],
+          "@id": "ft14wuaobr"
+        },
+        {
+          "type": "callout",
+          "variant": "info",
+          "title": "table 行与 footerRow",
+          "body": "不改行结构：`@id` 与列字段同层。渲染按 `columns[].key` 取单元格并 **忽略 `@id`**。`footerRow` 同样必填 `@id`，渲染忽略。",
+          "@id": "zafjw19p9k"
+        },
+        {
+          "type": "callout",
+          "variant": "info",
+          "title": "citation",
+          "body": "无协议级交叉引用。展示用顺序 `[1]` `[2]`…；`@id` 仅机器句柄；DOM `id` 用 `@id` 值。",
+          "@id": "twcb18kyf4"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "文案类型（仅 1.1.0）",
+          "@id": "byxin5fzjh"
+        },
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "def",
+              "label": "$defs",
+              "@id": "bpyijmigvl"
+            },
+            {
+              "key": "use",
+              "label": "用途",
+              "@id": "2mk0fhkge2"
+            },
+            {
+              "key": "render",
+              "label": "渲染",
+              "@id": "hc059l5py7"
+            }
+          ],
+          "rows": [
+            {
+              "def": "PlainString",
+              "use": "title / label / term / alt / 短 caption 等",
+              "render": "纯文本转义，不跑 markdown",
+              "@id": "lhqtaxb9ts"
+            },
+            {
+              "def": "MarkdownString",
+              "use": "text / body / description / note 等正文类",
+              "render": "markdown-lite：`**bold**`、`` `code` ``、`[text](url)`",
+              "@id": "2wy6s7g03u"
+            }
+          ],
+          "@id": "aihhq14qj3"
+        },
+        {
+          "type": "paragraph",
+          "text": "1.1.0 **删除** `RichText`、`InlineNode`、`LocalizedString`。1.0.0 **保持** `LocalizedString` + `RichText` + `InlineNode` + 可选字段 `id`。",
+          "@id": "j2ahmnaxze"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "版本隔离",
+          "@id": "alfrz44n6g"
+        },
+        {
+          "type": "table",
+          "columns": [
+            {
+              "key": "layer",
+              "label": "层",
+              "@id": "56d88viy9r"
+            },
+            {
+              "key": "rule",
+              "label": "规则",
+              "@id": "dlqmfb7mh9"
+            }
+          ],
+          "rows": [
+            {
+              "layer": "Schema",
+              "rule": "`schemas/1.0.0/` 与 `schemas/1.1.0/` 分目录；无跨版 fallback",
+              "@id": "noj8gmmoxz"
+            },
+            {
+              "layer": "Validate",
+              "rule": "`@id` 门禁只挂 1.1.0；1.0.0 仍为可选 `id` + 有则唯一",
+              "@id": "aefw7n5as6"
+            },
+            {
+              "layer": "Renderer",
+              "rule": "citation 下标、`@id`→DOM、Plain vs Markdown、忽略 row `@id` → 1.1.0 版本文件；1.0.0 行为不变",
+              "@id": "udrn8mvvui"
+            },
+            {
+              "layer": "Fixture / 测试",
+              "rule": "按 `schemaVersion` 分 case；禁止一条断言同时假设两套字段",
+              "@id": "y6gnedb50p"
+            },
+            {
+              "layer": "文档 / skill / 术语",
+              "rule": "写明仅 1.1.0；skill 与 `skills/airp/schemas` 跟 1.1.0",
+              "@id": "z6uj08iqxr"
+            },
+            {
+              "layer": "共享代码",
+              "rule": "仅无文档字段假设的工具可 unversioned；读字段逻辑禁止 1.0/1.1 混用",
+              "@id": "zu2u33q4tr"
+            }
+          ],
+          "@id": "hmsqhs3sw5"
+        },
+        {
+          "type": "constraint",
+          "rule": "遵循 `registry://rules.schema-version-routing`：registry 按精确 `schemaVersion` 分派；形态变化新建或改 `v1-1-0`，不改坏 `v1-0-0`。",
+          "scope": "代码放置",
+          "nonNegotiable": true,
+          "@id": "ch0bxt59a6"
+        }
+      ],
+      "@id": "d7lcdkc594"
+    },
+    {
+      "type": "section",
+      "title": "已定决策",
+      "children": [
+        {
+          "type": "decision",
+          "title": "机器句柄字段名",
+          "chosen": "一律 `@id`，值 `[a-z0-9]{10}`，文档内唯一",
+          "rationale": "与业务 `key` / `reqId` 分离；table 行可扁平携带；命名在协议规则中单列例外。",
+          "status": "accepted",
+          "@id": "mzprxyvtyg"
+        },
+        {
+          "type": "decision",
+          "title": "文案类型拆分",
+          "chosen": "`PlainString` + `MarkdownString`；删除 RichText / InlineNode",
+          "rationale": "标题类避免误解析 markdown；正文类保留三种 markdown-lite；能力足够且概念更少。",
+          "status": "accepted",
+          "@id": "xuvum657mq"
+        },
+        {
+          "type": "decision",
+          "title": "结构化对象句柄范围",
+          "chosen": "有结构就加 `@id`；纯字符串数组项不加",
+          "rationale": "编辑同步需要可重排实体的稳定句柄；字符串列表整段写回即可。",
+          "status": "accepted",
+          "@id": "j39h42e3bg"
+        },
+        {
+          "type": "decision",
+          "title": "生成与校验职责",
+          "chosen": "skill 脚本批量生成；validate 只检不补；VS Code 日后自写生成函数",
+          "rationale": "无静默补全，符合无兼容层；生成规则两端各自实现、格式统一。",
+          "status": "accepted",
+          "@id": "a6wc8wg4zq"
+        },
+        {
+          "type": "decision",
+          "title": "HTML 寻址",
+          "chosen": "仅用元素 `id`，值为 `@id`",
+          "rationale": "TOC 与编辑共用同一锚点，概念最少。",
+          "status": "accepted",
+          "@id": "hk5mzf6aht"
+        },
+        {
+          "type": "decision",
+          "title": "1.0.0 边界",
+          "chosen": "1.0.0 schema / 校验 / 渲染 / fixture 零改动",
+          "rationale": "两版并存靠版本路由；避免跨版冲突与隐式迁移。",
+          "status": "accepted",
+          "@id": "kd1lmxccqc"
+        }
+      ],
+      "@id": "ddh1gi3uk0"
+    },
+    {
+      "type": "section",
+      "title": "实施阶段",
+      "lead": "四段连续落地；每段只做到最小 fix + 本段测试通过；阶段间不留兼容/过渡代码。",
+      "children": [
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": "阶段 0 — `.agents`",
+              "description": "术语与协议字段命名写入最终形态",
+              "status": "done",
+              "@id": "xrkee1oawl"
+            },
+            {
+              "title": "阶段 1 — schema 与实例",
+              "description": "1.1.0 schema、skill 副本与脚本、全部 1.1.0 文档实例",
+              "status": "done",
+              "@id": "g8nq7x7jot"
+            },
+            {
+              "title": "阶段 2 — validate",
+              "description": "1.1.0 `@id` 必填 / pattern / 唯一门禁",
+              "status": "done",
+              "@id": "gn8vxwtdio"
+            },
+            {
+              "title": "阶段 3 — renderer",
+              "description": "HTML / Markdown 按 1.1.0 最终行为渲染",
+              "status": "done",
+              "@id": "kiuduyupyu"
+            }
+          ],
+          "@id": "t8m9c4ug8x"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "阶段 0 — `.agents` 规范与术语",
+          "@id": "0zqn6lovj1"
+        },
+        {
+          "type": "paragraph",
+          "text": "**交付**：`terminology.md` 登记 `@id`、`PlainString`、`MarkdownString`（并理顺与 1.0.0 `id` / `LocalizedString` / `RichText` 的版本分列表述）；`document-field-naming.md` 写明 1.1.0 的 `@id` 规则、文案类型、camelCase 下 `@id` 例外；按需同步 `registry://rules.rules-meta` 所要求的索引。跑通 `pnpm check-agents-registry`（及该阶段所需检查）。",
+          "@id": "8fzjorcof7"
+        },
+        {
+          "type": "paragraph",
+          "text": "**完成标准**：规范文案只描述最终形态；1.0.0 与 1.1.0 表述分列、无「过渡」措辞。完成本段后更新本文「阶段完成标记」。",
+          "@id": "1h944tghyp"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "阶段 1 — 1.1.0 schema + 文档实例 + skill",
+          "@id": "cet737fvqf"
+        },
+        {
+          "type": "paragraph",
+          "text": "**交付**：`packages/protocol/src/schemas/1.1.0/document.schema.json` 达到最终形态（`@id`、`PlainString`、`MarkdownString`；删除 `RichText` / `InlineNode` / 本版 `LocalizedString`；结构化对象与 Block 的 `@id` required）；同步 `skills/airp/schemas/document.schema.json`；新增 skill 批量生成脚本（如 `scripts/gen-airp-ids.mjs`，一次可输出多个 id）；更新 `SKILL.md` / `references` 中与句柄、文案类型相关的写法；重写仓库内全部 **1.1.0** 文档实例（`fixtures/airp/**` 中 1.1.0、`.docs/airp/**`、`.docs/samples/**` 等）使 schema 校验通过——**含本文自身**。`@airp/protocol` 相关测试通过。**不改** `schemas/1.0.0/`。",
+          "@id": "qlcbq2r9dn"
+        },
+        {
+          "type": "paragraph",
+          "text": "**完成标准**：1.1.0 文档均含合法唯一 `@id`；1.0.0 fixture 未改；protocol 包 check/test 通过。更新阶段标记。",
+          "@id": "uuht61mgei"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "阶段 2 — validate 1.1.0 `@id` 门禁",
+          "@id": "tmyvq3lbsa"
+        },
+        {
+          "type": "paragraph",
+          "text": "**交付**：按版本路由新增/改写 1.1.0 门禁——收集文档内全部 `@id`，校验必填（对约定对象）、`^[a-z0-9]{10}$`、文档内唯一；诊断码与 case 同步。1.0.0 门禁保持「可选 `id` + 有则唯一」。`@airp/validate`（及必要的 CLI）测试通过。",
+          "@id": "hlo61kbnvr"
+        },
+        {
+          "type": "paragraph",
+          "text": "**完成标准**：缺 `@id`、格式错误、重复 `@id` 的 1.1.0 用例硬失败；1.0.0 既有 case 行为不变。更新阶段标记。",
+          "@id": "cdsagsq5h6"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "阶段 3 — renderer 1.1.0",
+          "@id": "cusad95hpm"
+        },
+        {
+          "type": "paragraph",
+          "text": "**交付**：`renderer-shared` / `renderer-target-html` / `renderer-target-markdown` 在 **1.1.0** 路径：读 `@id` 写入 HTML `id`；`PlainString` 纯转义、`MarkdownString` 走 markdown-lite；citation 展示顺序下标；table 行 / `footerRow` 渲染忽略 `@id`；去掉依赖「缺省从 title slug 生成 section id」的 1.1.0 路径逻辑。1.0.0 渲染路径与断言不变。相关渲染测试通过。",
+          "@id": "pfufph5iuv"
+        },
+        {
+          "type": "paragraph",
+          "text": "**完成标准**：1.1.0 渲染 case 对齐最终形态；1.0.0 case 全绿。更新阶段标记。",
+          "@id": "vpsr4hwpsz"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "收尾 — 全仓门禁",
+          "@id": "9cx9lvmuuv"
+        },
+        {
+          "type": "paragraph",
+          "text": "阶段 0–3 全部完成后：根目录执行 `pnpm fix` 与 `pnpm test` 直至通过；将「收尾」标记为完成。**不开 PR。**",
+          "@id": "lzrjdfhg1n"
+        }
+      ],
+      "@id": "gkdgk501tg"
+    },
+    {
+      "type": "section",
+      "title": "非目标",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "协议级引用 / 脚注语法",
+              "checked": false,
+              "status": "skipped",
+              "@id": "93ta8blspw"
+            },
+            {
+              "label": "InlineNode AST / 完整 Markdown",
+              "checked": false,
+              "status": "skipped",
+              "@id": "pa8feru7iw"
+            },
+            {
+              "label": "validate 或 renderer 自动补 `@id`",
+              "checked": false,
+              "status": "skipped",
+              "@id": "lmtss3bjsv"
+            },
+            {
+              "label": "1.0.0 → 1.1.0 自动迁移层",
+              "checked": false,
+              "status": "skipped",
+              "@id": "z2sajedqi2"
+            },
+            {
+              "label": "本方案内实现 VS Code 编辑同步（仅预留 `@id`）",
+              "checked": false,
+              "status": "skipped",
+              "@id": "7255xc7khe"
+            },
+            {
+              "label": "AI 代提 / 代开 PR",
+              "checked": false,
+              "status": "skipped",
+              "@id": "sgd0jeky1l"
+            }
+          ],
+          "@id": "dn9k9l0rom"
+        }
+      ],
+      "@id": "ac3167mk01"
+    },
+    {
+      "type": "section",
+      "title": "执行铁律",
+      "children": [
+        {
+          "type": "bulletList",
+          "items": [
+            "**正确 > 简单 > 一致 > 完整**；与铁律冲突则暂停并询问。",
+            "只写最终形态；阶段间不留兼容/过渡代码。",
+            "同一概念一种表达：`@id` / `PlainString` / `MarkdownString` 在代码与文档间一致。",
+            "1.0.0 与 1.1.0 在 schema、校验、渲染、fixture、测试、文档各层不得冲突或混用。",
+            "每阶段完成后更新本文「阶段完成标记」。"
+          ],
+          "@id": "49bz115sim"
+        }
+      ],
+      "@id": "d46nwzvj2x"
+    }
+  ]
+}

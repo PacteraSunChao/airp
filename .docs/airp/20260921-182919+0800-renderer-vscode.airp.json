@@ -1,0 +1,398 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "renderer-vscode 设计方案",
+    "subtitle": "AIRP 单文件 Webview 预览扩展",
+    "kind": "architecture",
+    "createdAt": "2026-09-21T10:29:19.240Z",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "tags": [
+      "renderer-vscode",
+      "vscode",
+      "webview"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": "apps/renderer-vscode",
+        "label": "目标包",
+        "@id": "ev4l9r8r8d"
+      },
+      {
+        "type": "path",
+        "value": "apps/renderer-cli",
+        "label": "渲染管线参考",
+        "@id": "v47nyf6v54"
+      },
+      {
+        "type": "path",
+        "value": ".agents/rules/project/renderer/rules/target-options.md",
+        "label": "HTML 宿主插槽",
+        "@id": "2wbyjojddj"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "`apps/renderer-vscode` 对单个 `*.airp.json` 提供命令驱动的 Webview 预览：fork worker 渲染 HTML，顶栏 hover 导出 HTML/Markdown，磁盘变更后静默重渲。",
+      "@id": "44merxh9re"
+    },
+    {
+      "type": "section",
+      "title": "范围与落点",
+      "lead": "包、入口与激活条件。",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "包路径",
+              "value": "`apps/renderer-vscode`",
+              "@id": "7nl7y6hku5"
+            },
+            {
+              "key": "入口模型",
+              "value": "命令打开 `WebviewPanel`（非 Custom Editor）；`viewType` 如 `airp.renderer`",
+              "@id": "k69jol9ark"
+            },
+            {
+              "key": "Session 键",
+              "value": "预览文件的绝对路径；一文件一面板",
+              "@id": "i5m1gpvs10"
+            },
+            {
+              "key": "激活",
+              "value": "`workspaceContains:**/*.airp.json`",
+              "@id": "aycyjkoh0u"
+            },
+            {
+              "key": "命令挂载",
+              "value": "`editor/title`、`editor/context`、`explorer/context`，when `*.airp.json`",
+              "@id": "9dxs7pthah"
+            },
+            {
+              "key": "Status bar",
+              "value": "打开或聚焦 `*.airp.json` 时显示；点击触发预览命令",
+              "@id": "96x0b86eb2"
+            }
+          ],
+          "@id": "fil9o6zk24"
+        },
+        {
+          "type": "constraint",
+          "rule": "文档语言只来自 `*.airp.json` 的 `i18n.locale`；宿主不传 locale，不做运行时语言切换。",
+          "scope": "预览与导出",
+          "nonNegotiable": true,
+          "@id": "hyk9g1rvcl"
+        }
+      ],
+      "@id": "asin4dhoig"
+    },
+    {
+      "type": "section",
+      "title": "渲染管线",
+      "lead": "与 `renderer-cli` 同链；扩展宿主只编排与注入。",
+      "children": [
+        {
+          "type": "mermaid",
+          "diagramKind": "flowchart",
+          "title": "预览与导出",
+          "complexity": "simple",
+          "source": "flowchart TD\n  trig[\"命令 / Status bar / Watch\"] --> host[\"Extension Host\"]\n  host --> fork[\"fork worker\"]\n  fork --> load[\"loadDocumentFile\"]\n  load --> validate[\"validate/node\"]\n  validate --> render[\"renderDocument\"]\n  render --> htmlTarget[\"target html\"]\n  render --> mdTarget[\"target markdown\"]\n  htmlTarget --> inject[\"targetOptions 注入\"]\n  inject --> panel[\"panel.webview.html\"]\n  mdTarget --> save[\"Save Dialog 写盘\"]\n  htmlTarget --> save",
+          "@id": "av6dva9ld0"
+        },
+        {
+          "type": "table",
+          "caption": "触发与 target",
+          "columns": [
+            {
+              "key": "trigger",
+              "label": "触发",
+              "@id": "8qqyltw604"
+            },
+            {
+              "key": "target",
+              "label": "Render Target",
+              "cellKind": "code",
+              "@id": "dx2r0pw3kf"
+            },
+            {
+              "key": "output",
+              "label": "产物去向",
+              "@id": "p4tvfhqbyt"
+            }
+          ],
+          "rows": [
+            {
+              "trigger": "打开预览 / Watch 重渲",
+              "target": "html",
+              "output": "写入 Webview；成功则替换上一版",
+              "@id": "bt09hjxbhm"
+            },
+            {
+              "trigger": "导出菜单选 HTML",
+              "target": "html",
+              "output": "Save Dialog 写盘；现渲，不预缓存",
+              "@id": "r9syq9u3sq"
+            },
+            {
+              "trigger": "导出菜单选 Markdown",
+              "target": "markdown",
+              "output": "Save Dialog 写盘；现渲，不预缓存",
+              "@id": "phpi7j19ao"
+            }
+          ],
+          "@id": "0hqpmdmmmr"
+        },
+        {
+          "type": "paragraph",
+          "text": "Worker：`ELECTRON_RUN_AS_NODE` + `fork`，与 CLI/SSP 同形；依赖 `@airp/loader`、`@airp/validate`（`./node`）、`@airp/renderer`（`./node/render`）、`@airp/diagnostics`。构建多入口：extension / worker / webview bridge。",
+          "@id": "hu8fez58y7"
+        }
+      ],
+      "@id": "pfba1fusix"
+    },
+    {
+      "type": "section",
+      "title": "Host 壳与注入",
+      "lead": "无 config 首页；首次用 host 极简壳承接 loading / 错误。",
+      "children": [
+        {
+          "type": "table",
+          "caption": "HTML targetOptions",
+          "columns": [
+            {
+              "key": "slot",
+              "label": "插槽",
+              "cellKind": "code",
+              "@id": "wlftglxy1e"
+            },
+            {
+              "key": "content",
+              "label": "注入内容",
+              "@id": "m8bnfnspbv"
+            }
+          ],
+          "rows": [
+            {
+              "slot": "extraHead",
+              "content": "CSP；必要 reset",
+              "@id": "k1hn3exsah"
+            },
+            {
+              "slot": "extraAppHeader",
+              "content": "导出图标；hover 弹出 HTML / Markdown 菜单",
+              "@id": "hdq1e0ag2t"
+            },
+            {
+              "slot": "extraBody",
+              "content": "极薄 bridge（导出 postMessage；toast 文案节点）",
+              "@id": "uqp97e97ub"
+            }
+          ],
+          "@id": "grkox0axu1"
+        },
+        {
+          "type": "definitionList",
+          "items": [
+            {
+              "term": "首次打开",
+              "definition": "先设 host 极简 HTML（loading）；成功后换成渲染 HTML。",
+              "@id": "ym02yq8tt2"
+            },
+            {
+              "term": "首次失败",
+              "definition": "同壳变为错误页；页内 toast + OutputChannel。",
+              "@id": "eq1rq6pi3c"
+            },
+            {
+              "term": "后续失败",
+              "definition": "OutputChannel + 页内 toast；保留上一版成功 HTML，不整页换成错误页。",
+              "@id": "ejy6qq0s1o"
+            }
+          ],
+          "@id": "257bndyq21"
+        },
+        {
+          "type": "constraint",
+          "rule": "阅读器内不提供 Re-render、Exit、locale 切换等宿主 popover。",
+          "scope": "Webview 阅读器",
+          "nonNegotiable": true,
+          "@id": "6ifnhmyd5k"
+        }
+      ],
+      "@id": "ubd45919vf"
+    },
+    {
+      "type": "section",
+      "title": "文件监听",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "范围",
+              "value": "仅当前预览的那一个 `*.airp.json`",
+              "@id": "8th7ggbc0z"
+            },
+            {
+              "key": "来源",
+              "value": "`FileSystemWatcher`（该文件）+ `onDidSaveTextDocument`；不跟 dirty buffer",
+              "@id": "w4x7zs66rb"
+            },
+            {
+              "key": "输入",
+              "value": "Worker 始终按文件路径读盘",
+              "@id": "powna5njp7"
+            },
+            {
+              "key": "调度",
+              "value": "变更立即杀活跃 worker；debounce 后全量重渲（默认 1s）",
+              "@id": "ymgeghgspu"
+            },
+            {
+              "key": "源文件删除",
+              "value": "停 watch + 错误提示",
+              "@id": "6u296a4vs4"
+            }
+          ],
+          "@id": "msjovoqwmt"
+        }
+      ],
+      "@id": "nkh3h2yecm"
+    },
+    {
+      "type": "section",
+      "title": "导出",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "鼠标悬停顶栏导出图标弹出菜单：HTML、Markdown。选中后 Host `showSaveDialog`，再按对应 Render Target 现跑 worker 并写盘。不做 zip，不缓存 materialize/渲染结果供导出复用。",
+          "@id": "xi0vtp6z1u"
+        }
+      ],
+      "@id": "g1ze9l92js"
+    },
+    {
+      "type": "section",
+      "title": "已定决策",
+      "children": [
+        {
+          "type": "decision",
+          "title": "入口用命令 + WebviewPanel",
+          "chosen": "命令驱动面板",
+          "rationale": "实现面小于 Custom Editor；不与文本编辑器抢打开方式。",
+          "status": "accepted",
+          "@id": "momd55g4zg"
+        },
+        {
+          "type": "decision",
+          "title": "首次失败用 host 极简壳",
+          "chosen": "loading/错误同壳 + 页内 toast + OutputChannel",
+          "rationale": "无 config 页时仍需可挂 toast 的 DOM；与后续「保留上一版」策略衔接。",
+          "status": "accepted",
+          "@id": "d4rw91je5u"
+        },
+        {
+          "type": "decision",
+          "title": "Watch 跟磁盘与保存",
+          "chosen": "FS watcher + onDidSave；读盘",
+          "rationale": "与 SSP `renderer-vscode` 一致；未保存 buffer 不进入预览。",
+          "status": "accepted",
+          "@id": "uvcoc4nqag"
+        },
+        {
+          "type": "decision",
+          "title": "导出菜单用 hover",
+          "chosen": "hover 出 HTML/Markdown；按 target 现渲",
+          "rationale": "交互直接；导出与预览 target 解耦，避免预缓存两份产物。",
+          "status": "accepted",
+          "@id": "kro0d16r3h"
+        },
+        {
+          "type": "decision",
+          "title": "渲染在 fork worker",
+          "chosen": "子进程执行 load→validate→render",
+          "rationale": "避免堵 Extension Host；可杀进程取消，对齐 CLI/SSP。",
+          "status": "accepted",
+          "@id": "mbl1d6169y"
+        }
+      ],
+      "@id": "9yccu044ae"
+    },
+    {
+      "type": "section",
+      "title": "不做",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "Config / 首页配置页",
+              "checked": false,
+              "status": "skipped",
+              "@id": "n5qiwrkqkx"
+            },
+            {
+              "label": "Re-render 浮层 / popover",
+              "checked": false,
+              "status": "skipped",
+              "@id": "777g30xd4b"
+            },
+            {
+              "label": "Custom Editor",
+              "checked": false,
+              "status": "skipped",
+              "@id": "ad5547nzxd"
+            },
+            {
+              "label": "跟未保存 dirty buffer",
+              "checked": false,
+              "status": "skipped",
+              "@id": "tng35z11ne"
+            },
+            {
+              "label": "Figma / materialize",
+              "checked": false,
+              "status": "skipped",
+              "@id": "2hw5lpv942"
+            },
+            {
+              "label": "Locale 装饰（编辑器）",
+              "checked": false,
+              "status": "skipped",
+              "@id": "02ld111m94"
+            },
+            {
+              "label": "Zip 导出",
+              "checked": false,
+              "status": "skipped",
+              "@id": "enjwipag14"
+            },
+            {
+              "label": "扩展多语言 nls 全家桶",
+              "checked": false,
+              "status": "skipped",
+              "@id": "vwul49tsj7"
+            }
+          ],
+          "@id": "94ofoibt77"
+        },
+        {
+          "type": "constraint",
+          "rule": "实现交付时同步包边界：将 `renderer-vscode` 从「本设计不含」改为已含包。",
+          "scope": "`.agents` / package-roles",
+          "nonNegotiable": true,
+          "@id": "recfsjdubg"
+        }
+      ],
+      "@id": "uji074xhyp"
+    }
+  ]
+}

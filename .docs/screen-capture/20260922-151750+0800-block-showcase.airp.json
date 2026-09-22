@@ -1,0 +1,409 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "AIRP Block Showcase",
+    "subtitle": "Curated English marketing sample for README screen captures",
+    "kind": "architecture",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "createdAt": "2026-09-22T07:17:50.146Z",
+    "tags": ["screen-capture", "marketing", "showcase"],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": ".docs/samples/airp-block-gallery-1-1-0.airp.json",
+        "label": "Full block gallery (structure reference)",
+        "@id": "zr53293610"
+      },
+      {
+        "type": "url",
+        "value": "https://github.com/maosong-ai/airp",
+        "label": "AIRP repository",
+        "@id": "42gzyvarmd"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "en-US"
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "importance": "hero",
+      "metrics": [
+        {
+          "title": "Block types",
+          "value": 46,
+          "unit": "kinds",
+          "description": "Closed catalog registered in schema",
+          "tone": "accent",
+          "delta": "Closed catalog",
+          "@id": "r5d3c7dc4u"
+        },
+        {
+          "title": "Schema",
+          "value": "1.1.0",
+          "description": "document.schema.json",
+          "tone": "neutral",
+          "@id": "xu55eqf8to"
+        },
+        {
+          "title": "Render targets",
+          "value": 2,
+          "description": "HTML and Markdown",
+          "status": "pass",
+          "@id": "mstwelboqd"
+        },
+        {
+          "title": "Validate gate",
+          "value": "OK",
+          "description": "Schema + i18n + Mermaid parse",
+          "tone": "positive",
+          "delta": "Fail closed",
+          "@id": "7fms6165b9"
+        }
+      ],
+      "badges": [
+        {
+          "label": "Marketing sample",
+          "tone": "accent",
+          "@id": "je7mtcjvtc"
+        },
+        {
+          "label": "Schema aligned",
+          "status": "pass",
+          "@id": "k9z4m08wgf"
+        }
+      ],
+      "@id": "bbf5naw51x"
+    },
+    {
+      "type": "lead",
+      "text": "**AIRP** turns AI-authored reports into typed `*.airp.json`, then renders polished HTML or Markdown — content stays editable, presentation stays consistent.",
+      "@id": "dww2wgx377"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "1. Showcase blocks",
+      "lead": "Compact English fixtures for the blocks featured in README marketing captures.",
+      "children": [
+        {
+          "type": "comparison",
+          "labelBefore": "Freeform Markdown",
+          "labelAfter": "AIRP blocks",
+          "before": [
+            {
+              "type": "bulletList",
+              "items": [
+                "Layout depends on model luck",
+                "Hard to validate completeness",
+                "Weak structure for long reports"
+              ],
+              "@id": "d7nx818t0o"
+            }
+          ],
+          "after": [
+            {
+              "type": "bulletList",
+              "items": [
+                "**Deterministic** HTML / Markdown compile",
+                "**Ajv gate** before render",
+                "Block-level IDs and stable skins"
+              ],
+              "@id": "vygzcalfmf"
+            }
+          ],
+          "@id": "hamvj38wkf"
+        },
+        {
+          "type": "statusBoard",
+          "items": [
+            {
+              "label": "Schema validate",
+              "status": "pass",
+              "detail": "All contracts green",
+              "@id": "0r45iz289g"
+            },
+            {
+              "label": "Dark contrast",
+              "status": "pass",
+              "detail": "WCAG-ready tokens",
+              "@id": "qvgizkdn9h"
+            },
+            {
+              "label": "Mermaid SSR",
+              "status": "done",
+              "detail": "SVG embedded at export",
+              "@id": "3w4iluj1ew"
+            },
+            {
+              "label": "Legacy parser",
+              "status": "fail",
+              "detail": "Rejected at review",
+              "@id": "jaafx3lh39"
+            },
+            {
+              "label": "Host slots",
+              "status": "in_progress",
+              "detail": "VS Code theme bridge",
+              "@id": "nr20f2ozjk"
+            },
+            {
+              "label": "Virtual scroll",
+              "status": "pending",
+              "detail": "Not scheduled",
+              "@id": "fgnop8jldo"
+            }
+          ],
+          "@id": "d2p2dfc3tt"
+        },
+        {
+          "type": "codeDiff",
+          "filename": "pipeline/emit.ts",
+          "language": "typescript",
+          "before": "export function emit(block: Block): string {\n  return JSON.stringify(block);\n}\n",
+          "after": "export function emit(block: Block, ctx: EmitContext): string {\n  assertValid(block);\n  return ctx.skins.render(block);\n}\n",
+          "@id": "en35xajc5m"
+        },
+        {
+          "type": "fileTree",
+          "caption": "AIRP workspace",
+          "root": {
+            "name": "airp",
+            "change": "unchanged",
+            "children": [
+              {
+                "name": "packages",
+                "change": "unchanged",
+                "children": [
+                  {
+                    "name": "protocol",
+                    "change": "modified",
+                    "children": [
+                      {
+                        "name": "document.schema.json",
+                        "change": "unchanged",
+                        "annotation": "SSOT v1.1.0",
+                        "@id": "moduughu4w"
+                      }
+                    ],
+                    "@id": "w1chtzri88"
+                  },
+                  {
+                    "name": "renderer-target-html",
+                    "change": "modified",
+                    "children": [
+                      {
+                        "name": "emit-handlers.ts",
+                        "change": "modified",
+                        "annotation": "Block skins",
+                        "@id": "5rhkzxk3sz"
+                      }
+                    ],
+                    "@id": "rv7ryp6y49"
+                  }
+                ],
+                "@id": "7wv82i1aay"
+              },
+              {
+                "name": "apps",
+                "change": "unchanged",
+                "children": [
+                  {
+                    "name": "renderer-cli",
+                    "change": "unchanged",
+                    "@id": "yhu3j05k74"
+                  }
+                ],
+                "@id": "awb45v5rn4"
+              }
+            ],
+            "@id": "79qw7f0sk7"
+          },
+          "@id": "c2eifpz1lo"
+        },
+        {
+          "type": "mermaid",
+          "diagramKind": "flowchart",
+          "title": "Validate then render",
+          "complexity": "simple",
+          "source": "flowchart LR\n  A[\"LLM Output\"] --> B[\"AIRP Validate\"]\n  B --> C[\"Renderer\"]\n  C --> D[\"HTML\"]\n  C --> E[\"Markdown\"]",
+          "@id": "79yrjh0y8q"
+        },
+        {
+          "type": "architectureOverview",
+          "overview": {
+            "type": "mermaid",
+            "diagramKind": "flowchart",
+            "title": "AIRP pipeline",
+            "complexity": "medium",
+            "source": "flowchart LR\n  S[\"/airp Skill\"] -->|\"*.airp.json\"| V[\"@airp/validate\"]\n  V -->|\"Validated\"| R[\"@airp/renderer\"]\n  R --> H[\"HTML\"]\n  R --> M[\"Markdown\"]",
+            "@id": "4anmj1pfvg"
+          },
+          "modules": [
+            {
+              "title": "Skill authoring",
+              "description": "Generate and validate one `*.airp.json`.",
+              "badges": [
+                {
+                  "label": "Ingress",
+                  "tone": "accent",
+                  "@id": "h25owxtlhs"
+                }
+              ],
+              "meta": {
+                "output": "*.airp.json"
+              },
+              "@id": "jvw8oprclk"
+            },
+            {
+              "title": "@airp/validate",
+              "description": "Schema, i18n, unique `@id`, and Mermaid parse gates.",
+              "status": "pass",
+              "meta": {
+                "gate": "fail-closed"
+              },
+              "@id": "7e1tbk2wft"
+            },
+            {
+              "title": "@airp/renderer",
+              "description": "Deterministic HTML and Markdown from the closed catalog.",
+              "tone": "accent",
+              "badges": [
+                {
+                  "label": "Egress",
+                  "tone": "accent",
+                  "@id": "un5scbenii"
+                }
+              ],
+              "meta": {
+                "catalog": "46 blocks"
+              },
+              "@id": "fcpjjmbfu9"
+            }
+          ],
+          "@id": "u87z2ac8ya"
+        },
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": "Author",
+              "description": "Write typed `*.airp.json`",
+              "status": "done",
+              "@id": "lox3c5hg34"
+            },
+            {
+              "title": "Validate",
+              "description": "Schema + Mermaid parse",
+              "status": "done",
+              "@id": "qvx1u33d4i"
+            },
+            {
+              "title": "Render",
+              "description": "Dispatch block skins",
+              "status": "in_progress",
+              "@id": "l8omc3g2ag"
+            },
+            {
+              "title": "Export",
+              "description": "Standalone HTML or Markdown",
+              "status": "pending",
+              "@id": "gb5n8r5wmr"
+            }
+          ],
+          "@id": "00qu52qzyu"
+        },
+        {
+          "type": "decision",
+          "title": "Use JSON Schema Draft 2020-12 as the document contract",
+          "status": "accepted",
+          "context": "Draft-07 cannot express the recursive block tree we need.",
+          "options": [
+            {
+              "label": "Stay on Draft-07",
+              "pros": "Broader legacy tooling",
+              "cons": "Conflicts with current schema",
+              "@id": "vxvaxtqdaa"
+            },
+            {
+              "label": "Adopt Draft 2020-12",
+              "pros": "Matches document.schema.json",
+              "cons": "Requires validator upgrades",
+              "@id": "qltcpwkh46"
+            }
+          ],
+          "chosen": "Adopt Draft 2020-12",
+          "rationale": "The closed catalog and strict property maps treat the current schema as SSOT.",
+          "@id": "abx7k82j9v"
+        },
+        {
+          "type": "risk",
+          "title": "Model invents block types outside the catalog",
+          "severity": "high",
+          "likelihood": "possible",
+          "description": "Agents may emit unknown `type` values when freestyling structure.",
+          "mitigation": "Fail closed in validate; ship Skill prompts that enumerate allowed blocks.",
+          "owner": "protocol",
+          "status": "mitigated",
+          "@id": "pnfllifunk"
+        },
+        {
+          "type": "timeline",
+          "events": [
+            {
+              "date": "2025-Q1",
+              "title": "AIRP v1.0.0 schema locked",
+              "description": "Closed block catalog shipped.",
+              "status": "done",
+              "@id": "dz6r2943r0"
+            },
+            {
+              "date": "2026-Q2",
+              "title": "HTML + Markdown targets",
+              "description": "Dual export path stabilized.",
+              "status": "done",
+              "@id": "kgklu7u7ct"
+            },
+            {
+              "date": "2026-Q3",
+              "title": "VS Code reader + locales",
+              "description": "Theme-aware reading and ten locales.",
+              "status": "in_progress",
+              "@id": "szsb7p63no"
+            }
+          ],
+          "@id": "xm0k9ftche"
+        },
+        {
+          "type": "roadmap",
+          "phases": [
+            {
+              "title": "Core protocol",
+              "timeframe": "2026 Q2",
+              "goals": ["46 renderable blocks", "Light and dark tokens"],
+              "status": "done",
+              "@id": "xrlvmxxuin"
+            },
+            {
+              "title": "Authoring experience",
+              "timeframe": "2026 Q3",
+              "goals": ["/airp Skill", "Validate CLI"],
+              "status": "in_progress",
+              "@id": "8vocxafpxw"
+            },
+            {
+              "title": "Host integrations",
+              "timeframe": "2026 Q4",
+              "goals": ["Editor slots", "Locale re-render"],
+              "status": "pending",
+              "@id": "j5mmgvz0x4"
+            }
+          ],
+          "@id": "4qseyfbto2"
+        }
+      ],
+      "@id": "01ounkkvc4"
+    }
+  ]
+}

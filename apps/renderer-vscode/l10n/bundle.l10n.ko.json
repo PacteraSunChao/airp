@@ -1,0 +1,15 @@
+{
+  "AIRP Renderer": "AIRP 렌더러",
+  "Open a *.airp.json file to render": "렌더링하려면 *.airp.json 파일을 여세요",
+  "Open a *.airp.json Renderer view to edit source": "소스를 편집하려면 *.airp.json 렌더러 보기를 여세요",
+  "Render failed": "렌더링 실패",
+  "Render succeeded": "렌더링 성공",
+  "AIRP document was deleted": "AIRP 문서가 삭제되었습니다",
+  "Export failed": "내보내기 실패",
+  "Render failed. See diagnostics below or open the Output channel.": "렌더링에 실패했습니다. 아래 진단을 확인하거나 출력 채널을 여세요.",
+  "Open Output": "출력 열기",
+  "Edit Source": "소스 편집",
+  "Export": "내보내기",
+  "HTML": "HTML",
+  "Markdown": "Markdown"
+}

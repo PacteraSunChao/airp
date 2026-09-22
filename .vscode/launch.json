@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch AIRP Renderer",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/renderer-vscode",
+        "${workspaceFolder}/.docs/samples"
+      ],
+      "preLaunchTask": "build-airp-renderer-vscode",
+      "outFiles": [
+        "${workspaceFolder}/apps/renderer-vscode/dist/**/*.js",
+        "${workspaceFolder}/apps/renderer-vscode/dist/**/*.cjs"
+      ],
+      "sourceMaps": true
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "Section @id anchors 1.1.0",
+    "kind": "generic",
+    "createdAt": "2026-09-21T00:00:00.000Z",
+    "createdBy": "AIRP"
+  },
+  "i18n": {
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "type": "section",
+      "@id": "aaaaaaaaaa",
+      "level": 1,
+      "title": "Overview",
+      "children": [
+        {
+          "type": "paragraph",
+          "@id": "bbbbbbbbbb",
+          "text": "Body with **bold**, *italic*, ~~strike~~, `code`, and [docs](https://example.com)."
+        },
+        {
+          "type": "section",
+          "@id": "cccccccccc",
+          "level": 2,
+          "title": "Details",
+          "children": [
+            {
+              "type": "paragraph",
+              "@id": "dddddddddd",
+              "text": "Nested."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "citation",
+      "@id": "eeeeeeeeee",
+      "items": [
+        {
+          "@id": "ffffffffff",
+          "source": "First source",
+          "locator": "p.1"
+        },
+        {
+          "@id": "gggggggggg",
+          "source": "Second source"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "@id": "hhhhhhhhhh",
+      "columns": [
+        { "@id": "iiiiiiiiii", "key": "name", "label": "Name" },
+        { "@id": "jjjjjjjjjj", "key": "value", "label": "Value" }
+      ],
+      "rows": [
+        { "@id": "kkkkkkkkkk", "name": "alpha", "value": "1" },
+        { "@id": "llllllllll", "name": "beta", "value": "2" }
+      ]
+    }
+  ]
+}

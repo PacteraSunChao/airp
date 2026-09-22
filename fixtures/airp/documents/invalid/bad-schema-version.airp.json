@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "9.9.9",
+  "meta": {
+    "title": "Bad version",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Unsupported schemaVersion const."
+    }
+  ]
+}

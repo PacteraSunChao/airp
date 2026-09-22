@@ -1,68 +1,61 @@
-## AIRP Block selection (core)
+## AIRP Block selection
 
-This guide maps **content shape** to AIRP `blocks` while **schema remains SSOT**.
-
-### SSOT (required)
-
-- Read before generating: `../schemas/airp-document.schema.json`
-- This file only answers **which block fits best** — it does **not** replace schema structure:
-  - Allowed `type` values, per-block fields/required keys, and `additionalProperties: false` objects are defined by the schema
-  - If block names here ever diverge from the schema, follow the schema (and update this file)
+Maps **content shape** → `blocks`. Schema remains SSOT: `../schemas/document.schema.json`. If names here diverge from the schema, follow the schema.
 
 ### Inputs
 
-- **currentLocale**: chat language (default output language)
-- **multiLocale**: generate multiple locales (default false)
-- **evidence**: optional evidence (paths/files/diff summaries); write into `meta.sourceRefs` when needed
+- **Locale**: chat language or `--locale` → `i18n.locale` (see `SKILL.md`)
+- **Evidence**: optional paths/files/diff summaries → `meta.sourceRefs` when needed
+- **Meta attribution / timestamps**: `current-datetime.md`
 
 ### Hard defaults
 
-- **tablePreferThreshold**:
-  - Prefer `table` when rows ≥ 4 or columns ≥ 3 and alignment/comparison matters
-- **codeMaxLines**: beyond this line count, wrap in `collapsible` (explain in summary)
-- **mermaidComplexityThreshold**:
-  - Simple (≤10 nodes): prefer a single `mermaid`
-  - Medium complexity: split into multiple `mermaid` blocks under `section`
-  - Complex topology: prefer `architectureOverview` (overview + module cards)
+- **Independence**: design from this request’s content shape and the rules below. Do **not** treat existing `*.airp.json` under the output directory as a template unless the user **explicitly** names documents to follow. Named references guide intent/structure only; still satisfy the schema and these rules.
+- **`@id`**: every Block and structured object needs a unique `@id` (`^[a-z0-9]{10}$`); batch-generate with `scripts/gen-airp-ids.mjs`. String-only list items do not get `@id`.
+- Prefer `table` when rows ≥ 4 or columns ≥ 3 and alignment/comparison matters.
+- Wrap `code` / `codeDiff` in `collapsible` when the body exceeds **40 lines** (summary explains why).
+- Mermaid density:
+  - ≤10 nodes: one `mermaid`
+  - Medium: split into multiple `mermaid` under `section`
+  - Complex topology: `architectureOverview` (overview + module cards)
 
-### Block routing rules
+### Block routing
 
-#### 1) Document top (always)
+#### 1) Document top
 
-- **`hero`**: only the 3–8 most critical metrics (optional)
-- **`lead`**: one-sentence context/goal (strongly recommended)
+- `hero`: only the 3–8 most critical metrics (optional)
+- `lead`: one-sentence context/goal (strongly recommended)
 
 #### 2) Sections
 
-Wrap each major topic in `section` with a stable `id` (TOC/refs):
+Wrap each major topic in `section` with a stable `@id` (TOC/anchors; generate via `scripts/gen-airp-ids.mjs`):
 
 - `section` (Diagnosis / Findings / Plan / Risks / Appendix …)
-  - `lead` (optional): one-sentence purpose for the section
-  - children: choose per routing below
+  - `lead` (optional): one-sentence purpose
+  - children: per rules below
 
 #### 3) Structured content
 
-- **Strong alignment / comparison / matrix**: `table`
-- **Before/After two-column**: `comparison`
-- **Status board (pass/fail/partial, etc.)**: `statusBoard`
-- **Execution checklist**: `checklist`
-- **Definitions / terms**: `definitionList` or `glossary`
-- **Key-value metadata**: `keyValueList`
+- Strong alignment / comparison / matrix: `table`
+- Before/After two-column: `comparison`
+- Status board (pass/fail/partial, …): `statusBoard`
+- Execution checklist: `checklist`
+- Definitions / terms: `definitionList` or `glossary`
+- Key-value metadata: `keyValueList`
 
 #### 4) Code
 
-- **Short snippet**: `code` (optional filename/language)
-- **Clear diff**: `codeDiff`
-- **Very long**: outer `collapsible`, inner `code` or `codeDiff`
+- Short snippet: `code`
+- Clear diff: `codeDiff`
+- Beyond 40 lines: outer `collapsible`, inner `code` or `codeDiff`
 
 #### 5) Diagrams
 
-- **Flow / sequence / ER / state / class**: `mermaid` (diagramKind + source)
-- **Complex system overview + modules**: `architectureOverview`
+- Flow / sequence / ER / state / class: `mermaid`
+- Complex system overview + modules: `architectureOverview`
   - `overview`: simplified relationship diagram (mermaid source)
   - `modules`: one card per module (`collectionItem`)
-- **Mermaid authoring**: read `mermaid-authoring.md` before generating (special chars, quoted nodes, official syntax links)
-- **Validation**: `validate-airp.mjs` checks schema only; self-check Mermaid per `mermaid-authoring.md`, use `/airp-html` to confirm rendering when needed
+- Authoring: `mermaid-authoring.md`
 
 #### 6) Governance
 
@@ -72,21 +65,12 @@ Wrap each major topic in `section` with a stable `id` (TOC/refs):
 - Constraints: `constraint` (emphasize when `nonNegotiable`)
 - Open questions: `openQuestion`
 
-#### 7) Density control
+#### 7) Density
 
-- **Secondary / long**: `collapsible`
-- **Multiple perspectives**: `tabs`
-- **Citations / external links**: `citation` / `linkList`
+- Secondary / long: `collapsible`
+- Multiple perspectives: `tabs`
+- Citations / external links: `citation` / `linkList`
 
-#### 8) Hidden agent metadata
+#### 8) Agent-only notes
 
-- `agentNote` (`visible:false`) only for: coverage gaps, unpresented detail, key generation assumptions — not main content.
-
-### Minimal schema-safety checklist (generation-time)
-
-- Top-level object: only schema-defined fields (`additionalProperties: false` at root)
-- `schemaVersion` must be `"1.0.0"`
-- `i18n.defaultLocale` must appear in `i18n.locales`
-- Every block needs `type` from the schema discriminator union
-- Blocks with `additionalProperties: false`: no extra fields beyond schema
-- All Mermaid `source` must follow `mermaid-authoring.md` (schema CLI does not parse Mermaid)
+- `agentNote`: machine/agent remarks; `visible: true` only when humans must see it in render output

@@ -7,117 +7,103 @@ disable-model-invocation: true
 
 # /airp
 
-Generates an AIRP `*.airp.json` report (AIRP v1.0.0).
+Generates one AIRP `*.airp.json` (v1.1.0).
 
 ## Scope
 
-- **Does**: generate exactly one `.airp.json` file in the workspace (default under `.docs/airp/`)
-- **Does not**: modify any other workspace files (no matter what the user asks); does not render HTML (use `/airp-html`)
-- **Recommended chain**: `/airp` → `/airp-html` (pass the generated `.airp.json` path explicitly)
-
-## Non-negotiable constraints (DOCUMENT-ONLY)
-
-- Produce **only** the AIRP document. Do not output extra markdown/text outside the generated `.airp.json`.
-- Do **not** create/modify/delete any workspace files **except** the single target output `.airp.json`.
-- If the user's request would normally require changing any other file, you must translate the request into content **inside the AIRP document** (e.g. analysis/spec/plan/checklist/risks/tests — non-exhaustive) instead of applying real changes.
-  - Any proposed changes must be expressed only as **proposals** inside the AIRP document (e.g. `codeDiff` blocks), never as real file edits.
+- **Does**: create or update exactly one `.airp.json` under the **project root** (default `.docs/airp/`); validate it (schema + i18n + unique `@id` + Mermaid `parse`).
+- **Does not**: touch any other workspace file; does not render or export HTML/Markdown (humans use `airp-render`). If the request would normally edit other files, put analysis/spec/plan/diffs **inside** the document (e.g. `codeDiff`) — never apply real edits. Do not emit chat text outside the `.airp.json`.
 
 ## Workflow
 
 ```
-- [ ] Determine report intent and target audience
-- [ ] Choose blocks (follow references/block-selection.md)
-- [ ] For diagrams: follow references/mermaid-authoring.md
-- [ ] Get real current datetime for `meta.createdAt/updatedAt` (follow references/current-datetime.md)
-- [ ] Read and follow the schema (single source of truth)
-- [ ] Write <output.airp.json> under the workspace
-- [ ] Validate the output (must print "OK" — schema)
-- [ ] Self-check Mermaid sources per mermaid-authoring.md (not covered by validate CLI)
+- [ ] Intent + audience
+- [ ] Blocks — references/block-selection.md
+- [ ] Mermaid (if any) — references/mermaid-authoring.md
+- [ ] Meta timestamps + attribution — references/current-datetime.md
+- [ ] `@id` handles — scripts/gen-airp-ids.mjs (every block + structured object)
+- [ ] Output path (new: timestamp + slug; update: keep path)
+- [ ] Read schemas/document.schema.json and write the file
+- [ ] Validate — must print "OK  validate"
 ```
 
-**Step 1 — Choose blocks**
+## Steps
 
-Use the "content → block" selection rules:
+### 1 — Blocks
 
-- `references/block-selection.md`
+Follow `references/block-selection.md`. Choose from this request’s content shape. Do **not** mirror existing `*.airp.json` under the output directory unless the user **explicitly** names documents to follow.
 
-**Step 1b — Mermaid (when using `mermaid` or `architectureOverview`)**
+### 1b — Mermaid
 
-Read and apply:
+When using `mermaid` or `architectureOverview`, follow `references/mermaid-authoring.md`.
 
-- `references/mermaid-authoring.md` (special characters, quoted nodes, official docs)
+### 1c — Machine handles (`@id`)
 
-**Step 2 — Follow the schema (source of truth)**
+Every Block and every structured object needs a document-unique `@id` matching `^[a-z0-9]{10}$` (not business keys like `table.columns[].key` or `reqId`). Pure string array items (list rows, `meta.tags`, roadmap goals) do **not** get `@id`.
 
-The schema shipped with this skill is the single source of truth:
+Generate in batch from the **skill root**:
 
-- `schemas/airp-document.schema.json`
+```bash
+node scripts/gen-airp-ids.mjs 20
+```
 
-Before generating, read and follow at minimum:
+Do not invent ad-hoc ids; do not leave `@id` blank for validate to fill (validate does not auto-complete).
 
-- top-level `required` and `additionalProperties: false`
-- `blocks` discriminator (`type`) and each block's field constraints
+### 2 — Schema
 
-**Step 3 — Write output**
+SSOT: `schemas/document.schema.json` (AIRP v1.1.0). Before writing, satisfy at least:
 
-Default output directory (relative to the **project root** / workspace root, not the skill directory):
+- top-level `required`; `additionalProperties: false`
+- `schemaVersion`: `"1.1.0"`
+- `meta`: new → `createdBy` + `createdAt` only; modify → `updatedBy` + `updatedAt` only (see `references/current-datetime.md`)
+- `i18n.locale`: exactly one locale
+- Text types: `PlainString` (title / label / term / alt / short caption; escaped, no markdown) vs `MarkdownString` (text / body / description / note; markdown-lite **inline only**: `**bold**`, `*italic*`, `~~strike~~`, `` `code` ``, `[label](url)` — no headings/lists/fences/images/HTML) — no `LocalizedString` / `RichText` / `InlineNode`
+- `blocks` discriminator (`type`), each block’s field constraints, and required `@id` on blocks + structured objects
 
-- `.docs/airp/`
+### 3 — Path and naming
 
-Allow overrides:
+Default directory (relative to **project root**, not the skill directory): `.docs/airp/`
 
-- `/airp --out <dir>`
+Override: `/airp --out <dir>`
 
-**Locale (command flags)**
+**New file** basename: `<filename-timestamp>-<slug>.airp.json`
 
-How to pass language intent on `/airp` (generation rules: `references/block-selection.md`):
+- `<filename-timestamp>`: stdout of `node scripts/get-current-datetime.mjs --filename` (verbatim). Format `YYYYMMDD-HHmmss±HHmm`. See `references/current-datetime.md`.
+- `<slug>`: short kebab-case ASCII from the topic (`[a-z0-9-]+`, prefer ≤ 48 chars).
+
+**Update**: keep the existing path and filename.
+
+Example: `.docs/airp/20260921-175819+0800-airp-skill.airp.json`
+
+### 4 — Locale
 
 | Case | Example |
 |---|---|
-| Not specified — use chat language, single locale | `/airp` |
-| Multiple locales | `/airp --locales zh-CN,en` |
-| Multiple locales + explicit default | `/airp --locales zh-CN,en --default-locale zh-CN` |
+| Unspecified — use chat language | `/airp` |
+| Explicit | `/airp --locale zh-CN` |
 
-Same intent in plain language in the prompt (e.g. "中日英三语") counts as `--locales`
+Set `i18n.locale` to one of:
 
-**Step 4 — Validate**
+`en-US` · `zh-CN` · `ja-JP` · `ko-KR` · `de-DE` · `fr-FR` · `ru-RU` · `es-ES` · `pt-BR` · `it-IT`
 
-From the **skill root** (directory containing this `SKILL.md`; when installed globally, e.g. `~/.cursor/skills/airp/` or `~/.agents/skills/airp/`):
+(Match chat language when possible. For English use `en-US`.)
+
+### 5 — Validate
+
+Requires Node.js `>=20.19` and `@airp/validate-cli` (`airp-validate`). The skill script uses a PATH install if present, otherwise `npx`.
+
+From the **skill root** (directory containing this `SKILL.md`):
 
 ```bash
 node scripts/validate-airp.mjs <path/to/file.airp.json>
 ```
 
-If you run from the project root, resolve `scripts/validate-airp.mjs` to an absolute path under this skill, or `cd` to the skill root first.
+From the project root, use an absolute path to that script, or `cd` to the skill root first.
 
-`OK` means the file passes **AIRP JSON Schema** (structure, block types, required fields).
+Success: stdout contains `OK  validate`. On failure, fix until it passes — no best-effort file.
 
-**Mermaid** is not validated by this CLI. Before delivery, apply `mermaid-authoring.md` to every `mermaid` / `architectureOverview.overview` `source`. Use `/airp-html` when you need to confirm diagrams render.
-
-On schema failure: fix JSON per Zod/schema message. Do not produce a "best-effort" file — fix until validation prints `OK`.
-
-## Input and output
-
-**Input**: the user's request plus any relevant workspace context (docs, code, logs, etc.).
-
-**Output**: exactly one `.airp.json` file in the workspace (and nothing else).
-
-- **Default dir**: `.docs/airp/` (relative to the project root / workspace root)
-- **Override**: `--out <dir>`
-- **Locale**: omit flags for single chat language; `--locales` / `--default-locale` as above
-
-**Output contract**
-
-- Create exactly one file: `.docs/airp/<name>.airp.json` (or `--out`).
-- Do not create any other files; do not modify existing files.
-- The file must validate with `node scripts/validate-airp.mjs <path>` and print `OK`.
-
-## CLI (`validate-airp.mjs`)
-
-Validates **schema only** (Zod / `airp-document.schema.json`). Diagram syntax is governed by `references/mermaid-authoring.md`.
-
-### Examples
+Optional global install:
 
 ```bash
-node scripts/validate-airp.mjs .docs/airp/foo.airp.json
+npm i -g @airp/validate-cli
 ```

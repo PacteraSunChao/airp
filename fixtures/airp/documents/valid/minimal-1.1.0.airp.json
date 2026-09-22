@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "Minimal report 1.1.0",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z",
+    "updatedAt": "2026-09-21T08:00:00.000Z",
+    "createdBy": "AIRP",
+    "updatedBy": "maosong"
+  },
+  "i18n": {
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Hello AIRP 1.1.0.",
+      "@id": "24zdmqeha1"
+    }
+  ]
+}

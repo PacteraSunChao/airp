@@ -1,0 +1,445 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": { "en": "HTML block coverage", "zh-CN": "HTML 积木块覆盖" },
+    "subtitle": { "en": "Phase 3b fixture", "zh-CN": "阶段 3b 样例" },
+    "kind": "generic",
+    "authors": ["AIRP"],
+    "tags": ["html", "fixture", "blocks"],
+    "sourceRefs": [
+      { "type": "path", "value": "schema.json", "label": "Schema" },
+      { "type": "path", "value": "renderer.ts", "label": "Renderer" },
+      { "type": "url", "value": "https://example.com/spec", "label": "Specification" },
+      { "type": "commit", "value": "abc123", "label": "Reference commit" }
+    ],
+    "createdAt": "2026-09-14T14:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "zh-CN"]
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "id": "hero-top",
+      "metrics": [
+        {
+          "title": { "en": "Block types", "zh-CN": "块类型" },
+          "value": 46,
+          "tone": "positive",
+          "description": "Full schema block set"
+        },
+        {
+          "title": { "en": "Open issues", "zh-CN": "待解决问题" },
+          "value": 2,
+          "tone": "negative",
+          "description": "Items requiring attention"
+        },
+        {
+          "title": { "en": "Coverage", "zh-CN": "覆盖率" },
+          "value": "100%",
+          "tone": "accent",
+          "description": "Renderer block coverage"
+        }
+      ],
+      "badges": [{ "label": { "en": "Valid", "zh-CN": "有效" }, "tone": "positive" }]
+    },
+    {
+      "type": "section",
+      "id": "html-blocks",
+      "level": 2,
+      "title": { "en": "HTML emit coverage", "zh-CN": "HTML 输出覆盖" },
+      "lead": "Every **block** appears once in this fixture.",
+      "children": [
+        {
+          "type": "group",
+          "id": "layout-primitives",
+          "title": { "en": "Layout", "zh-CN": "布局" },
+          "children": [
+            { "type": "divider", "label": { "en": "Section break", "zh-CN": "分段" } },
+            { "type": "spacer", "size": "sm" },
+            {
+              "type": "heading",
+              "id": "subheading",
+              "level": 3,
+              "text": { "en": "Subheading", "zh-CN": "小标题" }
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Plain **bold** and `code`."
+        },
+        {
+          "type": "lead",
+          "text": "Lead paragraph for the section."
+        },
+        {
+          "type": "pullQuote",
+          "text": { "en": "Measure twice.", "zh-CN": "三思后行。" },
+          "attribution": { "en": "Proverb", "zh-CN": "谚语" }
+        },
+        {
+          "type": "blockquote",
+          "text": "Quoted **text** in a blockquote."
+        },
+        {
+          "type": "callout",
+          "variant": "tip",
+          "title": { "en": "Tip", "zh-CN": "提示" },
+          "body": "Callout **body** with markdown-lite."
+        },
+        {
+          "type": "bulletList",
+          "items": ["Alpha", "Beta"]
+        },
+        {
+          "type": "numberedList",
+          "items": ["First step"]
+        },
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "Done item",
+              "checked": true,
+              "note": "Verified in CI"
+            },
+            { "label": "Open item" }
+          ]
+        },
+        {
+          "type": "definitionList",
+          "items": [
+            {
+              "term": { "en": "AIRP", "zh-CN": "AIRP" },
+              "definition": "Agent report protocol."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "caption": { "en": "Sample table", "zh-CN": "示例表" },
+          "columns": [
+            { "key": "k", "label": { "en": "Key", "zh-CN": "键" } },
+            { "key": "v", "label": { "en": "Value", "zh-CN": "值" } }
+          ],
+          "rows": [{ "k": { "en": "Row", "zh-CN": "行" }, "v": "42" }],
+          "footerRow": { "k": { "en": "Total", "zh-CN": "合计" }, "v": "42" }
+        },
+        {
+          "type": "comparison",
+          "labelBefore": { "en": "Before", "zh-CN": "之前" },
+          "labelAfter": { "en": "After", "zh-CN": "之后" },
+          "before": [
+            {
+              "type": "bulletList",
+              "items": ["Legacy path"]
+            }
+          ],
+          "after": [
+            {
+              "type": "bulletList",
+              "items": ["Modern path"]
+            }
+          ]
+        },
+        {
+          "type": "collection",
+          "variant": "panel",
+          "title": { "en": "Metrics", "zh-CN": "指标" },
+          "items": [
+            {
+              "title": { "en": "Latency", "zh-CN": "延迟" },
+              "value": 12,
+              "unit": { "en": "ms", "zh-CN": "毫秒" },
+              "description": "P95 response time"
+            }
+          ]
+        },
+        {
+          "type": "keyValueList",
+          "items": [
+            {
+              "key": { "en": "Owner", "zh-CN": "负责人" },
+              "value": "Team A"
+            }
+          ]
+        },
+        {
+          "type": "statusBoard",
+          "items": [
+            {
+              "label": { "en": "Build", "zh-CN": "构建" },
+              "status": "pass",
+              "detail": "All green"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "sample.ts",
+          "code": "export const ok = true;\n"
+        },
+        {
+          "type": "codeDiff",
+          "filename": "sample.ts",
+          "language": "diff",
+          "unified": "@@ -1,1 +1,1 @@\n-const ok = false;\n+const ok = true;"
+        },
+        {
+          "type": "codeDiff",
+          "filename": "emit/block.ts",
+          "language": "typescript",
+          "before": "export function emit(block: Block): string {\n  return JSON.stringify(block);\n}\n",
+          "after": "export function emit(block: Block, ctx: EmitContext): string {\n  return ctx.skins.render(block);\n}\n"
+        },
+        {
+          "type": "fileTree",
+          "caption": { "en": "Repo layout", "zh-CN": "仓库结构" },
+          "root": {
+            "name": "src",
+            "children": [
+              {
+                "name": "emit-handlers.ts",
+                "annotation": { "en": "handlers", "zh-CN": "处理器" }
+              }
+            ]
+          }
+        },
+        {
+          "type": "fileChangeList",
+          "items": [
+            {
+              "path": "packages/renderer-target-html/src/emit-handlers.ts",
+              "change": "added",
+              "note": "New HTML block handlers"
+            }
+          ]
+        },
+        {
+          "type": "mermaid",
+          "title": { "en": "Simple flow", "zh-CN": "简单流程" },
+          "source": "flowchart LR\n  Start --> End"
+        },
+        {
+          "type": "architectureOverview",
+          "overview": {
+            "type": "mermaid",
+            "source": "flowchart TB\n  Client --> API\n  API --> DB"
+          },
+          "modules": [
+            {
+              "title": { "en": "API", "zh-CN": "接口层" },
+              "description": "HTTP surface"
+            },
+            {
+              "title": { "en": "DB", "zh-CN": "数据库" },
+              "description": "Persistence layer"
+            }
+          ]
+        },
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": { "en": "1. Plan", "zh-CN": "1. 规划" },
+              "status": "done",
+              "description": "Scope the work"
+            }
+          ]
+        },
+        {
+          "type": "decision",
+          "id": "dec-html",
+          "title": { "en": "HTML first", "zh-CN": "优先 HTML" },
+          "status": "accepted",
+          "context": "Phase **3b** delivery.",
+          "chosen": { "en": "Semantic blocks", "zh-CN": "语义化块" },
+          "rationale": "Stable `data-block-type` contract.",
+          "options": [
+            {
+              "label": { "en": "Semantic blocks", "zh-CN": "语义块" },
+              "pros": "Accessible markup"
+            }
+          ]
+        },
+        {
+          "type": "risk",
+          "id": "risk-fixture",
+          "title": { "en": "Fixture drift", "zh-CN": "样例漂移" },
+          "severity": "low",
+          "status": "open",
+          "description": "Schema may evolve over time.",
+          "mitigation": "Run validate in CI."
+        },
+        {
+          "type": "assumption",
+          "statement": "Locales remain en + zh-CN.",
+          "validated": true
+        },
+        {
+          "type": "constraint",
+          "rule": "No iframe embeds in HTML target.",
+          "nonNegotiable": true,
+          "scope": "html-target"
+        },
+        {
+          "type": "openQuestion",
+          "question": "When does 3c ship Mermaid SVG?",
+          "blocking": false
+        },
+        {
+          "type": "timeline",
+          "events": [
+            {
+              "date": "2026-09-14",
+              "title": { "en": "Phase 3b", "zh-CN": "阶段 3b" },
+              "status": "done",
+              "description": "HTML emit handlers"
+            }
+          ]
+        },
+        {
+          "type": "roadmap",
+          "phases": [
+            {
+              "title": { "en": "3c", "zh-CN": "3c" },
+              "timeframe": { "en": "Next", "zh-CN": "下一步" },
+              "status": "pending",
+              "goals": ["Mermaid SVG export"]
+            }
+          ]
+        },
+        {
+          "type": "requirementTrace",
+          "items": [
+            {
+              "reqId": "REQ-HTML-1",
+              "summary": { "en": "Emit all blocks", "zh-CN": "输出全部块" },
+              "status": "pass",
+              "evidence": "This fixture document"
+            }
+          ]
+        },
+        {
+          "type": "testResult",
+          "suites": [
+            {
+              "name": "unit",
+              "passed": 10,
+              "failed": 0,
+              "skipped": 1,
+              "notes": "Placeholder suite stats"
+            }
+          ]
+        },
+        {
+          "type": "apiInventory",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/health",
+              "summary": { "en": "Health check", "zh-CN": "健康检查" },
+              "status": "done"
+            }
+          ]
+        },
+        {
+          "type": "linkList",
+          "title": { "en": "Links", "zh-CN": "链接" },
+          "links": [
+            {
+              "href": "https://example.com/airp",
+              "label": { "en": "AIRP docs", "zh-CN": "AIRP 文档" },
+              "description": "External reference"
+            }
+          ]
+        },
+        {
+          "type": "glossary",
+          "terms": [
+            {
+              "term": { "en": "Block", "zh-CN": "块" },
+              "definition": "Typed document unit in AIRP."
+            }
+          ]
+        },
+        {
+          "type": "citation",
+          "items": [{ "id": "ref-1", "source": "AIRP Schema 1.0.0", "locator": "blocks" }]
+        },
+        {
+          "type": "image",
+          "src": "https://example.com/html-blocks.png",
+          "alt": { "en": "Coverage diagram", "zh-CN": "覆盖示意图" },
+          "caption": { "en": "Placeholder image", "zh-CN": "占位图" }
+        },
+        {
+          "type": "embed",
+          "url": "https://example.com/report",
+          "title": { "en": "Full report", "zh-CN": "完整报告" }
+        },
+        {
+          "type": "agentNote",
+          "visible": true,
+          "text": "Visible agent note for human readers."
+        },
+        {
+          "type": "agentNote",
+          "visible": false,
+          "text": "Hidden agent note."
+        },
+        {
+          "type": "agentNote",
+          "text": "Default-hidden agent note."
+        },
+        {
+          "type": "collapsible",
+          "summary": { "en": "Details", "zh-CN": "详情" },
+          "defaultOpen": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "text": "Inside collapsible."
+            }
+          ]
+        },
+        {
+          "type": "tabs",
+          "panels": [
+            {
+              "label": { "en": "Tab A", "zh-CN": "标签 A" },
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "Panel A content."
+                }
+              ]
+            },
+            {
+              "label": { "en": "Tab B", "zh-CN": "标签 B" },
+              "children": [
+                {
+                  "type": "paragraph",
+                  "text": "Panel B content."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "appendix",
+      "title": { "en": "Appendix", "zh-CN": "附录" },
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "End of **html-blocks** fixture."
+        }
+      ]
+    }
+  ]
+}

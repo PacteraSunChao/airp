@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Missing meta."
+    }
+  ]
+}

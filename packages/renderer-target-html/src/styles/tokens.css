@@ -1,0 +1,89 @@
+/* Reader tokens — theme surfaces via CSS variables. */
+:root {
+  --bg-page: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f5f9;
+  /* Align with Tailwind slate-200 so bare border/divide match border-slate-200. */
+  --border-color: oklch(92.9% 0.013 255.508);
+  --border-subtle: #edf2f7;
+  --text-main: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --code-bg: #f8fafc;
+  --code-border: oklch(92.9% 0.013 255.508);
+  /* Floating chrome only (menus / toc / toast). In-flow blocks: border + fill, no elevation. */
+  --shadow-float: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --link: #0284c7;
+  --link-hover: #0369a1;
+  /* Mermaid SVG theme (single export; follow html.dark via CSS vars). */
+  --airp-m-text: var(--text-main);
+  --airp-m-line: var(--text-secondary);
+  --airp-m-node-bg: #e0f2fe;
+  --airp-m-node-border: #0284c7;
+  --airp-m-on-node: #0f172a;
+  --airp-m-cluster-bg: var(--bg-subtle);
+  --airp-m-cluster-border: var(--border-color);
+  --airp-m-label-bg: color-mix(in oklab, var(--bg-surface) 85%, transparent);
+  --airp-m-note-bg: #fef9c3;
+  --airp-m-note-border: #ca8a04;
+  --airp-m-activation-bg: var(--bg-subtle);
+  --airp-m-activation-border: var(--border-color);
+  --airp-m-error: #b91c1c;
+  color-scheme: light;
+}
+
+html.dark {
+  --bg-page: #0b0f17;
+  --bg-surface: #111827;
+  --bg-subtle: #1a2234;
+  --border-color: oklch(37.2% 0.044 257.287);
+  --border-subtle: #1e293b;
+  --text-main: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --code-bg: #0f172a;
+  --code-border: oklch(37.2% 0.044 257.287);
+  --shadow-float: 0 25px 50px -12px rgb(0 0 0 / 0.55);
+  --link: #38bdf8;
+  --link-hover: #7dd3fc;
+  --airp-m-text: var(--text-main);
+  --airp-m-line: var(--text-secondary);
+  --airp-m-node-bg: #0c4a6e;
+  --airp-m-node-border: #38bdf8;
+  --airp-m-on-node: #f1f5f9;
+  --airp-m-cluster-bg: var(--bg-subtle);
+  --airp-m-cluster-border: var(--border-color);
+  --airp-m-label-bg: color-mix(in oklab, var(--bg-surface) 85%, transparent);
+  --airp-m-note-bg: #422006;
+  --airp-m-note-border: #eab308;
+  --airp-m-activation-bg: var(--bg-subtle);
+  --airp-m-activation-border: var(--border-color);
+  --airp-m-error: #f87171;
+  color-scheme: dark;
+}
+
+/*
+ * Tailwind v4 `border` / `border-b` / `divide-y` set width only; color inherits
+ * currentColor (text). Pin the default so bare borders use the token, not ink.
+ */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop {
+    border-color: var(--border-color);
+  }
+}
+
+@theme {
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui,
+    sans-serif;
+  --font-mono:
+    "JetBrains Mono", "Fira Code", Menlo, Monaco, Consolas, monospace;
+  --z-index-local: 0;
+  --z-index-shell: 40;
+  --z-index-popover: 70;
+}

@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "积木宣传图：截图与合成管线",
+    "subtitle": "方案介绍 + 流程控制；计算全部在脚本内",
+    "kind": "plan-review",
+    "createdBy": "毛松 <song.mao@gientech.com>",
+    "createdAt": "2026-09-22T08:22:48.751Z",
+    "updatedBy": "毛松 <song.mao@gientech.com>",
+    "updatedAt": "2026-09-22T11:02:42.442Z",
+    "tags": [
+      "screen-capture",
+      "pipeline"
+    ],
+    "sourceRefs": [
+      {
+        "type": "path",
+        "value": ".docs/screen-capture/20260922-151750+0800-block-showcase.airp.json",
+        "label": "截图输入（英文 showcase）",
+        "@id": "isk7ywm3xx"
+      },
+      {
+        "type": "path",
+        "value": ".docs/screen-capture/scripts/run.mjs",
+        "label": "阶段 1 脚本",
+        "@id": "5mehlqc6u6"
+      },
+      {
+        "type": "path",
+        "value": ".docs/screen-capture/scripts/capture.mjs",
+        "label": "单块截图脚本",
+        "@id": "30ovhgn09d"
+      },
+      {
+        "type": "path",
+        "value": ".docs/screen-capture/scripts/compose.mjs",
+        "label": "阶段 2 合成脚本（构图 SSOT）",
+        "@id": "kxt5pe2gty"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "type": "lead",
+      "text": "本文是宣传图管线的**方案介绍与流程控制**。执行者（含 AI）只按阶段调用 `pnpm` 脚本、检查产物、更新本节 checklist；**不算坐标、不算裁切、不手写摆放**。截图与合成的全部计算在 `.docs/screen-capture/scripts/`。",
+      "@id": "63xco2e0vy"
+    },
+    {
+      "type": "constraint",
+      "rule": "执行者不得自行计算或写入构图数据；构图与裁切只以 `compose.mjs` 为准。阶段必须串行：阶段 1 产物未齐不得跑阶段 2。开跑由 `pnpm screen-capture` 清空 `.tmp/screen-capture/`。",
+      "scope": "职责边界与阶段顺序",
+      "nonNegotiable": true,
+      "@id": "8vokuu3m58"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "1. 方案",
+      "lead": "两条命令覆盖端到端；路径与构图参数写死在脚本。",
+      "children": [
+        {
+          "type": "keyValueList",
+          "layout": "stacked",
+          "items": [
+            {
+              "key": "输入",
+              "value": "`.docs/screen-capture/20260922-151750+0800-block-showcase.airp.json`",
+              "@id": "jv4v9tjbv3"
+            },
+            {
+              "key": "工作目录",
+              "value": "`.tmp/screen-capture/`（HTML、单块 PNG、终稿）",
+              "@id": "7hilw2bb19"
+            },
+            {
+              "key": "阶段 1 命令",
+              "value": "`pnpm screen-capture` → 清空 → 导出 HTML → 亮暗各 12 块 PNG",
+              "@id": "at0n571e40"
+            },
+            {
+              "key": "阶段 1 产物",
+              "value": "`.tmp/screen-capture/export/showcase.html`；`.tmp/screen-capture/{light,dark}-blocks/<type>.png`",
+              "@id": "qkuhh0w2wb"
+            },
+            {
+              "key": "阶段 2 命令",
+              "value": "`pnpm screen-capture:compose` → 两列 grid 亮暗终稿 → 中线拼合 + 对比滑块 → 真无损压缩终稿并发布到仓库图",
+              "@id": "swgky76sh1"
+            },
+            {
+              "key": "阶段 2 产物",
+              "value": "`.tmp/screen-capture/light-final.png`；`dark-final.png`；`screen-capture.png`；并复制到 `screen-capture.png` 与 `apps/renderer-vscode/screen-capture.png`",
+              "@id": "24p1iuil7e"
+            },
+            {
+              "key": "构图 SSOT",
+              "value": "`.docs/screen-capture/scripts/compose.mjs`（画布、padding、gap、列宽比、列顺序、末块裁切、中线拼合、对比滑块、终稿真无损压缩、发布路径）",
+              "@id": "fut0omh80t"
+            },
+            {
+              "key": "改构图",
+              "value": "只改 `compose.mjs` 常量或逻辑，再跑 `pnpm screen-capture:compose`",
+              "@id": "6fd1d87851"
+            }
+          ],
+          "@id": "wre066wk7h"
+        },
+        {
+          "type": "paragraph",
+          "text": "列网：画布 2400×1350；左右列宽比 2:3；统一外边距与块间距；左列首块 hero、右列首块 architectureOverview，其余按截图顺序交替下排。块按列宽等比缩放后自上而下排列；仅当某块超出内容区底边时自顶裁切该块并结束该列（贴底不裁；其后块本列不上图）。亮暗背景对齐 HTML `--bg-page`。中线拼合：竖直对半，左暗右亮；中缝画对比滑块（竖线 + 圆形手柄 + 左右箭头）。终稿 `screen-capture.png` 用 sharp 真无损压缩（compressionLevel 9、effort 10），并复制到仓库根目录与 `apps/renderer-vscode/`（扩展 README / 市场页引用）。细节以实现为准。",
+          "@id": "9yq9ygnlml"
+        }
+      ],
+      "@id": "lxwhvb4tdr"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "2. 流程控制",
+      "lead": "串行执行。每阶段命令成功且门禁通过后，立刻更新 checklist，再进入下一阶段。",
+      "children": [
+        {
+          "type": "checklist",
+          "items": [
+            {
+              "label": "**阶段 1** — `pnpm screen-capture`",
+              "checked": true,
+              "status": "done",
+              "note": "门禁通过：light/dark 各 12 PNG，成对齐全",
+              "@id": "r1rv14wc0t"
+            },
+            {
+              "label": "**阶段 2** — `pnpm screen-capture:compose`",
+              "checked": true,
+              "status": "done",
+              "note": "门禁：tmp 终稿 + 根目录与 apps/renderer-vscode/screen-capture.png 已同步",
+              "@id": "xiy2z3bzpb"
+            },
+            {
+              "label": "**收尾** — 更新本文件 meta 并 validate",
+              "checked": true,
+              "status": "done",
+              "note": "终稿真无损压缩并发布到根目录与 VS Code 扩展图",
+              "@id": "6rbwla4949"
+            }
+          ],
+          "@id": "jx3pppsa0k"
+        },
+        {
+          "type": "flowSteps",
+          "steps": [
+            {
+              "title": "阶段 1",
+              "description": "执行 `pnpm screen-capture`；检查门禁；勾选 checklist 第一项",
+              "status": "done",
+              "@id": "me3t282vua"
+            },
+            {
+              "title": "阶段 2",
+              "description": "执行 `pnpm screen-capture:compose`；检查门禁；勾选 checklist 第二项",
+              "status": "done",
+              "@id": "0zr5oq1agw"
+            },
+            {
+              "title": "收尾",
+              "description": "勾选 checklist 第三项；写 meta.updatedBy / meta.updatedAt；validate 本文件",
+              "status": "done",
+              "@id": "2kv94t6bks"
+            }
+          ],
+          "@id": "h9yrdmb2jk"
+        }
+      ],
+      "@id": "qnysq3zhlm"
+    },
+    {
+      "type": "section",
+      "level": 1,
+      "title": "3. 复跑",
+      "lead": "block 皮肤、设计 token 或 showcase 变更后，人工指示按本节重跑。",
+      "children": [
+        {
+          "type": "bulletList",
+          "items": [
+            "将 §2 checklist 三项改回 `checked: false`、`status: pending`",
+            "showcase 过时则先改输入样例并 validate，再开跑",
+            "按 §2 重新执行阶段 1 → 2 → 收尾",
+            "构图或截图行为要改时，改对应脚本后重跑受影响阶段"
+          ],
+          "@id": "hxi2x41ee2"
+        }
+      ],
+      "@id": "jyirwlgoc0"
+    },
+    {
+      "type": "agentNote",
+      "visible": true,
+      "text": "你的工作：调命令、看退出码、查产物是否齐、勾 checklist、更新 meta、validate。禁止量 PNG 写摆放、禁止自创合成步骤。阶段不得并行。",
+      "@id": "qms0gyu4sy"
+    }
+  ]
+}

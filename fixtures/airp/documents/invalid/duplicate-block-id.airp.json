@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": "Duplicate ids",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "section",
+      "id": "same-id",
+      "title": "One",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "a"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "same-id",
+      "title": "Two",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "b"
+        }
+      ]
+    }
+  ]
+}

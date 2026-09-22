@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-airp-renderer-target-html",
+      "type": "shell",
+      "command": "pnpm --filter @airp/renderer-target-html build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build-airp-renderer-vscode",
+      "dependsOn": ["build-airp-renderer-target-html"],
+      "dependsOrder": "sequence",
+      "type": "shell",
+      "command": "pnpm --filter airp-renderer-vscode build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

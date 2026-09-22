@@ -1,32 +1,41 @@
 {
-  "name": "airp-workspace",
-  "version": "0.1.0",
+  "name": "airp",
+  "version": "1.1.2",
+  "author": "毛松 <maosong-life@outlook.com>",
+  "license": "MIT",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "workspaces": [
-    "renderer",
-    "tests"
-  ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "build": "pnpm run build:renderer && pnpm run build:skills",
-    "build:renderer": "pnpm -C renderer build",
-    "build:skills": "node scripts/build-skills.mjs",
-    "dev": "pnpm -C renderer dev",
-    "preview": "pnpm -C renderer preview",
-    "test": "pnpm run -C tests test",
-    "test:unit": "pnpm -C tests test:unit",
-    "test:integration": "pnpm -C tests test:integration",
-    "test:watch": "pnpm -C tests test:watch",
-    "validate:schema": "pnpm -C renderer run validate",
-    "render:html": "pnpm -C renderer run render:html",
-    "render:markdown": "pnpm -C renderer run render:markdown"
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "check": "pnpm check-agents-registry && pnpm check-testing-surface && pnpm check-runtime-entries && turbo run check --env-mode=loose",
+    "fix": "pnpm check-agents-registry && pnpm check-testing-surface && pnpm check-runtime-entries && turbo run fix --env-mode=loose",
+    "validate-cli:sample": "pnpm --filter @airp/validate-cli dev --input .docs/samples/block-gallery.airp.json",
+    "renderer-cli:sample": "rm -rf packages/renderer-target-html/dist && concurrently -i -r \"pnpm --filter @airp/renderer-target-html exec tsdown --watch\" \"pnpm --filter @airp/renderer-cli dev --input .docs/samples/airp-block-gallery-1-1-0.airp.json\"",
+    "renderer-vscode:sample": "rm -rf packages/renderer-target-html/dist && concurrently -i -r \"pnpm --filter @airp/renderer-target-html exec tsdown --watch\" \"pnpm --filter airp-renderer-vscode exec node esbuild.mjs --watch\"",
+    "check-agents-registry": "pnpm --filter @airp/repo-guard check-agents-registry",
+    "check-testing-surface": "pnpm --filter @airp/repo-guard check-testing-surface",
+    "check-runtime-entries": "pnpm --filter @airp/repo-guard check-runtime-entries",
+    "list-testing-surface": "pnpm --filter @airp/repo-guard list-testing-surface",
+    "screen-capture": "node .docs/screen-capture/scripts/run.mjs",
+    "screen-capture:capture": "node .docs/screen-capture/scripts/capture.mjs",
+    "screen-capture:compose": "node .docs/screen-capture/scripts/compose.mjs"
   },
   "devDependencies": {
-    "only-allow": "^1.2.1"
+    "@biomejs/biome": "2.4.8",
+    "@types/node": "^20.19.39",
+    "@vitest/coverage-v8": "4.1.11",
+    "concurrently": "^9.2.4",
+    "playwright": "^1.63.0",
+    "sharp": "^0.35.4",
+    "turbo": "^2.8.0",
+    "typescript": "^6.0.3",
+    "ultracite": "7.4.2",
+    "vitest": "4.1.11"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "engines": {
+    "node": ">=20.19",
+    "pnpm": ">=10.17"
   }
 }
