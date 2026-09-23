@@ -11,7 +11,6 @@ import { type EmitBlocksOptions, emitBlocks } from "./emit-block.js";
 import { htmlLocaleMessage } from "./i18n/html-locale.js";
 import { renderIcon } from "./icons/render-icon.js";
 import { escapeHtml } from "./shared/escape-html.js";
-import { AIRP_PROTOCOL_DISPLAY_VERSION } from "./shared/product-chrome.js";
 
 function emitSourceRefs(
   refs: readonly {
@@ -80,10 +79,8 @@ export function emitDocumentBody(
   const { t } = createLocaleFormatContext(doc, locale);
   const title = t(doc.meta.title as never);
   const subtitle = doc.meta.subtitle ? t(doc.meta.subtitle as never) : "";
-  const schemaVersion =
-    typeof doc.schemaVersion === "string" && doc.schemaVersion.length > 0
-      ? doc.schemaVersion
-      : AIRP_PROTOCOL_DISPLAY_VERSION;
+  assertSchemaVersion(doc.schemaVersion);
+  const { schemaVersion } = doc;
 
   const headerParts: string[] = [];
   headerParts.push(
@@ -115,8 +112,7 @@ export function emitDocumentBody(
   }
 
   const labelSep = locale.toLowerCase().startsWith("zh") ? "：" : ": ";
-  assertSchemaVersion(doc.schemaVersion);
-  const metaBits = documentMetaFor(doc.schemaVersion)(doc, locale, labelSep);
+  const metaBits = documentMetaFor(schemaVersion)(doc, locale, labelSep);
 
   const sourceRefs = Array.isArray(doc.meta.sourceRefs)
     ? (doc.meta.sourceRefs as {

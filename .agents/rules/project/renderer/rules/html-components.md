@@ -26,9 +26,9 @@
 | `main` | `flex-1 w-full min-w-0 max-w-4xl mx-auto px-4 py-6 sm:px-6 sm:py-10`；`data-route-path="/"` |
 | 正文 | `article.min-w-0.space-y-8.sm:space-y-12`；首块为 `[data-doc-header]` |
 | 本页目录 | 可选 `nav[data-page-toc]`（见下）；置于 `main` 与页脚之间 |
-| 文档头 | 协议徽标 `AI Report Protocol v{schemaVersion}`（缺省 `AIRP_PROTOCOL_DISPLAY_VERSION`）；tags；唯一 `h1`；副标题；**1.0.0**：作者 + `data-doc-time`（标签「更新时间」）；**1.1.0**：`data-doc-last-updated` 一行「最后更新：updatedBy + 本地时间」（`data-doc-time-by`）；同行右侧 `[data-doc-sources-menu]`「真源参考」菜单（触发器扁平：button + `airp-interactive`，无 elevation；展开面板标题旁可保留计数，列出全部 `sourceRefs`）；桌面悬停 / 触屏点击以 `data-open` 开合（与导出菜单同式，不用 `details`，以便 `.airp-float-panel` 过渡），离开后 260ms 宽限关闭，fixed 浮层按视口定位并自动上下翻转，面板 `.airp-float-panel` + `box-shadow: var(--shadow-float)`（与本页目录同开合动效）；无 `kind` |
+| 文档头 | 协议徽标 `AI Report Protocol v{schemaVersion}`；tags；唯一 `h1`；副标题；**1.0.0**：作者 + `data-doc-time`（标签「更新时间」）；**1.1.0**：`data-doc-last-updated` 一行「最后更新：updatedBy + 本地时间」（`data-doc-time-by`）；同行右侧 `[data-doc-sources-menu]`「真源参考」菜单（触发器扁平：button + `airp-interactive`，无 elevation；展开面板标题旁可保留计数，列出全部 `sourceRefs`）；桌面悬停 / 触屏点击以 `data-open` 开合（与导出菜单同式，不用 `details`，以便 `.airp-float-panel` 过渡），离开后 260ms 宽限关闭，fixed 浮层按视口定位并自动上下翻转，面板 `.airp-float-panel` + `box-shadow: var(--shadow-float)`（与本页目录同开合动效）；无 `kind` |
 | 更新时间 | 优先 `updatedAt` 否则 `createdAt`；SSR `<time datetime>`；客户端本地 `(UTC{±offset}) YYYY/MM/DD HH:mm`；1.1.0 归因优先 `updatedBy` 否则 `createdBy` |
-| 页脚 | 左 `AIRP Renderer v… • AI Report Protocol v{schemaVersion}`（取自 airp.json，缺省同文档头）；右 github 图标 + 仓库链接；主题表面用 CSS 变量 `style` |
+| 页脚 | 左 `AIRP Renderer v… • AI Report Protocol v{schemaVersion}`（取自 airp.json）；右 github 图标 + 仓库链接；主题表面用 CSS 变量 `style` |
 
 ## 积木根节点
 
