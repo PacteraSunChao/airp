@@ -47,6 +47,29 @@ npx skills add maosong-ai/airp
 
 지원 문서 언어: English(`en-US`), 简体中文(`zh-CN`), 日本語(`ja-JP`), 한국어(`ko-KR`), Deutsch(`de-DE`), Français(`fr-FR`), Русский(`ru-RU`), Español(`es-ES`), Português Brasil(`pt-BR`), Italiano(`it-IT`). 리포트를 쓸 때 `/airp --locale …`로 지정하세요.
 
+## 블록
+
+이 블록들을 외울 필요는 없습니다. `/airp` Skill이 내용에 맞춰 고릅니다. 직접 고르고 싶을 때만 아래 표를 보세요.
+
+| 판형과 본문 | 대조와 목록 | 엔지니어링과 의사결정 |
+| --- | --- | --- |
+| **히어로 지표**(`hero`)<br>*맨 앞에 가장 중요한 지표 몇 개* | **표**(`table`)<br>*여러 행·열을 맞춰 비교* | **코드**(`code`)<br>*짧은 코드* |
+| **리드**(`lead`)<br>*이 절이 무슨 이야기인지 한 문장* | **비교**(`comparison`)<br>*좌우로 바꾸기 전과 후* | **코드 차이**(`codeDiff`)<br>*어느 줄이 바뀌었는지* |
+| **섹션**(`section`)<br>*주제별로 건너뛸 수 있는 큰 덩어리* | **카드 모음**(`collection`)<br>*항목을 카드로 펼침* | **파일 트리**(`fileTree`)<br>*디렉터리 구조* |
+| **제목**(`heading`)<br>*소절의 단계를 표시* | **키-값 목록**(`keyValueList`)<br>*이름과 값을 짝으로* | **파일 변경**(`fileChangeList`)<br>*추가, 수정, 삭제된 파일* |
+| **문단**(`paragraph`)<br>*설명 한 단락* | **정의 목록**(`definitionList`)<br>*용어와 뜻을 짝으로* | **Mermaid**(`mermaid`)<br>*흐름, 시퀀스, 상태 같은 그림* |
+| **그룹**(`group`)<br>*이웃한 내용을 한 묶음으로* | **용어집**(`glossary`)<br>*글에 나온 말을 모아 설명* | **아키텍처 개요**(`architectureOverview`)<br>*전체 그림과 모듈 카드로 시스템을 봄* |
+| **강조 인용**(`pullQuote`)<br>*핵심 한 줄을 따로 꺼냄* | **상태 보드**(`statusBoard`)<br>*통과, 실패, 일부를 한눈에* | **API 목록**(`apiInventory`)<br>*API와 용도* |
+| **인용**(`blockquote`)<br>*원문이나 다른 사람의 말* | **체크리스트**(`checklist`)<br>*항목 완료 여부* | **테스트 결과**(`testResult`)<br>*통과와 실패 수를 모음* |
+| **콜아웃**(`callout`)<br>*주의, 경고, 결론을 표시* | **타임라인**(`timeline`)<br>*일어난 일을 시간순으로* | **요구 추적**(`requirementTrace`)<br>*요구를 상태와 근거에 연결* |
+| **글머리 목록**(`bulletList`)<br>*요점을 나란히* | **로드맵**(`roadmap`)<br>*단계별 목표와 진행* | **의사결정**(`decision`)<br>*무엇을 골랐고 왜인지* |
+| **번호 목록**(`numberedList`)<br>*순서대로 단계나 항목* | **단계 흐름**(`flowSteps`)<br>*흐름을 앞뒤 단계로* | **위험**(`risk`)<br>*위험과 지금 상태* |
+| **구분선**(`divider`)<br>*위아래 사이에 선을 긋기* | **링크 목록**(`linkList`)<br>*관련 링크* | **가정**(`assumption`)<br>*지금 기대고 있는 전제* |
+| **여백**(`spacer`)<br>*블록 사이에 간격* | **출처**(`citation`)<br>*인용의 출처* | **제약**(`constraint`)<br>*넘을 수 없는 한계* |
+| **이미지**(`image`)<br>*그림과 설명* | **탭**(`tabs`)<br>*한곳에서 여러 관점을 전환* | **미결 질문**(`openQuestion`)<br>*아직 정하지 않은 것* |
+| **임베드**(`embed`)<br>*외부 페이지나 리소스* | **접기**(`collapsible`)<br>*덜 중요한 긴 내용을 접어 둠* | **에이전트 메모**(`agentNote`)<br>*모델용 메모. 사람에게는 기본으로 안 보임* |
+| **부록**(`appendix`)<br>*보충 자료는 맨 끝으로* | | |
+
 ## 앞으로 할 일
 
 지금 되는 것: Skill로 소스 생성 / 검증, 확장으로 HTML / Markdown 읽기·내보내기. 다음에 하려는 것:

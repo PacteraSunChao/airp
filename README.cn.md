@@ -47,6 +47,29 @@ npx skills add maosong-ai/airp
 
 支持这些文档语言：English（`en-US`）、简体中文（`zh-CN`）、日本語（`ja-JP`）、한국어（`ko-KR`）、Deutsch（`de-DE`）、Français（`fr-FR`）、Русский（`ru-RU`）、Español（`es-ES`）、Português Brasil（`pt-BR`）、Italiano（`it-IT`）。写报告时用 `/airp --locale …` 指定。
 
+## 积木块
+
+不用记这些积木块，`/airp` Skill 会按内容自己选；想定制时再对照下面的表。
+
+| 版式与正文 | 对照与清单 | 工程与决策 |
+| --- | --- | --- |
+| **指标首屏**(`hero`)<br>*开篇放最关键的几项指标* | **表格**(`table`)<br>*多行多列对齐对照* | **代码**(`code`)<br>*放一段短代码* |
+| **导语**(`lead`)<br>*用一句话点明本节要讲什么* | **对比**(`comparison`)<br>*左右两栏看改前改后* | **代码差异**(`codeDiff`)<br>*标出改了哪些行* |
+| **章节**(`section`)<br>*按主题分成可跳转的大段* | **卡片集**(`collection`)<br>*用卡片铺开一组条目* | **文件树**(`fileTree`)<br>*展示目录结构* |
+| **标题**(`heading`)<br>*标出小节层级* | **键值列表**(`keyValueList`)<br>*成对列出名称和取值* | **文件变更**(`fileChangeList`)<br>*列出新增、修改、删除的文件* |
+| **段落**(`paragraph`)<br>*写一段说明文字* | **定义列表**(`definitionList`)<br>*术语和释义成对列出* | **Mermaid**(`mermaid`)<br>*画流程、时序、状态等图* |
+| **分组**(`group`)<br>*把相邻内容收成一组* | **术语表**(`glossary`)<br>*集中解释文中用词* | **架构总览**(`architectureOverview`)<br>*总图加模块卡片看系统* |
+| **醒目引文**(`pullQuote`)<br>*把一句关键结论单独拎出来* | **状态板**(`statusBoard`)<br>*一眼看过、不过或部分通过* | **接口清单**(`apiInventory`)<br>*列出接口及其用途* |
+| **引用**(`blockquote`)<br>*引用一段原文或他人说法* | **检查清单**(`checklist`)<br>*勾选事项是否完成* | **测试结果**(`testResult`)<br>*汇总用例通过与失败数* |
+| **提示**(`callout`)<br>*标出注意、警告或结论* | **时间线**(`timeline`)<br>*按时间排出发生过的事* | **需求追溯**(`requirementTrace`)<br>*把需求对到状态和证据* |
+| **无序列表**(`bulletList`)<br>*并列列出若干要点* | **路线图**(`roadmap`)<br>*按阶段排出目标和进度* | **决策**(`decision`)<br>*记下选了什么、为什么* |
+| **有序列表**(`numberedList`)<br>*按顺序写步骤或条目* | **步骤流**(`flowSteps`)<br>*把流程拆成先后步骤* | **风险**(`risk`)<br>*写出风险和处理现状* |
+| **分隔线**(`divider`)<br>*在上下内容之间划开* | **链接列表**(`linkList`)<br>*列出相关链接* | **假设**(`assumption`)<br>*写明当前依赖的前提* |
+| **留白**(`spacer`)<br>*在块与块之间留出空隙* | **出处**(`citation`)<br>*标明引用的来源* | **约束**(`constraint`)<br>*标出不能突破的限制* |
+| **图片**(`image`)<br>*插入一张图并配说明* | **分页签**(`tabs`)<br>*同一处切换多种看法* | **待决问题**(`openQuestion`)<br>*记下还没定的问题* |
+| **外链嵌入**(`embed`)<br>*嵌一段外部页面或资源* | **折叠**(`collapsible`)<br>*把次要的长内容收起来* | **代理备注**(`agentNote`)<br>*留给模型看的备注，默认不展示给人* |
+| **附录**(`appendix`)<br>*把补充材料放到文末* | | |
+
 ## 接下来打算做什么
 
 现在已经能用：Skill 生成 / 校验源文件，扩展阅读并导出 HTML / Markdown。后面计划：

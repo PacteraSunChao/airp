@@ -47,6 +47,29 @@ No chat, digite `/airp <tema>`. O Skill gera e valida a fonte (pasta padrão: `.
 
 Idiomas de documento suportados: English (`en-US`), 简体中文 (`zh-CN`), 日本語 (`ja-JP`), 한국어 (`ko-KR`), Deutsch (`de-DE`), Français (`fr-FR`), Русский (`ru-RU`), Español (`es-ES`), Português Brasil (`pt-BR`), Italiano (`it-IT`). Na hora de escrever, use `/airp --locale …`.
 
+## Blocos
+
+Não precisa decorar. O Skill `/airp` escolhe pelo conteúdo; a tabela é para quando quiser personalizar.
+
+| Diagramação e texto | Comparação e listas | Engenharia e decisões |
+| --- | --- | --- |
+| **Hero**(`hero`)<br>*As poucas métricas que importam, logo no começo* | **Tabela**(`table`)<br>*Linhas e colunas alinhadas para comparar* | **Código**(`code`)<br>*Um trecho curto* |
+| **Lead**(`lead`)<br>*Uma frase sobre o que esta parte trata* | **Comparação**(`comparison`)<br>*Antes e depois, lado a lado* | **Diff de código**(`codeDiff`)<br>*Quais linhas mudaram* |
+| **Seção**(`section`)<br>*Um tema grande para o qual dá para pular* | **Coleção**(`collection`)<br>*Itens em cartões* | **Árvore de arquivos**(`fileTree`)<br>*A estrutura de diretórios* |
+| **Título**(`heading`)<br>*Marca o nível de um trecho* | **Lista chave-valor**(`keyValueList`)<br>*Nomes pareados com valores* | **Mudanças de arquivos**(`fileChangeList`)<br>*Arquivos adicionados, alterados ou apagados* |
+| **Parágrafo**(`paragraph`)<br>*Um pedaço de explicação* | **Lista de definições**(`definitionList`)<br>*Termos pareados com o sentido* | **Mermaid**(`mermaid`)<br>*Fluxo, sequência, estado e diagramas parecidos* |
+| **Grupo**(`group`)<br>*Junta o conteúdo vizinho* | **Glossário**(`glossary`)<br>*Os termos do texto, num lugar só* | **Visão de arquitetura**(`architectureOverview`)<br>*Diagrama do sistema mais cartões de módulos* |
+| **Citação em destaque**(`pullQuote`)<br>*Tira uma frase-chave sozinha* | **Quadro de status**(`statusBoard`)<br>*Passou, falhou ou parcial num olhar* | **Inventário de API**(`apiInventory`)<br>*Endpoints e para que servem* |
+| **Citação**(`blockquote`)<br>*Cita um trecho ou outra pessoa* | **Checklist**(`checklist`)<br>*Itens para marcar* | **Resultados de teste**(`testResult`)<br>*Contagem de aprovados e falhas* |
+| **Destaque**(`callout`)<br>*Marca um aviso, um alerta ou uma conclusão* | **Linha do tempo**(`timeline`)<br>*O que aconteceu, na ordem do tempo* | **Rastreio de requisitos**(`requirementTrace`)<br>*Requisitos ligados a status e evidência* |
+| **Lista com marcadores**(`bulletList`)<br>*Pontos lado a lado* | **Roteiro**(`roadmap`)<br>*Metas e andamento por fase* | **Decisão**(`decision`)<br>*O que foi escolhido e por quê* |
+| **Lista numerada**(`numberedList`)<br>*Passos ou itens em ordem* | **Passos de fluxo**(`flowSteps`)<br>*Um processo partido em passos* | **Risco**(`risk`)<br>*Um risco e em que pé está* |
+| **Divisor**(`divider`)<br>*Uma linha entre o de cima e o de baixo* | **Lista de links**(`linkList`)<br>*Links relacionados* | **Premissa**(`assumption`)<br>*Uma premissa de que o relatório depende* |
+| **Espaço**(`spacer`)<br>*Vão entre blocos* | **Fonte**(`citation`)<br>*De onde veio a citação* | **Restrição**(`constraint`)<br>*Um limite que não se atravessa* |
+| **Imagem**(`image`)<br>*Uma imagem com legenda* | **Abas**(`tabs`)<br>*Várias visões no mesmo lugar* | **Pergunta em aberto**(`openQuestion`)<br>*Algo que ainda não foi decidido* |
+| **Incorporação**(`embed`)<br>*Uma página ou recurso externo* | **Recolhível**(`collapsible`)<br>*Conteúdo longo e secundário, recolhido* | **Nota de agente**(`agentNote`)<br>*Uma nota para o modelo; escondida do leitor por padrão* |
+| **Apêndice**(`appendix`)<br>*Material extra no fim* | | |
+
 ## O que vem a seguir
 
 Já dá para usar: Skill gera / valida fontes; extensão lê e exporta HTML / Markdown. Na fila:

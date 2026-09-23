@@ -47,6 +47,29 @@ In chat, type `/airp <topic>`. The Skill generates and validates a source file (
 
 Supported document languages: English (`en-US`), 简体中文 (`zh-CN`), 日本語 (`ja-JP`), 한국어 (`ko-KR`), Deutsch (`de-DE`), Français (`fr-FR`), Русский (`ru-RU`), Español (`es-ES`), Português Brasil (`pt-BR`), Italiano (`it-IT`). Pass `/airp --locale …` when you write a report.
 
+## Blocks
+
+You don’t have to memorize these Blocks. The `/airp` Skill picks them from the content; use the table when you want to customize.
+
+| Layout and prose | Comparison and lists | Engineering and decisions |
+| --- | --- | --- |
+| **Hero**(`hero`)<br>*The few metrics that matter most, up front* | **Table**(`table`)<br>*Rows and columns lined up for comparison* | **Code**(`code`)<br>*A short snippet* |
+| **Lead**(`lead`)<br>*One sentence on what this part is about* | **Comparison**(`comparison`)<br>*Before and after, side by side* | **Code diff**(`codeDiff`)<br>*Which lines changed* |
+| **Section**(`section`)<br>*A major topic you can jump to* | **Collection**(`collection`)<br>*A set of items as cards* | **File tree**(`fileTree`)<br>*A directory layout* |
+| **Heading**(`heading`)<br>*Marks a subsection level* | **Key-value list**(`keyValueList`)<br>*Names paired with values* | **File changes**(`fileChangeList`)<br>*Files added, modified, or deleted* |
+| **Paragraph**(`paragraph`)<br>*A stretch of explanation* | **Definition list**(`definitionList`)<br>*Terms paired with meanings* | **Mermaid**(`mermaid`)<br>*Flow, sequence, state, and similar diagrams* |
+| **Group**(`group`)<br>*Bundles neighboring content* | **Glossary**(`glossary`)<br>*Terms used in the report, in one place* | **Architecture overview**(`architectureOverview`)<br>*A system diagram plus module cards* |
+| **Pull quote**(`pullQuote`)<br>*Lifts one key line out on its own* | **Status board**(`statusBoard`)<br>*Pass, fail, or partial at a glance* | **API inventory**(`apiInventory`)<br>*Endpoints and what they’re for* |
+| **Quote**(`blockquote`)<br>*Quotes a passage or someone else* | **Checklist**(`checklist`)<br>*Items you tick off* | **Test results**(`testResult`)<br>*Passed and failed counts* |
+| **Callout**(`callout`)<br>*Flags a note, warning, or conclusion* | **Timeline**(`timeline`)<br>*What happened, in time order* | **Requirement trace**(`requirementTrace`)<br>*Requirements mapped to status and evidence* |
+| **Bullet list**(`bulletList`)<br>*Points side by side* | **Roadmap**(`roadmap`)<br>*Goals and progress by phase* | **Decision**(`decision`)<br>*What was chosen, and why* |
+| **Numbered list**(`numberedList`)<br>*Steps or items in order* | **Flow steps**(`flowSteps`)<br>*A process broken into steps* | **Risk**(`risk`)<br>*A risk and where it stands* |
+| **Divider**(`divider`)<br>*A line between what’s above and below* | **Link list**(`linkList`)<br>*Related links* | **Assumption**(`assumption`)<br>*A premise the report depends on* |
+| **Spacer**(`spacer`)<br>*Space between blocks* | **Citation**(`citation`)<br>*Where a claim comes from* | **Constraint**(`constraint`)<br>*A limit you can’t break* |
+| **Image**(`image`)<br>*A picture with a caption* | **Tabs**(`tabs`)<br>*Several views in one place* | **Open question**(`openQuestion`)<br>*Something still undecided* |
+| **Embed**(`embed`)<br>*An external page or resource* | **Collapsible**(`collapsible`)<br>*Long, secondary content folded away* | **Agent note**(`agentNote`)<br>*A note for the model; hidden from readers by default* |
+| **Appendix**(`appendix`)<br>*Extra material at the end* | | |
+
 ## What’s next
 
 Available today: Skill generates / validates sources; the extension reads and exports HTML / Markdown. Planned next:
