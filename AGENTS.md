@@ -12,6 +12,7 @@
 |------|--------|------|
 | 受约束源码（`*.ts`、`*.tsx`、`*.mjs` 等）交付前 | 根目录 `pnpm fix`；本地可按包收窄，如 `pnpm --filter @airp/validate fix` | `registry://skills.code-fix` |
 | 改 `packages/**/src`、`apps/**/src` 或 `fixtures/airp/**` | 同步 Unit/Package/E2E 测试与 case，并跑 `pnpm test` | `registry://skills.test-sync` |
+| 更新 `CHANGELOG.md`、整理发版说明 / Unreleased | 按最新 `vX.Y.Z` tag 与工作区净效果写用户可见条目 | `registry://skills.changelog` |
 | 勾选任一 rule / skill checklist 前 | 先满足交付前联动 | `registry://shared.delivery-prerequisites` |
 | 用户可见文案、协议概念命名或术语表相关标识符 | 按术语表选词 | `registry://shared.terminology` |
 

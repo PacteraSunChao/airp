@@ -83,6 +83,15 @@ skills:
       block-authoring: .agents/skills/project/airp/references/block-authoring.md
       current-datetime: .agents/skills/project/airp/references/current-datetime.md
       mermaid-authoring: .agents/skills/project/airp/references/mermaid-authoring.md
+  changelog:
+    checklists:
+      update-changelog: .agents/skills/project/changelog/checklists/update-changelog.md
+    path: .agents/skills/project/changelog/SKILL.md
+    references:
+      entry-examples: .agents/skills/project/changelog/references/entry-examples.md
+    rules:
+      granularity: .agents/skills/project/changelog/rules/granularity.md
+      scope-and-format: .agents/skills/project/changelog/rules/scope-and-format.md
   code-fix:
     checklists:
       post-change-fix: .agents/skills/core/code-fix/checklists/post-change-fix.md
