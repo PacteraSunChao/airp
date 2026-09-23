@@ -20,7 +20,7 @@ export const renderCases: HtmlRenderCase[] = [
         'data-route-path="/"',
         "AIRP Renderer",
         "AI Report Protocol v1.0.0",
-        "v1.1.2",
+        "v1.1.3",
         "data-doc-header",
       ],
       notContains: [
