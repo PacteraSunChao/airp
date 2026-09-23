@@ -124,6 +124,10 @@ pnpm --filter=airp-renderer-vscode package
 
 ---
 
+## 변경 기록
+
+[변경 기록](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
+
 ## 라이선스
 
 MIT

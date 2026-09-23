@@ -80,6 +80,10 @@ Available today: Skill generates / validates sources; the extension reads and ex
 | **More export formats** | Add PDF (print, archive) |
 | **Multi-page / multi-sheet** | Split long reports by section or sheet instead of one endless page |
 
+## Changelog
+
+[Changelog](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
+
 ---
 
 **让 AI 写出来的报告更好读，也好改。**
@@ -157,6 +161,10 @@ npx skills add maosong-ai/airp
 | **可视化编辑** | 在扩展里直接改内容，不必事事找 Skill |
 | **更多导出格式** | 增加 PDF（打印、归档） |
 | **多页 / 多 Sheet** | 长报告按章节或工作表拆开，别堆成一页 |
+
+## 变更记录
+
+[变更记录](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
 
 ## License
 

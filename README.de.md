@@ -124,6 +124,10 @@ pnpm --filter=airp-renderer-vscode package
 
 ---
 
+## Änderungsprotokoll
+
+[Änderungsprotokoll](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
+
 ## Lizenz
 
 MIT

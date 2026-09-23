@@ -75,6 +75,10 @@ Open the printed URL in a browser when using `--serve`.
 | `1` | Validation or render failure, or usage error |
 | `2` | Unexpected failure |
 
+## Changelog
+
+[Changelog](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
+
 ## License
 
 MIT

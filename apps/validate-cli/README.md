@@ -53,6 +53,10 @@ airp-validate --input ./doc.airp.json --reporter json
 | `1` | Invalid document or usage error |
 | `2` | Unexpected failure |
 
+## Changelog
+
+[Changelog](https://github.com/maosong-ai/airp/blob/main/CHANGELOG.md)
+
 ## License
 
 MIT
