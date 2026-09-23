@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://airp.local/1.1.0/document.schema.json",
+  "$id": "https://raw.githubusercontent.com/maosong-ai/airp/refs/tags/JSON-SCHEMA-v1.1.0/packages/protocol/src/schemas/1.1.0/document.schema.json",
   "title": "AIRP Document",
   "description": "AI Report Protocol — version 1.1.0. Semantic document IR for agent-generated technical reports. Single locale per document; PlainString / MarkdownString for user-visible text; machine handle @id on structured objects. No layout coordinates; renderer derives presentation.",
   "type": "object",
