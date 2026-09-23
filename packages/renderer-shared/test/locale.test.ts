@@ -39,6 +39,12 @@ describe("resolveRichText", () => {
     );
   });
 
+  it("folds an object map to the passed locale", () => {
+    expect(resolveRichText({ en: "Hi", "zh-CN": "你好" }, "zh-CN")).toBe(
+      "你好"
+    );
+  });
+
   it("renders inline nodes", () => {
     expect(
       resolveRichText(

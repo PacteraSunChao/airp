@@ -64,8 +64,9 @@
 
 | `$defs` | 规则 |
 |---------|------|
-| `LocalizedString` | plain `string` **或** `Record<locale, string>`；object 形态必须含 `defaultLocale` 键，且所有键 ⊆ `i18n.locales`（validate i18n 门禁） |
-| `RichText` / `InlineNode` | 富文本与行内节点（以该版 schema 为准） |
+| `LocalizedString` | plain `string`（`minLength: 1`）**或**对象形态：`minProperties: 1`，每个值为 `minLength: 1` 的 string。对象形态必须含 `defaultLocale` 键，且所有键 ⊆ `i18n.locales`（validate i18n 门禁） |
+| `RichText` | 恰好一种：① plain `string`（markdown-lite，无最短长度）；② `InlineNode[]`（`minItems: 1`）；③ 对象形态（与 `LocalizedString` 的对象分支同形，不含其纯字符串分支）。对象形态必须含 `defaultLocale` 键，且所有键 ⊆ `i18n.locales`（validate i18n 门禁） |
+| `InlineNode` | 行内节点 `text` / `code` / `strong` / `link` |
 
 ### `1.1.0`
 

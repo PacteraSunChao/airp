@@ -1,4 +1,3 @@
-import { isRecord } from "@airp/utils";
 import type { InlineNode, RichText } from "../document-model.js";
 import { resolveLocalized } from "./resolve-localized.js";
 
@@ -23,10 +22,10 @@ function renderInlineNode(node: InlineNode): string {
 
 /**
  * Fold RichText at the knocked-in locale.
- * Plain strings pass through (markdown-lite); maps use resolveLocalized.
+ * Plain strings pass through (markdown-lite); locale maps use resolveLocalized.
  */
 export function resolveRichText(
-  value: RichText | LocalizedStringLike | undefined,
+  value: RichText | undefined,
   locale: string
 ): string {
   if (value === undefined) {
@@ -36,13 +35,7 @@ export function resolveRichText(
     return value;
   }
   if (Array.isArray(value)) {
-    return value.map((node) => renderInlineNode(node as InlineNode)).join("");
+    return value.map((node) => renderInlineNode(node)).join("");
   }
-  if (isRecord(value)) {
-    return resolveLocalized(value as Record<string, string>, locale);
-  }
-  return "";
+  return resolveLocalized(value, locale);
 }
-
-/** Accept schema-wide union where RichText may also be a locale map. */
-type LocalizedStringLike = string | Readonly<Record<string, string>>;

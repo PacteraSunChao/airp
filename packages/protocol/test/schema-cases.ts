@@ -9,6 +9,13 @@ export const schemaCases: SchemaCase[] = [
     expect: { ok: true },
   },
   {
+    id: "schema.document.valid-richtext-locale-map",
+    tier: "Package",
+    schemaRef: "document.schema.json",
+    document: "valid/richtext-locale-map-1.0.0.airp.json",
+    expect: { ok: true },
+  },
+  {
     id: "schema.document.valid-minimal-1.1.0",
     tier: "Package",
     schemaRef: "document.schema.json",

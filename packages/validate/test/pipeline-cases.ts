@@ -9,6 +9,13 @@ export const pipelineCases: PipelineCase[] = [
     expect: { ok: true },
   },
   {
+    id: "pipeline.document.valid-richtext-locale-map",
+    tier: "Package",
+    document: "valid/richtext-locale-map-1.0.0.airp.json",
+    mode: "node",
+    expect: { ok: true },
+  },
+  {
     id: "pipeline.document.valid-minimal-1.1.0",
     tier: "Package",
     document: "valid/minimal-1.1.0.airp.json",

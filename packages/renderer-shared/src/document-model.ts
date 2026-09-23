@@ -10,8 +10,8 @@ export type InlineNode =
   | { type: "strong"; children: InlineNode[] }
   | { type: "link"; href: string; children: InlineNode[] };
 
-/** Markdown-lite string or inline node array. */
-export type RichText = string | InlineNode[];
+/** Markdown-lite string, inline node array, or locale map (schema 1.0.0). */
+export type RichText = string | InlineNode[] | LocalizedStringMap;
 
 /** schema 1.0.0: chrome strings per locale (1.1.0 forbids `i18n.ui`). */
 export type I18nUiByLocale = Readonly<

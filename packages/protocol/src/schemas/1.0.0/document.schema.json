@@ -49,7 +49,7 @@
       ]
     },
     "RichText": {
-      "description": "Plain string (markdown-lite) or structured inline nodes. Renderer supports **bold**, `code`, and [links](url) in string form.",
+      "description": "Exactly one of: a plain string (markdown-lite; no minimum length), an InlineNode array (at least one item), or a locale map. The locale map matches the LocalizedString object branch (at least one key; each value a non-empty string) and does not include the LocalizedString plain-string branch. A locale map must include the defaultLocale key, and every key must be listed in i18n.locales (validate i18n gate). String form supports **bold**, `code`, and [links](url).",
       "oneOf": [
         {
           "type": "string"
@@ -60,6 +60,14 @@
             "$ref": "#/$defs/InlineNode"
           },
           "minItems": 1
+        },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       ]
     },
