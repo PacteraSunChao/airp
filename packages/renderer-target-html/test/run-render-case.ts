@@ -280,6 +280,19 @@ export async function runRenderCase(case_: HtmlRenderCase): Promise<void> {
       throw new Error(`${case_.id}: expected string HTML body`);
     }
     assertOkBody(case_.id, body, case_.expect);
+    if (case_.expect.diagnostics) {
+      const actual = output.diagnostics ?? [];
+      for (const expected of case_.expect.diagnostics) {
+        const match = actual.find(
+          (d) => d.code === expected.code && d.severity === expected.severity
+        );
+        if (!match) {
+          throw new Error(
+            `${case_.id}: missing diagnostic ${expected.code}/${expected.severity}; got ${JSON.stringify(actual)}`
+          );
+        }
+      }
+    }
     return;
   }
 

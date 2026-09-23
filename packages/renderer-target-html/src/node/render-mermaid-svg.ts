@@ -3,7 +3,10 @@ import { RENDERER_TARGETS_HTML_MERMAID_RENDER_FAILED } from "../diagnostic-codes
 import { loadMermaid } from "./load-mermaid.js";
 import { applyMermaidThemeVars } from "./mermaid-theme-vars.js";
 
-/** Render one Mermaid source to an SVG markup string (unique `id` isolates defs). */
+/** Render one Mermaid source to an SVG markup string (unique `id` isolates defs).
+ * Failures throw `AirpDiagnosticError` with warning severity; Node `renderHtml`
+ * converts them to page error blocks so the document still succeeds.
+ */
 export async function renderMermaidSvg(
   source: string,
   id: string,

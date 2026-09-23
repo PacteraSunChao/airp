@@ -8,6 +8,7 @@ export interface RendererCase {
         format: "html" | "markdown";
         contains: string[];
         notContains?: string[];
+        diagnostics?: readonly { code: string; severity: string }[];
       }
     | {
         ok: false;

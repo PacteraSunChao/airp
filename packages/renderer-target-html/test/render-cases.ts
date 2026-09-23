@@ -1,5 +1,6 @@
 import {
   RENDERER_TARGETS_HTML_MERMAID_NODE_REQUIRED,
+  RENDERER_TARGETS_HTML_MERMAID_RENDER_FAILED,
   RENDERER_TARGETS_HTML_UNKNOWN_BLOCK_TYPE,
 } from "../src/diagnostic-codes.js";
 import type { HtmlRenderCase } from "./render-case.js";
@@ -237,6 +238,27 @@ export const renderCases: HtmlRenderCase[] = [
       notContains: ["data-mermaid-source"],
       hasSvgViewer: true,
       distinctMermaidSvgIds: true,
+    },
+  },
+  {
+    id: "mermaid-bad-source-soft-fail",
+    document: "valid/mermaid-bad-source.airp.json",
+    entry: "node",
+    expect: {
+      ok: true,
+      contains: [
+        "Before diagram.",
+        "After diagram.",
+        'data-mermaid-error="true"',
+        "Mermaid render failed",
+      ],
+      notContains: ["data-mermaid-source"],
+      diagnostics: [
+        {
+          code: RENDERER_TARGETS_HTML_MERMAID_RENDER_FAILED.code,
+          severity: "warning",
+        },
+      ],
     },
   },
   {

@@ -71,6 +71,27 @@ export const renderCases: RendererCase[] = [
     },
   },
   {
+    id: "html-mermaid-bad-source-soft-fail",
+    document: "valid/mermaid-bad-source.airp.json",
+    target: "html",
+    entry: "node",
+    expect: {
+      ok: true,
+      format: "html",
+      contains: [
+        "Before diagram.",
+        "After diagram.",
+        'data-mermaid-error="true"',
+      ],
+      diagnostics: [
+        {
+          code: "renderer.targets.html.mermaid.render-failed",
+          severity: "warning",
+        },
+      ],
+    },
+  },
+  {
     id: "unknown-target",
     document: "valid/minimal.airp.json",
     target: "excel",

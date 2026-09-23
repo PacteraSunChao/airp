@@ -184,9 +184,12 @@ function mermaidFigure(
   diagramBlock: Record<string, unknown>,
   titleText?: string
 ): string {
-  const svg = takeMermaidSvgOrFail(ctx);
+  const markup = takeMermaidSvgOrFail(ctx);
+  if (markup.includes('data-mermaid-error="true"')) {
+    return markup;
+  }
   return renderSvgViewer({
-    svg,
+    svg: markup,
     minHeight: MERMAID_VIEWER_MIN_HEIGHT_PX,
     storageKey: svgViewerStorageKey(
       "/",

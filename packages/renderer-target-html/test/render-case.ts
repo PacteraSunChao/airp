@@ -27,6 +27,8 @@ export interface HtmlRenderCase {
         hasAgentNoteChrome?: boolean;
         /** Assert appendix chrome contains only its title. */
         hasAppendixTitleOnly?: boolean;
+        /** Assert TargetRenderOutput diagnostics (code + severity). */
+        diagnostics?: readonly { code: string; severity: string }[];
       }
     | { ok: false; code: string };
   id: string;

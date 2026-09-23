@@ -49,6 +49,18 @@ function assertOkBody(
       );
     }
   }
+  if (expect.diagnostics) {
+    for (const expected of expect.diagnostics) {
+      const match = result.diagnostics.find(
+        (d) => d.code === expected.code && d.severity === expected.severity
+      );
+      if (!match) {
+        throw new Error(
+          `${caseId}: missing diagnostic ${expected.code}/${expected.severity}; got ${JSON.stringify(result.diagnostics)}`
+        );
+      }
+    }
+  }
 }
 
 function assertFailCodes(

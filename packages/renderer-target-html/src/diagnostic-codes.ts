@@ -12,10 +12,10 @@ export const RENDERER_TARGETS_HTML_MERMAID_NODE_REQUIRED = defineDiagnosticCode(
   "error"
 );
 
-/** return: src/node/render-mermaid-svg.ts */
+/** return: src/node/render-mermaid-svg.ts / src/node/render.ts */
 export const RENDERER_TARGETS_HTML_MERMAID_RENDER_FAILED = defineDiagnosticCode(
   "renderer.targets.html.mermaid.render-failed",
-  "error"
+  "warning"
 );
 
 /** return: src/section-anchor/v1-1-0.ts */

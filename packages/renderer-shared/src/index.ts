@@ -20,5 +20,5 @@ export {
   createLocaleFormatContext,
   type LocaleFormatContext,
 } from "./locale/format-context.js";
-export { resolveLocalized } from "./locale/resolve-localized.js";
+export { resolveLocalized } from "./locale/resolve-localized/registry.js";
 export { resolveRichText } from "./locale/resolve-rich-text.js";

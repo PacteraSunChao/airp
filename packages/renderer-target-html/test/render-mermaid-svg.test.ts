@@ -17,7 +17,7 @@ describe("renderMermaidSvg", () => {
     vi.clearAllMocks();
   });
 
-  it("fail-closes with mermaid.render-failed", async () => {
+  it("throws mermaid.render-failed warning diagnostic", async () => {
     const { renderMermaidSvg } = await import(
       "../src/node/render-mermaid-svg.js"
     );
@@ -30,6 +30,7 @@ describe("renderMermaidSvg", () => {
         diagnostics: [
           expect.objectContaining({
             code: RENDERER_TARGETS_HTML_MERMAID_RENDER_FAILED.code,
+            severity: "warning",
           }),
         ],
       });

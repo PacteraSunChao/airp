@@ -3,7 +3,7 @@ import { ensureMermaidDom } from "./ensure-mermaid-dom.js";
 
 let mermaidApi: typeof Mermaid | undefined;
 
-/** Load Mermaid after DOM shim (shared with validate/node version pin). */
+/** Load Mermaid after DOM shim. */
 export async function loadMermaid(): Promise<typeof Mermaid> {
   ensureMermaidDom();
   if (!mermaidApi) {

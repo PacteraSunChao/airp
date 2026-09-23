@@ -1,13 +1,13 @@
 import { AirpDiagnosticError, diagnostic } from "@airp/diagnostics";
 import { isRecord } from "@airp/utils";
-import { RENDERER_SHARED_LOCALE_LOCALIZED_STRING_MISSING } from "../diagnostic-codes.js";
-import type { LocalizedString } from "../document-model.js";
+import { RENDERER_SHARED_LOCALE_LOCALIZED_STRING_MISSING } from "../../diagnostic-codes.js";
+import type { LocalizedString } from "../../document-model.js";
 
 /**
- * Fold a LocalizedString at the knocked-in locale.
+ * Fold a LocalizedString at the knocked-in locale (schema 1.1.0).
  * Missing object key → hard fail (no defaultLocale fallback).
  */
-export function resolveLocalized(
+export function resolveLocalized110(
   value: LocalizedString | undefined,
   locale: string
 ): string {

@@ -322,7 +322,6 @@ function installHtmlLayoutStubs(htmlElement: typeof HTMLElement): void {
 /**
  * Install a minimal DOM so Mermaid can render SVG in Node.
  * Must run before the first `import("mermaid")` so DOMPurify binds to `window`.
- * Intentional fork of validate/node ensure-mermaid-dom (same contract; DAG).
  */
 export function ensureMermaidDom(): void {
   if (shimmed) {

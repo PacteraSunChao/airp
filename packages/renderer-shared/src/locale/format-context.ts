@@ -1,9 +1,10 @@
+import { assertSchemaVersion } from "@airp/protocol";
 import type {
   AirpDocumentModel,
   LocalizedString,
   RichText,
 } from "../document-model.js";
-import { resolveLocalized } from "./resolve-localized.js";
+import { resolveLocalizedFor } from "./resolve-localized/registry.js";
 import { resolveRichText } from "./resolve-rich-text.js";
 
 export interface LocaleFormatContext {
@@ -40,16 +41,18 @@ function resolveUi(
   return fallback;
 }
 
-/** Build t / tr / ui helpers bound to a knocked-in locale. */
+/** Build t / tr / ui helpers bound to a knocked-in locale and schema version. */
 export function createLocaleFormatContext(
   doc: AirpDocumentModel,
   locale: string
 ): LocaleFormatContext {
+  assertSchemaVersion(doc.schemaVersion);
+  const resolveLocalized = resolveLocalizedFor(doc.schemaVersion);
   return {
     doc,
     locale,
-    t: (value) => resolveLocalized(value, locale),
-    tr: (value) => resolveRichText(value, locale),
+    t: (value) => resolveLocalized(value, locale, doc),
+    tr: (value) => resolveRichText(value, locale, doc),
     ui: (key, fallback) => resolveUi(doc, locale, key, fallback),
   };
 }
