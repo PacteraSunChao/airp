@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "1.0.0 富文本接受对象形态",
+    "subtitle": "旧文档可校验、可阅读；1.1.0 不动",
+    "kind": "plan-review",
+    "createdAt": "2026-09-23T10:41:53.471Z",
+    "createdBy": "毛松 <maosong-life@outlook.com>",
+    "tags": ["1.0.0", "richtext"],
+    "sourceRefs": [
+      {
+        "@id": "vopt1eqsrl",
+        "type": "path",
+        "value": "packages/protocol/src/schemas/1.0.0/document.schema.json",
+        "label": "1.0.0 文档 schema"
+      },
+      {
+        "@id": "st75izncsw",
+        "type": "path",
+        "value": ".agents/rules/project/protocol/rules/document-field-naming.md",
+        "label": "字段命名规范"
+      },
+      {
+        "@id": "u83fop83sz",
+        "type": "path",
+        "value": ".tmp/20260622144654-surge-spec-studio-start.airp.json",
+        "label": "旧 skill 样例"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "@id": "s6v5mtbhjn",
+      "type": "lead",
+      "text": "1.0.0 的 `RichText` 增加对象形态，使旧 skill 写出的正文语言对象能通过校验并被阅读。1.1.0 的 schema 与处理逻辑不动。HTML / Markdown 外观保持现状。"
+    },
+    {
+      "@id": "lylss3nfqk",
+      "type": "section",
+      "title": "目标形态",
+      "lead": "`RichText` 恰好符合下面三种之一。阅读时对象形态只取 `defaultLocale` 那一句；缺这个键则整篇失败。",
+      "children": [
+        {
+          "@id": "wn64po0tpo",
+          "type": "definitionList",
+          "items": [
+            {
+              "@id": "mze9rqle0y",
+              "term": "纯字符串",
+              "definition": "markdown-lite 正文。保持 schema 里现有的 string 分支，不另加最短长度。"
+            },
+            {
+              "@id": "xnr2qt9hds",
+              "term": "行内节点数组",
+              "definition": "`InlineNode` 数组，至少一项。"
+            },
+            {
+              "@id": "ut5hqki9ky",
+              "term": "对象形态",
+              "definition": "至少一个键，每个值是长度至少为 1 的字符串。形状与 `LocalizedString` 的对象分支相同，不包含它的纯字符串分支。键必须含 `defaultLocale`，且每个键都属于 `i18n.locales`。这道检查用现有 i18n 门禁，不新写检查。"
+            }
+          ]
+        },
+        {
+          "@id": "gby2stinno",
+          "type": "decision",
+          "title": "第三种只收对象形态",
+          "status": "accepted",
+          "chosen": "对象分支单独写入 `RichText` 的 oneOf",
+          "rationale": "整段 `LocalizedString` 含纯字符串。把它并进 `RichText` 的 oneOf 后，纯字符串同时命中两支，规则要求恰好命中一支，现有合法的 1.0.0 文档会全部失败。对象分支与 `LocalizedString` 的对象分支字段相同，用展开写出，不用 `$ref` 指向整个 `LocalizedString`。"
+        }
+      ]
+    },
+    {
+      "@id": "uw6vwldn45",
+      "type": "section",
+      "title": "阶段",
+      "lead": "按 0 → 1 → 收尾连续做完，阶段之间不停、不另开窗口。每阶段测试通过后，把对应项的 `status` 改为 `done`、`checked` 改为 `true`。",
+      "children": [
+        {
+          "@id": "2rxvc4sf85",
+          "type": "checklist",
+          "items": [
+            {
+              "@id": "9s44irsktk",
+              "label": "阶段 0",
+              "checked": true,
+              "status": "done",
+              "note": "按「目标形态」改 `.agents/rules/project/protocol/rules/document-field-naming.md` 里 1.0.0 的 `RichText` 行。跑 `pnpm check-agents-registry`。通过后把本项标完成。"
+            },
+            {
+              "@id": "9vs48b3hqu",
+              "label": "阶段 1",
+              "checked": true,
+              "status": "done",
+              "note": "按「目标形态」改 1.0.0 schema 与 `RichText` 类型，并补上「变动文件」表里阶段 1 的 fixture 与 case。既有 `fixtures/airp/documents/valid/minimal.airp.json` 的纯字符串正文仍须通过。跑 `pnpm --filter @airp/protocol test`、`pnpm --filter @airp/validate test`、`pnpm --filter @airp/renderer-shared test`。通过后把本项标完成。"
+            },
+            {
+              "@id": "8ns83uiqdy",
+              "label": "收尾",
+              "checked": true,
+              "status": "done",
+              "note": "根目录 `pnpm fix`，然后根目录 `pnpm test`。通过后把本项标完成。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "jqnca6u49t",
+      "type": "section",
+      "title": "变动文件",
+      "children": [
+        {
+          "@id": "8fw67dh6r5",
+          "type": "table",
+          "caption": "本次改动的文件",
+          "columns": [
+            {
+              "@id": "bdfc2sy7cm",
+              "key": "phase",
+              "label": "阶段"
+            },
+            {
+              "@id": "h1rff5dloy",
+              "key": "path",
+              "label": "路径"
+            },
+            {
+              "@id": "86wa5hwd4d",
+              "key": "change",
+              "label": "改动"
+            }
+          ],
+          "rows": [
+            {
+              "@id": "jm0dc54sy9",
+              "phase": "0",
+              "path": ".agents/rules/project/protocol/rules/document-field-naming.md",
+              "change": "1.0.0 的 RichText 写成三种形态；第三种是对象形态"
+            },
+            {
+              "@id": "ngjfp3oqwn",
+              "phase": "1",
+              "path": "packages/protocol/src/schemas/1.0.0/document.schema.json",
+              "change": "RichText 的 oneOf 增加对象分支，字段与 LocalizedString 的对象分支相同，不引用整个 LocalizedString"
+            },
+            {
+              "@id": "5gal5zn9ue",
+              "phase": "1",
+              "path": "packages/renderer-shared/src/document-model.ts",
+              "change": "RichText 包含对象形态"
+            },
+            {
+              "@id": "whcxzjxp13",
+              "phase": "1",
+              "path": "packages/renderer-shared/src/locale/resolve-rich-text.ts",
+              "change": "参数类型改为 RichText，去掉 LocalizedStringLike"
+            },
+            {
+              "@id": "k0x9jmj7y6",
+              "phase": "1",
+              "path": "packages/renderer-shared/test/locale.test.ts",
+              "change": "对象形态按传入 locale 折成该句"
+            },
+            {
+              "@id": "fn5f94tz73",
+              "phase": "1",
+              "path": "fixtures/airp/documents/valid/richtext-locale-map-1.0.0.airp.json",
+              "change": "新增。paragraph.text 为含 defaultLocale 的对象形态"
+            },
+            {
+              "@id": "kqbkc5cwdb",
+              "phase": "1",
+              "path": "packages/protocol/test/schema-cases.ts",
+              "change": "登记上述 fixture，期望通过"
+            },
+            {
+              "@id": "e90gzegy72",
+              "phase": "1",
+              "path": "packages/validate/test/pipeline-cases.ts",
+              "change": "登记上述 fixture，mode 为 node，期望通过"
+            },
+            {
+              "@id": "9ua3bdt3b1",
+              "phase": "1",
+              "path": "packages/validate/test/i18n-unknown-locale.test.ts",
+              "change": "正文对象形态的键不在 i18n.locales 时失败，诊断码 validate.validators.i18n.unknown-locale-key"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "7drijh66x6",
+      "type": "section",
+      "title": "边界",
+      "lead": "阅读折叠已写在 `registry://rules.renderer` 的 locale-format：对象形态取敲定语言的键，缺失则失败。本次不改该文件，也不改 HTML / Markdown 的发射代码。",
+      "children": [
+        {
+          "@id": "0tiw7rigvd",
+          "type": "constraint",
+          "nonNegotiable": true,
+          "rule": "`packages/protocol/src/schemas/1.1.0/` 与 `.agents/skills/project/airp/schemas/document.schema.json` 保持不动。1.1.0 的校验与渲染逻辑保持不动。",
+          "scope": "1.1.0"
+        },
+        {
+          "@id": "3aw4vherlx",
+          "type": "constraint",
+          "nonNegotiable": true,
+          "rule": "不放宽 1.0.0 的 date-time、积木块 `id` 格式、`id` 唯一，以及 `additionalProperties: false`。",
+          "scope": "1.0.0 其余门禁"
+        },
+        {
+          "@id": "soprncvlp1",
+          "type": "constraint",
+          "nonNegotiable": true,
+          "rule": "Mermaid 源码解析失败仍令整篇失败。该步骤与 1.1.0 共用，本次不改。",
+          "scope": "Mermaid"
+        },
+        {
+          "@id": "i29ce9ez55",
+          "type": "constraint",
+          "nonNegotiable": true,
+          "rule": "不提 PR。PR 由人在全部阶段完成后手动一次。",
+          "scope": "交付"
+        }
+      ]
+    }
+  ]
+}
