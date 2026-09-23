@@ -19,5 +19,6 @@
 
 ## 维护
 
-- 协议字段或管线变更时：**先改 schema 与校验器**，再同步 `rules/document-field-naming.md`。
+- 已列入 `supportedSchemaVersions` 的协议形状不改（`registry://rules.schema-version-routing`）。
+- 新协议形状：新 `schemaVersion` 的 schema 与校验器，再在 `rules/document-field-naming.md` 增加该版分列。
 - 禁止在索引页复制 `rules/*` 长文。

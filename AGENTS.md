@@ -25,7 +25,7 @@
 | `registry://rules.package-boundaries` | 包边界规范（SSOT） | 新增/移动包内符号、调整 workspace 依赖、判定 platform / 同构与 Node 入口、判定代码应落在哪一包、或收敛跨包近重复实现时，应优先遵循对应规范文档 | — |
 | `registry://rules.failure-channels` | 失败通道规范（SSOT） | 改失败通道判定、`AirpDiagnostic` / `AirpResult`、Ctx/Payload、或 CLI 人话 / 退出码 / Logger 约定时，应优先遵循对应规范文档 | — |
 | `registry://rules.protocol` | AIRP 协议文档命名规范（SSOT） | 新增或修改 `*.airp.json`、schema 字段或协议 fixture 时，应优先遵循对应规范文档 | — |
-| `registry://rules.schema-version-routing` | Schema 版本路由规范（SSOT） | 新增/修改按 `schemaVersion` 分派的实现与 registry，或判断代码应进版本文件还是 unversioned 时，应优先遵循对应规范文档 | — |
+| `registry://rules.schema-version-routing` | Schema 版本路由规范（SSOT） | 新增/修改按 `schemaVersion` 分派的实现与 registry、判断代码应进版本文件还是 unversioned、或改协议形状 / 已有 schema 目录时，应优先遵循对应规范文档 | — |
 | `registry://rules.renderer` | Renderer 规范（SSOT） | 改 `packages/renderer*`、HTML/Markdown target、locale 敲定、Mermaid→SVG、缺物件硬失败或阅读器壳样式时，应优先遵循对应规范文档 | — |
 | `registry://rules.rules-meta` | AGENTS.md 与 `.agents` 结构规范（SSOT） | 任何对 `AGENTS.md` 或 `.agents/**` 文件内容的新增或修改，都应优先遵循对应规范文档 | — |
 | `registry://rules.code-styles` | 通用编码规范 | 任何对本项目文件内容的新增或修改，都应优先遵循对应规范文档 | `registry://skills.code-fix` |

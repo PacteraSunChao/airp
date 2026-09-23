@@ -7,7 +7,7 @@
 | 内容 | 落点 | 跨版复用 |
 |------|------|----------|
 | 支持的版本集合 | `@airp/protocol` 的 `supportedSchemaVersions` | 每个消费包 registry 对集合内**每个**键有条目 |
-| 协议 schema | `packages/protocol/src/schemas/<semver>/` | 新版本新建目录；无旧字段 fallback |
+| 协议 schema | `packages/protocol/src/schemas/<semver>/` | `supportedSchemaVersions` 中的目录不改，该版校验结果不改；新形状新建目录 |
 | 校验 step、块渲染 builder | `<版本实现根>/<domain>/v<major>-<minor>-<patch>.ts` + 包内唯一 version-first registry | 新版本行显式写旧导出名 |
 | 多个 registry 入口共用、且假定 schema 字段形态的逻辑 | `<版本实现根>/shared/<domain>/v….ts` 同版私有模块（**不**写入 VersionRegistry） | 新版本入口显式引用旧导出；有 diff 则新建版本文件 |
 | 无 schema 字段假设的工具与 UI | unversioned 模块 | 任意版本入口可调用；不得充当跨版业务真相源 |
@@ -34,8 +34,9 @@
 4. 按版语义文件路径为 `<版本实现根>/…/v<major>-<minor>-<patch>.ts`（例首版 `v1-0-0.ts`）。
 5. **导出名** = 相对版本实现根的目录段转 camelCase + 版本三位编码（`v1-0-0` → `100`）。
 6. **同版私有模块**：路径为 `<版本实现根>/shared/<domain>/v….ts`；**不**进 VersionRegistry。
-7. **无兼容层**：不为旧 schema 形态写 fallback；形态变化则新建或修改对应版本文件并在 registry 换指针。
-8. 散落的 `switch (schemaVersion)` / 按版 `if` 业务分支应收敛为 registry + 版本文件。
+7. **已发布版本冻结**：`supportedSchemaVersions` 中的版本，`schemas/<semver>/` 不改，该版文档校验通过或失败的结果不改。判定该结果的 schema 约束与校验步骤不改。不改变该结果的同版渲染修复仍改该版 `v….ts`。协议形状变化新开 `schemaVersion`。
+8. **无兼容层**：不为旧 schema 形态写 fallback，不引入旧版 JSON 双读或 deprecated 字段别名。
+9. 散落的 `switch (schemaVersion)` / 按版 `if` 业务分支应收敛为 registry + 版本文件。
 
 ## 分类细则
 
@@ -56,6 +57,8 @@
 - Schema 树在 `schemas/<semver>/`；经 `getSchemaSet` 按版本取用
 
 ## 增加 `schemaVersion` 时
+
+协议形状变化只走本节。
 
 1. 在 `supportedSchemaVersions` 追加精确版本，并增加 `schemas/<semver>/`。
 2. 每个消费包 registry **增加完整一行**；入口与同版私有模块未变则显式引用旧导出，有 diff 则新建 `v….ts`。
