@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "meta": {
+    "title": "OpenQuestion with unknown impact",
+    "kind": "generic",
+    "createdAt": "2026-09-14T12:00:00.000Z"
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "blocks": [
+    {
+      "type": "openQuestion",
+      "question": "Does Zod ignore unknown impact?",
+      "impact": "high",
+      "blocking": false
+    }
+  ]
+}

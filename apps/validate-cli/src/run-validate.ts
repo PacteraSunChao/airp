@@ -2,7 +2,7 @@ import { airpResultFrom, logInternalError, withStage } from "@airp/diagnostics";
 import { loadDocumentFile } from "@airp/loader/node";
 import type { AirpCtx } from "@airp/utils";
 import { createCliLogger, UsageError } from "@airp/utils/node";
-import { type ValidationResult, validateDocument } from "@airp/validate/node";
+import { type ValidationResult, validateDocument } from "@airp/validate";
 import { withCliPayload } from "./payload.js";
 import { renderValidationResult } from "./render.js";
 

@@ -3,7 +3,7 @@ import { type AirpResult, airpResultFrom, withStage } from "@airp/diagnostics";
 import { loadDocumentFile } from "@airp/loader/node";
 import type { AirpDocumentSnapshot } from "@airp/renderer";
 import { renderDocument } from "@airp/renderer/node/render";
-import { validateDocument } from "@airp/validate/node";
+import { validateDocument } from "@airp/validate";
 import { documentTitleFromLoaded } from "../document-title.js";
 import type { PipelineStage, RenderJobRecipe } from "./ipc.js";
 

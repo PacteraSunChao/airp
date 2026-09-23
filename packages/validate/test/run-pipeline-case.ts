@@ -1,14 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { documentPath, type PipelineCase } from "@airp/test-kit";
-import { validateDocument as validateIso } from "../src/index.js";
-import { validateDocument as validateNode } from "../src/node/index.js";
+import { validateDocument } from "../src/index.js";
 
-/** Package: run isomorphic or Node validation against a fixture document. */
+/** Package: run isomorphic validation against a fixture document. */
 export async function runPipelineCase(case_: PipelineCase): Promise<void> {
   const raw = await readFile(documentPath(case_.document), "utf8");
   const data = JSON.parse(raw);
-  const result =
-    case_.mode === "node" ? await validateNode(data) : await validateIso(data);
+  const result = await validateDocument(data);
 
   if (case_.expect.ok) {
     if (!result.ok) {

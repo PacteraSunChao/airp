@@ -21,7 +21,6 @@ export type LoadCase = BaseCase & {
 export type PipelineCase = BaseCase & {
   tier: "Package";
   document: string;
-  mode: "iso" | "node";
   expect: { ok: true } | { ok: false; failedStage: string; codes: string[] };
 };
 

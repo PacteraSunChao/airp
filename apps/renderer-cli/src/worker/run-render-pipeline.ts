@@ -6,7 +6,7 @@ import type {
   RenderFile,
   RenderTarget,
 } from "@airp/renderer";
-import { validateDocument } from "@airp/validate/node";
+import { validateDocument } from "@airp/validate";
 import { createDiskWriter } from "@airp/writer/to-disk";
 import type { RendererCliScene } from "../command-types.js";
 import { loadRendererModule } from "../renderer/load-render-document.js";

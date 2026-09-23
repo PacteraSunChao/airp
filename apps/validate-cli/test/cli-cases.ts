@@ -34,9 +34,9 @@ export const cliCases: CliCase[] = [
     stdoutContains: "OK  validate",
   },
   {
-    id: "cli.mermaid.parse-fail",
+    id: "cli.document.missing-meta",
     tier: "E2E",
-    document: "invalid/mermaid-parse-fail.airp.json",
+    document: "invalid/missing-meta.airp.json",
     args: ["--reporter", "json"],
     exitCode: 1,
     stdoutJson: { ok: false },

@@ -2,7 +2,7 @@ import path from "node:path";
 import { logDiagnostics } from "@airp/diagnostics";
 import { readDocumentPayload } from "@airp/loader";
 import type { AirpCtx, Logger } from "@airp/utils";
-import type { ValidationResult } from "@airp/validate/node";
+import type { ValidationResult } from "@airp/validate";
 
 /** Human-readable source label for CLI text reporter. */
 export function validationSourceLabel(

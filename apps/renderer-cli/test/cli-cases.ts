@@ -43,10 +43,10 @@ export const cliCases: CliCase[] = [
   {
     id: "render.validate.fail-closed",
     tier: "E2E",
-    document: "invalid/mermaid-parse-fail.airp.json",
+    document: "invalid/missing-meta.airp.json",
     args: ["export", "--target", "html", "--out", e2eOut("fail-closed.html")],
     exitCode: 1,
-    stderrContains: "mermaid",
+    stderrContains: "zod-failed",
   },
   {
     id: "render.usage.missing-input",
