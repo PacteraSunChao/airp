@@ -1,0 +1,593 @@
+{
+  "schemaVersion": "1.1.0",
+  "meta": {
+    "title": "1.0.0 Zod 校验；图渲染兜底；去掉 validate Node 入口",
+    "subtitle": "1.0.0 只跑旧版 Zod；两版校验都不拦图；HTML 图失败整页成功并带 warning",
+    "kind": "plan-review",
+    "createdAt": "2026-09-23T13:41:12.203Z",
+    "createdBy": "毛松 <maosong-life@outlook.com>",
+    "updatedAt": "2026-09-23T15:37:47.243Z",
+    "updatedBy": "毛松 <maosong-life@outlook.com>",
+    "tags": [
+      "1.0.0",
+      "zod",
+      "validate",
+      "renderer",
+      "mermaid",
+      "i18n"
+    ],
+    "sourceRefs": [
+      {
+        "@id": "0774w4tp3x",
+        "type": "path",
+        "value": "/Users/maosong/Downloads/airp-1.0.0/renderer/src/lib/airp-schema.ts",
+        "label": "旧版 Zod 结构真源（须原样拷入）"
+      },
+      {
+        "@id": "c3lqpz8s1t",
+        "type": "path",
+        "value": "/Users/maosong/Downloads/airp-1.0.0/renderer/src/lib/i18n.ts",
+        "label": "旧版 resolveLocalized 退回顺序"
+      },
+      {
+        "@id": "h694xa7tet",
+        "type": "path",
+        "value": "/Users/maosong/Downloads/airp-1.0.0/renderer/src/components/mermaid-diagram.tsx",
+        "label": "旧版 Mermaid 失败时图内 Error 文案"
+      },
+      {
+        "@id": "6y0tk6kte9",
+        "type": "path",
+        "value": "packages/validate/src/registry.ts",
+        "label": "同构校验 registry"
+      },
+      {
+        "@id": "5rap65j3v5",
+        "type": "path",
+        "value": "packages/validate/src/validators/document/v1-0-0.ts",
+        "label": "document100 入口"
+      }
+    ]
+  },
+  "i18n": {
+    "locale": "zh-CN"
+  },
+  "blocks": [
+    {
+      "@id": "0qcf8efee4",
+      "type": "lead",
+      "text": "`1.0.0` 文档校验只跑拷入的旧版 Zod，`safeParse` 通过与否对齐旧阅读器。`1.1.0` 结构门仍走 Ajv，语义门为 `i18n110` 与 `atId110`。两版校验都不做 Mermaid parse。删除 `@airp/validate/node`。HTML SSR 单图 `render` 失败时整页仍成功，图位输出错误块，结果带 `severity: warning` 诊断。`1.0.0` 取文案按旧版退回。不改 `.agents`。测试物料只在 `fixtures/airp/`。"
+    },
+    {
+      "@id": "55d7edqc9m",
+      "type": "section",
+      "title": "旧版参照路径",
+      "lead": "落地时打开下列绝对路径；禁止凭记忆改写 Zod 规则。",
+      "children": [
+        {
+          "@id": "kpf3dgakzt",
+          "type": "definitionList",
+          "items": [
+            {
+              "@id": "nk431n9zbb",
+              "term": "结构校验",
+              "definition": "`/Users/maosong/Downloads/airp-1.0.0/renderer/src/lib/airp-schema.ts` — `airpDocumentSchema` / `parseAirpDocument`。未知对象键由 Zod 默认丢弃。拷入后依赖钉 `zod@4.4.3`。"
+            },
+            {
+              "@id": "xl1lc2x991",
+              "term": "取文案",
+              "definition": "`/Users/maosong/Downloads/airp-1.0.0/renderer/src/lib/i18n.ts` 的 `resolveLocalized`：当前 locale → `defaultLocale` → `locales` 里第一句有值 → 对象第一句。"
+            },
+            {
+              "@id": "ixhz88b74a",
+              "term": "Mermaid 失败呈现",
+              "definition": "`/Users/maosong/Downloads/airp-1.0.0/renderer/src/components/mermaid-diagram.tsx`：`catch` 后图内显示错误，文档其余继续。SSR 用 callout `danger` 风格错误块对齐「整页仍输出」；不要求像素级复刻旧浏览器壳。"
+            },
+            {
+              "@id": "r15yhlivjg",
+              "term": "协议 JSON 结构表",
+              "definition": "`packages/protocol` 的 `1.0.0` document schema 与 `getSchemaSet(\"1.0.0\")` 保留供 protocol 自测。产品校验 `1.0.0` **不**调用它们。未知键（如 `callout.tone`、`openQuestion.impact`）不登记为正式字段。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "286e6l3tip",
+      "type": "section",
+      "title": "目标形态",
+      "children": [
+        {
+          "@id": "oxs9n7b4r0",
+          "type": "group",
+          "title": "校验",
+          "children": [
+            {
+              "@id": "gni3d28g8w",
+              "type": "code",
+              "language": "typescript",
+              "filename": "packages/validate/src/registry.ts（目标）",
+              "code": "const VALIDATION_PIPELINES = {\n  \"1.0.0\": {\n    gates: [document100],\n    semantics: [],\n  },\n  \"1.1.0\": {\n    gates: [document110, i18n110, atId110],\n    semantics: [],\n  },\n} satisfies VersionRegistry<ValidationPipeline>;"
+            },
+            {
+              "@id": "xs2emycb3a",
+              "type": "definitionList",
+              "items": [
+                {
+                  "@id": "5j6gg5bavt",
+                  "term": "document100",
+                  "definition": "`validators/document/v1-0-0.ts`：只调用拷入的 `airpDocumentSchema.safeParse`。失败时一条诊断（码表新增或收敛后的 document 码，`severity: error`），`message` 为该次 `ZodError.message`；通过则诊断为空。不调用 `getSchemaSet`。"
+                },
+                {
+                  "@id": "kzscdkuego",
+                  "term": "document110",
+                  "definition": "`validators/document/v1-1-0.ts`：`getSchemaSet(schemaVersion).validate` + `validationStageResult(\"document\", …)`。仅 `1.1.0` registry 引用。"
+                },
+                {
+                  "@id": "lpcvrsxblu",
+                  "term": "删除",
+                  "definition": "删除 `validators/i18n/v1-0-0.ts`、`validators/block-id/v1-0-0.ts`、`validators/mermaid-parse/**`、`validators/shared/collect-mermaid-sources/**`、整棵 `src/node/`（`index` / `registry` / `ensure-mermaid-dom`）。`package.json` 去掉 `./node` 导出与 `mermaid` / `jsdom` 依赖。无消费者的 i18n100 / block-id / mermaid-parse 码表条目一并删。`apps/validate-cli`、`apps/renderer-cli`、`apps/renderer-vscode` 改 import `@airp/validate`。"
+                },
+                {
+                  "@id": "33p3pm7gaf",
+                  "term": "PipelineCase",
+                  "definition": "`@airp/test-kit` 的 `PipelineCase` 去掉 `mode`（仅同构入口）。`run-pipeline-case` 只调 `validateDocument`。"
+                }
+              ]
+            },
+            {
+              "@id": "y95yjmcn19",
+              "type": "decision",
+              "title": "按 registry 换门，不在 document100 内分叉",
+              "status": "accepted",
+              "chosen": "document100 = Zod；document110 = Ajv；两行各引各的",
+              "rationale": "版本路由要求按版文件 + registry 穷尽映射。"
+            },
+            {
+              "@id": "15umj88hnx",
+              "type": "decision",
+              "title": "校验不做 Mermaid parse；删除 validate Node 入口",
+              "status": "accepted",
+              "chosen": "两版 gates 均无 parse；调用方只用 `@airp/validate`",
+              "rationale": "坏图只在 HTML 导出用 warning + 页内错误块表达。Node 入口存在的唯一理由是 parse，删除。"
+            },
+            {
+              "@id": "tdbtqa5ru5",
+              "type": "constraint",
+              "rule": "`1.0.0` 校验与阅读相关实现锁死：非用户明示，禁止再改 Zod 拷贝、`document100`、以及专为 `1.0.0` 阅读退回写的版本文件。",
+              "nonNegotiable": true
+            }
+          ]
+        },
+        {
+          "@id": "un2j2lz3xm",
+          "type": "group",
+          "title": "渲染",
+          "children": [
+            {
+              "@id": "3tbijogmiz",
+              "type": "paragraph",
+              "text": "`renderHtml` 对每张图分别处理：`api.render` 成功则输出 `svg-viewer`；失败则**不**抛 `AirpDiagnosticError`（抛出会被管线收成无产物的 Result）。写入 callout `danger` 风格错误块（转义失败原文；亮/暗色走现有主题），并把 `severity: warning` 的诊断放进 `TargetRenderOutput.diagnostics`（复用或改写 `renderer.targets.html.mermaid.render-failed` 码表 severity 为 `warning`）。`1.0.0` 与 `1.1.0` 共用。Markdown 仍输出源码围栏。"
+            },
+            {
+              "@id": "3hexz32f35",
+              "type": "paragraph",
+              "text": "`renderer-shared` 按 `schemaVersion` 分派 `resolveLocalized`：`v1-0-0` 实现旧版退回（能读 `defaultLocale` 与 `locales`）；`v1-1-0` 缺键硬失败。`createLocaleFormatContext` 按文档版本绑定 `t` / `tr`。HTML / Markdown emit 不改调用点。重复块 id 仅靠现有 `allocateSectionId` 去重。"
+            },
+            {
+              "@id": "xkfuj9idba",
+              "type": "decision",
+              "title": "图失败走 warning 诊断且整页有产物",
+              "status": "accepted",
+              "chosen": "TargetRenderOutput 带 HTML + warning diagnostics；ok 可为 true",
+              "rationale": "失败通道：仅 warning ⇒ Result `ok: true`，CLI 打 WARN、退出码可为 0。"
+            },
+            {
+              "@id": "ybvqjcayx9",
+              "type": "decision",
+              "title": "未知键不提示作者",
+              "status": "accepted",
+              "chosen": "静默忽略；不映射 tone→variant；不加警告门",
+              "rationale": "不增加复杂度；不把未知键登记成正式字段。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "rl9apotiby",
+      "type": "section",
+      "title": "阶段",
+      "lead": "无阶段 0（不改 `.agents`）。按 1 → 2 → 收尾连续做完，阶段之间不停、不另开窗口。每阶段最小 fix + 该阶段测试通过后，把对应项 `status` 改为 `done`、`checked` 改为 `true`。阶段间不留过渡实现。",
+      "children": [
+        {
+          "@id": "bysl4swey0",
+          "type": "checklist",
+          "items": [
+            {
+              "@id": "wlqzkz11fc",
+              "label": "阶段 1 — 校验",
+              "checked": true,
+              "status": "done",
+              "note": "按「目标形态 / 校验」与「变动文件」阶段 1 落地。跑 `pnpm --filter @airp/validate test`、`pnpm --filter @airp/test-kit test`，以及改过 import 的 app 相关测试（`validate-cli` / `renderer-cli` / `renderer-vscode` 以各包脚本为准）。通过后标完成。"
+            },
+            {
+              "@id": "4lo54yalr6",
+              "label": "阶段 2 — 渲染",
+              "checked": true,
+              "status": "done",
+              "note": "按「目标形态 / 渲染」与「变动文件」阶段 2 落地。跑 `pnpm --filter @airp/renderer-shared test`、`pnpm --filter @airp/renderer-target-html test`，以及依赖 HTML 合同的 `pnpm --filter @airp/renderer test`。通过后标完成。"
+            },
+            {
+              "@id": "3ob6d6rlec",
+              "label": "收尾",
+              "checked": true,
+              "status": "done",
+              "note": "根目录 `pnpm fix`，然后根目录 `pnpm test`。通过后标完成。禁止 AI 开 PR。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "7hhvh6q93l",
+      "type": "section",
+      "title": "变动文件",
+      "lead": "每条保留完整路径、操作类型与说明；按阶段分列。",
+      "children": [
+        {
+          "@id": "6rv1oi7y00",
+          "type": "group",
+          "title": "阶段 1 — 校验",
+          "children": [
+            {
+              "@id": "2id4igwegj",
+              "type": "fileChangeList",
+              "items": [
+                {
+                  "@id": "hbzg8i277r",
+                  "path": "packages/validate/src/validators/document/zod-airp-schema-1-0-0.ts",
+                  "change": "added",
+                  "note": "从旧版 `airp-schema.ts` 原样拷入"
+                },
+                {
+                  "@id": "embi17ny2a",
+                  "path": "packages/validate/package.json",
+                  "change": "modified",
+                  "note": "加 `zod@4.4.3`；去掉 `./node`、`mermaid`、`jsdom`（及仅为其服务的 types）"
+                },
+                {
+                  "@id": "my0jjoeq2k",
+                  "path": "packages/validate/src/validators/document/v1-0-0.ts",
+                  "change": "modified",
+                  "note": "document100 → Zod safeParse"
+                },
+                {
+                  "@id": "vvxj4zuih4",
+                  "path": "packages/validate/src/validators/document/v1-1-0.ts",
+                  "change": "added",
+                  "note": "document110 → Ajv"
+                },
+                {
+                  "@id": "cju9o7dbiw",
+                  "path": "packages/validate/src/registry.ts",
+                  "change": "modified",
+                  "note": "目标形态 registry"
+                },
+                {
+                  "@id": "4btk0pgcx7",
+                  "path": "packages/validate/src/node/index.ts",
+                  "change": "deleted",
+                  "note": "Node 入口删除"
+                },
+                {
+                  "@id": "jpl008lqi2",
+                  "path": "packages/validate/src/node/registry.ts",
+                  "change": "deleted",
+                  "note": "Node registry 删除"
+                },
+                {
+                  "@id": "lb9x6jzsx4",
+                  "path": "packages/validate/src/node/ensure-mermaid-dom.ts",
+                  "change": "deleted",
+                  "note": "随 Node 入口删除"
+                },
+                {
+                  "@id": "c3lqpz8s1a",
+                  "path": "packages/validate/src/validators/i18n/v1-0-0.ts",
+                  "change": "deleted",
+                  "note": "无消费者"
+                },
+                {
+                  "@id": "h694xa7tea",
+                  "path": "packages/validate/src/validators/block-id/v1-0-0.ts",
+                  "change": "deleted",
+                  "note": "无消费者"
+                },
+                {
+                  "@id": "6y0tk6ktea",
+                  "path": "packages/validate/src/validators/mermaid-parse/v1-0-0.ts",
+                  "change": "deleted",
+                  "note": "校验不再 parse"
+                },
+                {
+                  "@id": "5rap65j3va",
+                  "path": "packages/validate/src/validators/shared/collect-mermaid-sources/v1-0-0.ts",
+                  "change": "deleted",
+                  "note": "仅被 mermaid-parse 使用"
+                },
+                {
+                  "@id": "0qcf8efeea",
+                  "path": "packages/validate/test/collect-mermaid-sources.test.ts",
+                  "change": "deleted",
+                  "note": "随收集器删除"
+                },
+                {
+                  "@id": "55d7edqc9a",
+                  "path": "packages/validate/src/diagnostic-codes.ts",
+                  "change": "modified",
+                  "note": "删无消费者码；为 Zod 失败补 document 码（error）"
+                },
+                {
+                  "@id": "kpf3dgakza",
+                  "path": "packages/validate/test/pipeline-cases.ts",
+                  "change": "modified",
+                  "note": "见「测试」"
+                },
+                {
+                  "@id": "nk431n9zba",
+                  "path": "packages/validate/test/run-pipeline-case.ts",
+                  "change": "modified",
+                  "note": "只调同构 validateDocument"
+                },
+                {
+                  "@id": "xl1lc2x99a",
+                  "path": "packages/validate/test/i18n-unknown-locale.test.ts",
+                  "change": "deleted",
+                  "note": "仅服务已删的 i18n100"
+                },
+                {
+                  "@id": "ixhz88b74b",
+                  "path": "packages/validate/test/surface.json",
+                  "change": "modified",
+                  "note": "同步 case / Unit 注册"
+                },
+                {
+                  "@id": "r15yhlivja",
+                  "path": "packages/test-kit/src/types.ts",
+                  "change": "modified",
+                  "note": "PipelineCase 去掉 mode"
+                },
+                {
+                  "@id": "286e6l3tia",
+                  "path": "fixtures/airp/documents/valid/callout-extra-tone-1.0.0.airp.json",
+                  "change": "added",
+                  "note": "含 `callout.tone`；期望 validate 通过"
+                },
+                {
+                  "@id": "oxs9n7b4ra",
+                  "path": "fixtures/airp/documents/valid/openquestion-extra-impact-1.0.0.airp.json",
+                  "change": "added",
+                  "note": "含 `openQuestion.impact`；期望 validate 通过"
+                },
+                {
+                  "@id": "gni3d28g8a",
+                  "path": "fixtures/airp/documents/invalid/mermaid-parse-fail.airp.json",
+                  "change": "deleted",
+                  "note": "无 parse 门；坏图改阶段 2 渲染 fixture"
+                },
+                {
+                  "@id": "xs2emycb3b",
+                  "path": "apps/validate-cli/src/run-validate.ts",
+                  "change": "modified",
+                  "note": "import `@airp/validate`"
+                },
+                {
+                  "@id": "5j6gg5bava",
+                  "path": "apps/validate-cli/src/render.ts",
+                  "change": "modified",
+                  "note": "类型从 `@airp/validate` 引入"
+                },
+                {
+                  "@id": "kzscdkuega",
+                  "path": "apps/renderer-cli/src/worker/run-render-pipeline.ts",
+                  "change": "modified",
+                  "note": "import `@airp/validate`"
+                },
+                {
+                  "@id": "lpcvrsxbla",
+                  "path": "apps/renderer-vscode/src/workers/run-render-job.ts",
+                  "change": "modified",
+                  "note": "import `@airp/validate`"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "@id": "33p3pm7gag",
+          "type": "group",
+          "title": "阶段 2 — 渲染",
+          "children": [
+            {
+              "@id": "y95yjmcn1a",
+              "type": "fileChangeList",
+              "items": [
+                {
+                  "@id": "15umj88hna",
+                  "path": "packages/renderer-shared/src/locale/resolve-localized/v1-0-0.ts",
+                  "change": "added",
+                  "note": "旧版退回"
+                },
+                {
+                  "@id": "tdbtqa5rua",
+                  "path": "packages/renderer-shared/src/locale/resolve-localized/v1-1-0.ts",
+                  "change": "added",
+                  "note": "缺键硬失败"
+                },
+                {
+                  "@id": "un2j2lz3xa",
+                  "path": "packages/renderer-shared/src/locale/resolve-localized/registry.ts",
+                  "change": "added",
+                  "note": "VersionRegistry 分派"
+                },
+                {
+                  "@id": "3tbijogmia",
+                  "path": "packages/renderer-shared/src/locale/resolve-localized.ts",
+                  "change": "deleted",
+                  "note": "拆进版本文件后删除"
+                },
+                {
+                  "@id": "3hexz32f3a",
+                  "path": "packages/renderer-shared/src/locale/format-context.ts",
+                  "change": "modified",
+                  "note": "按 schemaVersion 绑定 t/tr"
+                },
+                {
+                  "@id": "xkfuj9idbb",
+                  "path": "packages/renderer-shared/src/locale/resolve-rich-text.ts",
+                  "change": "modified",
+                  "note": "对象形态走版本化 resolveLocalized"
+                },
+                {
+                  "@id": "ybvqjcayxa",
+                  "path": "packages/renderer-shared/src/index.ts",
+                  "change": "modified",
+                  "note": "导出与路径对齐"
+                },
+                {
+                  "@id": "rl9apotiba",
+                  "path": "packages/renderer-shared/test/locale.test.ts",
+                  "change": "modified",
+                  "note": "见「测试」"
+                },
+                {
+                  "@id": "bysl4sweya",
+                  "path": "packages/renderer-target-html/src/shared/render-mermaid-error.ts",
+                  "change": "added",
+                  "note": "danger 风格错误块 markup"
+                },
+                {
+                  "@id": "wlqzkz11fa",
+                  "path": "packages/renderer-target-html/src/node/render.ts",
+                  "change": "modified",
+                  "note": "按图捕获失败；svg 或错误块；汇总 warning diagnostics"
+                },
+                {
+                  "@id": "4lo54yalra",
+                  "path": "packages/renderer-target-html/src/emit-handlers.ts",
+                  "change": "modified",
+                  "note": "若需接受错误块 HTML 则改；否则保持 takeMermaidSvg 字符串合同"
+                },
+                {
+                  "@id": "3ob6d6rlea",
+                  "path": "packages/renderer-target-html/src/diagnostic-codes.ts",
+                  "change": "modified",
+                  "note": "`mermaid.render-failed` severity → warning"
+                },
+                {
+                  "@id": "7hhvh6q93a",
+                  "path": "packages/renderer-target-html/src/node/render-mermaid-svg.ts",
+                  "change": "modified",
+                  "note": "与 render.ts 约定一致（失败由上层收成 warning，不导致无产物）"
+                },
+                {
+                  "@id": "6rv1oi7y0a",
+                  "path": "packages/renderer-target-html/test/render-mermaid-svg.test.ts",
+                  "change": "modified",
+                  "note": "见「测试」"
+                },
+                {
+                  "@id": "2id4igwegb",
+                  "path": "packages/renderer-target-html/test/render-cases.ts",
+                  "change": "modified",
+                  "note": "见「测试」"
+                },
+                {
+                  "@id": "hbzg8i277a",
+                  "path": "packages/renderer/test/render-cases.ts",
+                  "change": "modified",
+                  "note": "若合同需登记坏图仍出 HTML"
+                },
+                {
+                  "@id": "embi17ny2b",
+                  "path": "fixtures/airp/documents/valid/mermaid-bad-source.airp.json",
+                  "change": "added",
+                  "note": "结构合法、Mermaid 源码故意坏；供 HTML soft-fail"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "@id": "my0jjoeq2a",
+          "type": "callout",
+          "variant": "info",
+          "title": "不动",
+          "body": "`packages/protocol` 的 `1.0.0`/`1.1.0` document schema、`get-schema-set.ts`、`i18n/v1-1-0.ts`、`at-id/v1-1-0.ts`。不改 `.agents/**`。不把 `tone` 映射成 `variant`。不启用 Ajv `removeAdditional`。"
+        }
+      ]
+    },
+    {
+      "@id": "vvxj4zuiha",
+      "type": "section",
+      "title": "测试",
+      "lead": "与实现同轮交付。文档输入只经 `fixtures/airp/` + `@airp/test-kit`。禁止 `.docs/samples/` 作合同或收尾门禁。",
+      "children": [
+        {
+          "@id": "cju9o7dbia",
+          "type": "group",
+          "title": "阶段 1 — validate",
+          "children": [
+            {
+              "@id": "4btk0pgcxa",
+              "type": "bulletList",
+              "items": [
+                "`pipeline-cases`：登记 `callout-extra-tone-1.0.0`、`openquestion-extra-impact-1.0.0`，`expect.ok: true`；去掉所有 `mode` 字段。",
+                "`pipeline.i18n.default-locale-missing`、`pipeline.i18n.localized-missing-default`、`pipeline.block-id.duplicate`：Zod 会通过 → `expect.ok: true`（或挪到 valid）；不再断言 `failedStage: i18n|block-id`。",
+                "删除 `pipeline.mermaid.parse-fail` 与对应 invalid fixture。",
+                "码表覆盖：收敛已删码；保留 at-id / schema-version / document(Zod) 覆盖。",
+                "既有 `valid-richtext-locale-map`、`valid-minimal`、全部 `1.1.0` pipeline case（除已删 mermaid-parse）保持绿。"
+              ]
+            }
+          ]
+        },
+        {
+          "@id": "jpl008lqia",
+          "type": "group",
+          "title": "阶段 2 — renderer",
+          "children": [
+            {
+              "@id": "lb9x6jzsxa",
+              "type": "bulletList",
+              "items": [
+                "`renderer-shared` Unit：`1.0.0` 缺当前 locale 键 → 退回链不抛；`1.1.0` 硬失败单测保留。",
+                "`renderHtml` / case：`mermaid-bad-source` → 整页 HTML 成功（`ok: true`），正文含错误块可观测属性或稳定文案；diagnostics 含 `mermaid.render-failed` 且 severity 为 warning。",
+                "既有好图 case（`html-mermaid-node` 等）保持绿。"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "c3lqpz8s1b",
+      "type": "section",
+      "title": "边界",
+      "children": [
+        {
+          "@id": "h694xa7teb",
+          "type": "bulletList",
+          "items": [
+            "不改 `.agents/**`（接受与现规范条文暂时不一致）。",
+            "不改 `1.1.0` JSON Schema、`i18n110`、`atId110` 的通过/失败语义。",
+            "不把未知键登记成正式字段。",
+            "不改 Markdown Mermaid 围栏行为。",
+            "实施阶段不开 PR、不代提 PR。",
+            "范围外：旧版浏览器壳、静态导出脚本、非 AIRP 包。"
+          ]
+        }
+      ]
+    }
+  ]
+}
