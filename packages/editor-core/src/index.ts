@@ -8,6 +8,15 @@ export {
   type ValueShape,
 } from "./block-shape.js";
 export {
+  duplicateValue,
+  insertValue,
+  moveValue,
+  readValue,
+  removeValue,
+  setValue,
+  withUniqueAtIds,
+} from "./commands.js";
+export {
   type AtIdOccurrence,
   atIdAtPath,
   type DocumentAtIdIndex,
