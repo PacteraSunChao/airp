@@ -16,7 +16,7 @@
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { documentPath } from "@airp/test-kit";
+import { documentPath, resolveRepoRoot } from "@airp/test-kit";
 import { type Browser, chromium, type Page } from "playwright";
 import { createServer, type ViteDevServer } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -27,6 +27,13 @@ const APP_ROOT = path.resolve(
 );
 const PLAIN = documentPath("valid", "section-at-id-1.1.0.airp.json");
 const DIAGRAM = documentPath("valid", "mermaid-ok-1.1.0.airp.json");
+/** Every block type in one 1.1.0 document. */
+const GALLERY = path.join(
+  resolveRepoRoot(),
+  ".docs/samples/airp-block-gallery-1-1-0.airp.json"
+);
+/** Tall enough to need few slices, short enough for Chromium to rasterise. */
+const TALL_VIEWPORT = 3000;
 const CANVAS_TIMEOUT_MS = 30_000;
 
 /** Fraction of pixels allowed to differ for a document with a diagram. */
@@ -174,11 +181,119 @@ async function compareWithRenderer(
   return result;
 }
 
+/**
+ * The gallery is taller than any viewport, so it is compared slice by slice.
+ *
+ * Slice offsets are absolute scroll positions applied to both frames, which also
+ * makes anything scroll-dependent — the floating page TOC — compare fairly.
+ */
+async function compareSlices(
+  fixture: string
+): Promise<{ differing: number; total: number; slices: number }> {
+  const html = await serviceHtml(fixture);
+  const page = await browser.newPage({
+    viewport: { width: 1500, height: TALL_VIEWPORT },
+  });
+  await page.goto(url, { waitUntil: "load" });
+  await page.setInputFiles("#file", fixture);
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+          ?.body?.innerHTML ?? ""
+      ).length > 2000,
+    null,
+    { timeout: CANVAS_TIMEOUT_MS }
+  );
+  await page.frameLocator("#canvas").locator("[data-doc-header]").click();
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(600);
+
+  const canvas = page.locator("#canvas");
+  const box = await canvas.boundingBox();
+  if (box === null) {
+    throw new Error("canvas has no box");
+  }
+  const contentHeight = await page.evaluate(
+    () =>
+      document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+        ?.body?.scrollHeight ?? 0
+  );
+
+  const renderer = await browser.newPage({
+    viewport: { width: Math.ceil(box.width), height: Math.ceil(box.height) },
+  });
+  await renderer.setContent(
+    `<!doctype html><html><head><style>html,body{margin:0;padding:0}iframe{display:block;border:0}</style></head><body><iframe id="f" srcdoc="${html.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"></iframe></body></html>`
+  );
+  await renderer.evaluate(
+    ([width, height]) => {
+      const frame = document.querySelector("#f");
+      if (frame instanceof HTMLElement) {
+        frame.style.width = `${width}px`;
+        frame.style.height = `${height}px`;
+      }
+    },
+    [box.width, box.height]
+  );
+  await renderer.waitForTimeout(600);
+
+  // Leave a margin so no slice straddles a rasterisation boundary.
+  const step = Math.max(Math.floor(box.height) - 40, 200);
+  let differing = 0;
+  let total = 0;
+  let slices = 0;
+  for (let offset = 0; offset < contentHeight; offset += step) {
+    await page.evaluate(
+      (top) =>
+        document
+          .querySelector<HTMLIFrameElement>("#canvas")
+          ?.contentWindow?.scrollTo(0, top),
+      offset
+    );
+    await renderer.evaluate(
+      (top) =>
+        document
+          .querySelector<HTMLIFrameElement>("#f")
+          ?.contentWindow?.scrollTo(0, top),
+      offset
+    );
+    await page.waitForTimeout(200);
+    const left = await canvas.screenshot();
+    const right = await renderer.locator("#f").screenshot();
+    const result = await differingPixels(page, left, right);
+    differing += result.differing;
+    total += result.total;
+    slices += 1;
+  }
+
+  await page.close();
+  await renderer.close();
+  return { differing, slices, total };
+}
+
 describe("canvas and Renderer", () => {
   it("draw the same pixels for a document without a diagram", async () => {
     const { differing, total } = await compareWithRenderer(PLAIN);
     expect(differing, `${differing}/${total} pixels differ`).toBe(0);
   }, 180_000);
+
+  it("draw all 46 block types the way the Renderer does", async () => {
+    const { differing, total, slices } = await compareSlices(GALLERY);
+    const ratio = differing / total;
+    // Report the measurement, not just pass or fail: this is the number anyone
+    // investigating a parity problem wants.
+    process.stdout.write(
+      `\ngallery parity: ${slices} slices, ${differing}/${total} differing (${(ratio * 100).toFixed(4)}%)\n`
+    );
+    // Same tolerance as the diagram case: the only residual is vector edge
+    // antialiasing. Losing the render service would move this by orders of
+    // magnitude, not by a sliver.
+    expect(
+      ratio,
+      `${differing}/${total} pixels over ${slices} slices`
+    ).toBeLessThan(DIAGRAM_TOLERANCE);
+  }, 600_000);
 
   it("draw a diagram in the same place, down to shape edges", async () => {
     const { differing, total } = await compareWithRenderer(DIAGRAM);
