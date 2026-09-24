@@ -1,7 +1,10 @@
 /**
- * Drives the built app in a real browser: open a document, edit a field, save.
- * The save step is the point — it proves the round trip ends in a file whose only
- * change is the edited line.
+ * Drives the built app in a real browser.
+ *
+ * These are the assertions that need a browser rather than a unit test: the
+ * canvas is the renderer's real output in an iframe, a click on it has to come
+ * back as the right block, and a save has to end in a file whose only change is
+ * the edit.
  */
 
 import { readdirSync, readFileSync } from "node:fs";
@@ -20,6 +23,10 @@ const APP_ROOT = path.resolve(
 const FIXTURE = documentPath("valid", "section-at-id-1.1.0.airp.json");
 /** The status line a completed refresh writes: `<file> · <n> 个块 · …`. */
 const STATUS_RE = /·\s*\d+ 个块\s*·/;
+const SECTION_AT_ID = "aaaaaaaaaa";
+const PARAGRAPH_AT_ID = "bbbbbbbbbb";
+const TABLE_AT_ID = "hhhhhhhhhh";
+const TABLE_COLUMNS = "/blocks/2/columns";
 
 let browser: Browser;
 let server: ViteDevServer;
@@ -41,24 +48,73 @@ afterAll(async () => {
   await server?.close();
 });
 
+/**
+ * A page with the File System Access pickers removed.
+ *
+ * Whether `showSaveFilePicker` exists varies by Chromium build, and a picker in
+ * a headless run can never be answered — so the save path is pinned to the
+ * download fallback here. Writing back through a handle is covered by
+ * `file-access.test.ts`, which does not need a browser.
+ */
+async function openPage(): Promise<Awaited<ReturnType<Browser["newPage"]>>> {
+  const page = await browser.newPage();
+  await page.addInitScript(() => {
+    const target = window as {
+      showOpenFilePicker?: unknown;
+      showSaveFilePicker?: unknown;
+    };
+    target.showOpenFilePicker = undefined;
+    target.showSaveFilePicker = undefined;
+  });
+  return page;
+}
+
+/** Which block the field panel is currently showing. */
+async function selectedAtId(
+  page: Awaited<ReturnType<Browser["newPage"]>>
+): Promise<string | null> {
+  return await page
+    .locator("[data-selected-at-id]")
+    .first()
+    .getAttribute("data-selected-at-id");
+}
+
+/** Click a block on the rendered canvas, the way an author would. */
+async function clickBlock(
+  page: Awaited<ReturnType<Browser["newPage"]>>,
+  atId: string
+): Promise<void> {
+  await page
+    .frameLocator("#canvas")
+    .locator(`[data-airp-id="${atId}"]`)
+    .first()
+    .click();
+  await page.waitForSelector(`[data-selected-at-id="${atId}"]`);
+}
+
 describe("studio app", () => {
-  it("opens a document, edits a field, and saves a minimal diff", async () => {
-    const page = await browser.newPage();
+  it("opens a document, edits it on the inspector, and saves a minimal diff", async () => {
+    const page = await openPage();
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles("#file", FIXTURE);
-    await page.waitForSelector('[data-block-at-id="bbbbbbbbbb"]');
-    expect(await page.locator("#blocks li").count()).toBe(6);
+    await page.waitForFunction((pattern) => {
+      const status = document.querySelector("#status")?.textContent ?? "";
+      return new RegExp(pattern).test(status);
+    }, STATUS_RE.source);
     expect(await page.locator("#status").innerText()).toContain("校验通过");
 
-    await page.click('[data-block-at-id="bbbbbbbbbb"]');
-    const field = page.locator('[data-field-key="text"]');
-    await field.fill("改写后的正文。");
+    await clickBlock(page, PARAGRAPH_AT_ID);
+    const paragraph = page.locator("[data-field-path]").first();
+    await paragraph.fill("改写后的正文。");
+
+    // The canvas is the renderer's own output, so the edit has to show up there.
     await page.waitForFunction(
       () =>
-        document
-          .querySelector<HTMLIFrameElement>("#preview")
-          ?.srcdoc.includes("改写后的正文。") === true,
+        (
+          document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+            ?.body?.textContent ?? ""
+        ).includes("改写后的正文。") === true,
       null,
       { timeout: 10_000 }
     );
@@ -69,12 +125,12 @@ describe("studio app", () => {
     ]);
     const savedPath = await download.path();
     const saved = readFileSync(savedPath, "utf8");
-    const original = readFileSync(FIXTURE, "utf8");
     // Saving rewrites the document in the protocol's canonical form, and this
-    // fixture is not canonical (it keeps some objects on one line), so the
-    // baseline for "only the edit changed" is the canonical form of the same
-    // document rather than the file's original bytes.
-    const baseline = serializeDocument(JSON.parse(original)).split("\n");
+    // fixture is not canonical, so the baseline is the canonical form of the
+    // same document rather than the file's original bytes.
+    const baseline = serializeDocument(
+      JSON.parse(readFileSync(FIXTURE, "utf8"))
+    ).split("\n");
     const changed = baseline.filter(
       (line, index) => line !== saved.split("\n")[index]
     );
@@ -84,103 +140,35 @@ describe("studio app", () => {
     await page.close();
   }, 60_000);
 
-  it("reports a document the schema rejects", async () => {
-    const page = await browser.newPage();
+  it("refuses a document that is not schema 1.1.0", async () => {
+    const page = await openPage();
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles(
       "#file",
-      documentPath("invalid", "duplicate-at-id-1.1.0.airp.json")
+      documentPath("valid", "minimal.airp.json")
     );
-    await page.waitForSelector("[data-diagnostic-at-id]");
-
-    expect(await page.locator("#status").innerText()).toContain("校验问题");
-    expect(
-      await page.locator("[data-diagnostic-at-id]").first().innerText()
-    ).toContain("validate.validators.at-id.duplicate");
+    expect(await page.locator("#status").innerText()).toContain(
+      "只支持 schema 1.1.0"
+    );
     await page.close();
   }, 60_000);
 
-  it("adds and removes a block from the list", async () => {
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: "load" });
-
-    await page.setInputFiles("#file", FIXTURE);
-    await page.waitForSelector('[data-block-at-id="bbbbbbbbbb"]');
-    expect(
-      await page
-        .locator("li:has([data-block-at-id='aaaaaaaaaa']) [data-move-up]")
-        .isDisabled()
-    ).toBe(true);
-
-    await page.click('[data-block-at-id="bbbbbbbbbb"]');
-    await page.selectOption("#add-type", "paragraph");
-    await page.click("#add-block");
-    await page.waitForFunction(
-      () => document.querySelectorAll("#blocks li").length === 7
+  it("opens every 1.1.0 fixture and lists its blocks", async () => {
+    const page = await openPage();
+    // Mermaid figures need the Node-side renderer, so a document containing one
+    // draws the failure panel on the canvas instead of blocks. That case is
+    // asserted on its own below rather than smuggled into this loop.
+    const fixtures = readdirSync(documentPath("valid")).filter(
+      (name) => name.endsWith("1.1.0.airp.json") && !name.startsWith("mermaid")
     );
-
-    // The block that was just created is selected, so it can be dropped again.
-    await page.click('li:has(button[aria-current="true"]) [data-remove]');
-    await page.waitForFunction(
-      () => document.querySelectorAll("#blocks li").length === 6
-    );
-    expect(await page.locator("#status").innerText()).toContain("校验通过");
-    await page.close();
-  }, 60_000);
-
-  it("adds a table column through the form and removes it again", async () => {
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: "load" });
-
-    await page.setInputFiles("#file", FIXTURE);
-    await page.waitForSelector('[data-block-at-id="hhhhhhhhhh"]');
-    await page.click('[data-block-at-id="hhhhhhhhhh"]');
-
-    const columns = 'fieldset[data-field-path="/blocks/2/columns"]';
-    const countColumns = `document.querySelectorAll('${columns} [data-array-item]').length`;
-    expect(await page.locator(`${columns} [data-array-item]`).count()).toBe(2);
-
-    await page.click(`${columns} [data-add-item]`);
-    await page.waitForFunction(`${countColumns} === 3`);
-    // A new column is seeded empty, so the content floor on `label` flags it.
-    expect(await page.locator("#status").innerText()).toContain("校验问题");
-
-    await page
-      .locator(`${columns} [data-array-item]`)
-      .last()
-      .locator('[data-field-key="label"]')
-      .fill("备注");
-    await page.waitForFunction(
-      () =>
-        document.querySelector("#status")?.textContent?.includes("校验通过") ===
-        true
-    );
-
-    await page
-      .locator(`${columns} [data-array-item]`)
-      .last()
-      .locator("[data-drop-item]")
-      .click();
-    await page.waitForFunction(`${countColumns} === 2`);
-    await page.close();
-  }, 60_000);
-
-  // Every valid fixture in the repository, not just the one the tests above use:
-  // a document shape the app cannot list must fail here rather than in a
-  // reviewer's browser.
-  it("opens every valid fixture and lists its blocks", async () => {
-    const page = await browser.newPage();
-    const fixtures = readdirSync(documentPath("valid")).filter((name) =>
-      name.endsWith(".airp.json")
-    );
-    expect(fixtures.length).toBeGreaterThan(0);
+    expect(fixtures.length).toBeGreaterThan(1);
 
     for (const name of fixtures) {
       await page.goto(url, { waitUntil: "load" });
       await page.setInputFiles("#file", documentPath("valid", name));
-      // The status line is rewritten as `<file> · <n> 个块 · …` only when a
-      // refresh ran to completion; a thrown error leaves a bare message instead.
+      // A thrown error leaves a bare message instead of the `<file> · N 个块`
+      // shape, so matching that shape is what proves the refresh finished.
       await page.waitForFunction(
         (fileName) =>
           document.querySelector("#status")?.textContent?.includes(fileName) ===
@@ -190,35 +178,95 @@ describe("studio app", () => {
       );
       const status = await page.locator("#status").innerText();
       expect(status, name).toMatch(STATUS_RE);
-      expect(await page.locator("#blocks li").count(), name).toBeGreaterThan(0);
+      await page
+        .frameLocator("#canvas")
+        .locator("[data-airp-id]")
+        .first()
+        .waitFor({ timeout: 10_000 });
     }
     await page.close();
   }, 180_000);
 
-  it("offers no structural actions for a block nested in an object field", async () => {
-    const page = await browser.newPage();
+  it("says why a Mermaid document cannot be drawn on the canvas", async () => {
+    const page = await openPage();
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles(
       "#file",
-      documentPath("valid", "html-blocks.airp.json")
+      documentPath("valid", "mermaid-ok-1.1.0.airp.json")
     );
     await page.waitForFunction(
-      () => document.querySelectorAll("#blocks li").length > 0
+      () =>
+        (
+          document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+            ?.body?.textContent ?? ""
+        ).includes("画布渲染失败") === true,
+      null,
+      { timeout: 10_000 }
+    );
+    // The document is still loaded and still editable.
+    expect(await page.locator("#status").innerText()).toMatch(STATUS_RE);
+    await page.close();
+  }, 60_000);
+
+  it("adds a table column on the field panel and removes it again", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    await clickBlock(page, TABLE_AT_ID);
+
+    const columns = `[data-array-path="${TABLE_COLUMNS}"]`;
+    const count = `${columns} [data-array-item]`;
+    expect(await page.locator(count).count()).toBe(2);
+
+    await page.click(`${columns} [data-add-item]`);
+    await page.waitForFunction(
+      (selector) => document.querySelectorAll(selector).length === 3,
+      count
+    );
+    // A new column is seeded empty, so the content floor on `label` flags it —
+    // and only it: the union noise the renderer's `oneOf` produces is filtered
+    // out of the panel on purpose.
+    expect(await page.locator("#status").innerText()).toContain("1 条校验问题");
+
+    // `key` accepts an empty string, so the content floor is on `label`.
+    await page
+      .locator('[data-field-path="/blocks/2/columns/2/label"]')
+      .fill("备注");
+    await page.waitForFunction(
+      () =>
+        document.querySelector("#status")?.textContent?.includes("校验通过") ===
+        true
     );
 
-    const nested = page
-      .locator("#blocks li")
-      .filter({ hasNot: page.locator("[data-move-up]") });
-    expect(await nested.count()).toBe(1);
-    await nested.first().locator("button").first().click();
-
-    // Neither an array to insert into…
-    expect(await page.locator("#add-block").isDisabled()).toBe(true);
-    // …nor one to remove from or reorder within.
-    expect(await page.locator("#blocks [data-remove]").count()).toBe(
-      (await page.locator("#blocks li").count()) - 1
+    await page.locator(count).last().locator("[data-drop-item]").click();
+    await page.waitForFunction(
+      (selector) => document.querySelectorAll(selector).length === 2,
+      count
     );
+    await page.close();
+  }, 60_000);
+
+  it("selects the block that was clicked on the canvas, not a neighbour", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    await clickBlock(page, PARAGRAPH_AT_ID);
+    expect(await selectedAtId(page)).toBe(PARAGRAPH_AT_ID);
+    // The paragraph is inside the first section, so the chain back out is there
+    // to click: a block that covers its parent cannot be clicked directly.
+    expect(
+      await page
+        .locator("[data-ancestor-at-id]")
+        .first()
+        .getAttribute("data-ancestor-at-id")
+    ).toBe(SECTION_AT_ID);
+
+    await page.click(`[data-ancestor-at-id="${SECTION_AT_ID}"]`);
+    await page.waitForSelector(`[data-selected-at-id="${SECTION_AT_ID}"]`);
+    expect(await selectedAtId(page)).toBe(SECTION_AT_ID);
     await page.close();
   }, 60_000);
 });

@@ -84,8 +84,12 @@ export async function pickSaveHandle(
 }
 
 /** Fallback save: hand the document to the browser as a download. */
-export function downloadDocument(fileName: string, text: string): void {
-  const blob = new Blob([text], { type: "application/json" });
+export function downloadDocument(
+  fileName: string,
+  text: string,
+  mimeType = "application/json"
+): void {
+  const blob = new Blob([text], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;

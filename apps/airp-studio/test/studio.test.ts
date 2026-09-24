@@ -4,6 +4,7 @@ import { documentPath } from "@airp/test-kit";
 import { describe, expect, it } from "vitest";
 import {
   appendArrayItem,
+  blockAncestors,
   blockFieldSpecs,
   diagnosticEntries,
   documentText,
@@ -59,6 +60,25 @@ describe("listBlocks", () => {
       "children",
       0,
     ]);
+  });
+
+  it("returns the chain of blocks that contains a selection", () => {
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    const deep = blocks[3];
+    if (deep === undefined) {
+      throw new Error("fixture has no nested block");
+    }
+    // Outermost first, the selection last: a block that covers its parent can
+    // only be reached by clicking a descendant, so the ancestors come back here.
+    expect(
+      blockAncestors(blocks, deep.path).map((block) => block.path)
+    ).toEqual([
+      ["blocks", 0],
+      ["blocks", 0, "children", 1],
+      ["blocks", 0, "children", 1, "children", 0],
+    ]);
+    expect(blockAncestors(blocks, ["meta"])).toEqual([]);
   });
 
   it("separates array items from blocks hanging off an object field", () => {

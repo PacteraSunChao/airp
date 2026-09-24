@@ -98,3 +98,12 @@ button {
 ::selection {
   background: rgba(15, 107, 92, 0.18);
 }
+
+/*
+ * `hidden` must win over a layout `display`: the modal backdrop, the field panel
+ * and the reopen button all set `display`, and without this they stay on screen
+ * (and swallow clicks) while marked hidden.
+ */
+[hidden] {
+  display: none !important;
+}

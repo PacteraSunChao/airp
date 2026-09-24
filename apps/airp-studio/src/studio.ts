@@ -19,6 +19,7 @@ import {
   resolveDiagnosticLocations,
   serializeDocument,
   setValue,
+  toJsonPointer,
   type ValueShape,
 } from "@airp/editor-core";
 import type { SchemaVersion } from "@airp/protocol";
@@ -152,6 +153,27 @@ export function listBlocks(
   const blocks: BlockEntry[] = [];
   collectBlocks(document, [], schemaVersion, blocks);
   return blocks;
+}
+
+/**
+ * The chain of blocks that contains `path`, outermost first, ending with the
+ * block at `path` itself.
+ *
+ * A block that fills its parent — most of them — can never be reached by
+ * clicking the canvas: the click lands on whichever descendant is under the
+ * pointer. This chain is how a host offers the ancestors back.
+ */
+export function blockAncestors(
+  blocks: readonly BlockEntry[],
+  path: NodePath
+): BlockEntry[] {
+  const target = toJsonPointer(path);
+  return blocks
+    .filter((block) => {
+      const pointer = toJsonPointer(block.path);
+      return target === pointer || target.startsWith(`${pointer}/`);
+    })
+    .sort((left, right) => left.path.length - right.path.length);
 }
 
 /** The fields of the block at `path`, in schema order. */

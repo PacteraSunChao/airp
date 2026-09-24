@@ -12,10 +12,13 @@
 export const FIELD_LABELS: Readonly<Record<string, string>> = {
   after: "之后",
   align: "对齐",
+  annotation: "标注",
+  attribution: "出处",
   alt: "替代文字",
   badges: "徽章",
   before: "之前",
   blocking: "是否阻塞",
+  cellKind: "单元格类型",
   body: "内容",
   caption: "说明",
   cells: "单元格",
@@ -34,11 +37,15 @@ export const FIELD_LABELS: Readonly<Record<string, string>> = {
   description: "说明",
   detail: "详情",
   diagramKind: "图类型",
+  evidence: "证据",
+  footerRow: "页脚行",
   endpoints: "接口",
   events: "事件",
   failed: "失败数",
   filename: "文件名",
+  gap: "差距",
   goals: "目标",
+  highlightLines: "高亮行",
   href: "链接地址",
   importance: "重要度",
   items: "条目",
@@ -51,7 +58,9 @@ export const FIELD_LABELS: Readonly<Record<string, string>> = {
   likelihood: "可能性",
   links: "链接",
   locator: "定位",
+  maxLines: "最多显示行数",
   method: "方法",
+  meta: "附加信息",
   metrics: "指标",
   mitigation: "应对措施",
   modules: "模块",
@@ -60,12 +69,15 @@ export const FIELD_LABELS: Readonly<Record<string, string>> = {
   note: "说明",
   notes: "备注",
   options: "备选方案",
+  owner: "负责人",
   overview: "架构总览",
   panels: "页签",
   passed: "通过数",
   path: "路径",
   phases: "阶段",
   progress: "进度",
+  pros: "支持理由",
+  cons: "反对理由",
   question: "问题",
   rationale: "理由",
   reqId: "需求编号",
@@ -74,6 +86,8 @@ export const FIELD_LABELS: Readonly<Record<string, string>> = {
   rule: "约束规则",
   scope: "范围",
   severity: "严重程度",
+  sizeAfter: "新大小",
+  sizeBefore: "原大小",
   skipped: "跳过数",
   source: "图源码 / 来源",
   src: "图片地址",
@@ -196,7 +210,13 @@ export const BLOCK_FIELD_LABELS: Readonly<
   },
   spacer: { size: "空白大小" },
   statusBoard: { items: "状态卡片" },
-  table: { columns: "列", rows: "行" },
+  table: {
+    align: "对齐",
+    cellKind: "单元格类型",
+    columns: "列",
+    footerRow: "页脚行",
+    rows: "行",
+  },
   testResult: { suites: "测试套件" },
   timeline: { events: "时间节点" },
 };
@@ -204,4 +224,112 @@ export const BLOCK_FIELD_LABELS: Readonly<
 /** What to show as a field's name: the block's own label, else the shared one. */
 export function fieldLabel(blockType: string, key: string): string {
   return BLOCK_FIELD_LABELS[blockType]?.[key] ?? FIELD_LABELS[key] ?? key;
+}
+
+/**
+ * Chinese names for enum values, keyed `field:value`. Values are machine words
+ * (`pass`, `in_progress`, `flowchart`), so a control that showed them raw would
+ * make the author translate in their head.
+ */
+export const ENUM_LABELS: Readonly<Record<string, string>> = {
+  "change:added": "新增",
+  "change:deleted": "删除",
+  "change:modified": "修改",
+  "change:renamed": "重命名",
+  "change:unchanged": "未变",
+  "cellKind:badge": "标签",
+  "cellKind:code": "代码",
+  "cellKind:link": "链接",
+  "cellKind:number": "数字",
+  "cellKind:status": "状态",
+  "cellKind:text": "文本",
+  "complexity:complex": "复杂",
+  "complexity:medium": "中等",
+  "complexity:simple": "简单",
+  "diagramKind:class": "类图",
+  "diagramKind:er": "ER 图",
+  "diagramKind:flowchart": "流程图",
+  "diagramKind:gantt": "甘特图",
+  "diagramKind:mindmap": "思维导图",
+  "diagramKind:other": "其它",
+  "diagramKind:sequence": "时序图",
+  "diagramKind:state": "状态图",
+  "importance:hero": "首屏",
+  "importance:primary": "主要",
+  "importance:reference": "参考",
+  "importance:secondary": "次要",
+  "align:center": "中",
+  "align:end": "右",
+  "align:start": "左",
+  "layout:auto": "自动",
+  "layout:inline": "横向",
+  "layout:stacked": "纵向",
+  "likelihood:certain": "几乎必然",
+  "likelihood:likely": "很可能",
+  "likelihood:possible": "可能",
+  "likelihood:rare": "罕见",
+  "likelihood:unlikely": "不太可能",
+  "severity:critical": "严重",
+  "severity:high": "高",
+  "severity:info": "提示",
+  "severity:low": "低",
+  "severity:medium": "中",
+  "size:lg": "大",
+  "size:md": "中",
+  "size:sm": "小",
+  "status:blocked": "阻塞",
+  "status:done": "完成",
+  "status:fail": "失败",
+  "status:in_progress": "进行中",
+  "status:neutral": "中性",
+  "status:partial": "部分",
+  "status:pass": "通过",
+  "status:pending": "待定",
+  "status:skipped": "跳过",
+  "status:warning": "警告",
+  "tone:accent": "强调",
+  "tone:negative": "负面",
+  "tone:neutral": "中性",
+  "tone:positive": "正面",
+  "tone:warning": "警告",
+  "variant:card": "卡片",
+  "variant:chip": "标签",
+  "variant:compact": "紧凑",
+  "variant:danger": "危险",
+  "variant:info": "信息",
+  "variant:metric": "指标",
+  "variant:panel": "面板",
+  "variant:stat": "统计",
+  "variant:success": "成功",
+  "variant:tip": "提示",
+  "variant:warning": "警告",
+};
+
+/**
+ * Overrides where the same field holds a different enum — a `status` is the
+ * shared pass/fail set on most blocks but a decision's own lifecycle here.
+ */
+export const BLOCK_ENUM_LABELS: Readonly<Record<string, string>> = {
+  "decision.status:accepted": "已采纳",
+  "decision.status:deferred": "暂缓",
+  "decision.status:proposed": "提议",
+  "decision.status:rejected": "已否决",
+  "decision.status:superseded": "已被取代",
+  "risk.status:accepted": "已接受",
+  "risk.status:closed": "已关闭",
+  "risk.status:mitigated": "已缓解",
+  "risk.status:open": "未处理",
+};
+
+/** What to show for one enum value: the block's own label, else the shared one. */
+export function enumValueLabel(
+  blockType: string,
+  key: string,
+  value: string
+): string {
+  return (
+    BLOCK_ENUM_LABELS[`${blockType}.${key}:${value}`] ??
+    ENUM_LABELS[`${key}:${value}`] ??
+    value
+  );
 }
