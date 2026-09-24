@@ -13,6 +13,7 @@ import {
   listBlocks,
   primaryTextField,
   readAt,
+  resolveSelection,
   setScalarText,
   visibleDiagnostics,
 } from "../src/studio.js";
@@ -355,6 +356,55 @@ describe("documentText", () => {
 
     expect(text.endsWith("\n")).toBe(true);
     expect(JSON.parse(text)).toEqual(document);
+  });
+});
+
+describe("resolveSelection", () => {
+  it("resolves a block handle to that block and its fields", () => {
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    const found = resolveSelection(document_, blocks, "bbbbbbbbbb", "1.1.0");
+
+    expect(found?.isBlock).toBe(true);
+    expect(found?.block.path).toEqual(["blocks", 0, "children", 0]);
+    expect(found?.fields.map((field) => field.key)).toEqual(["text"]);
+  });
+
+  it("resolves an item handle to the object inside its block", () => {
+    // A table column carries a handle of its own, so the canvas can address it
+    // even though it is not a block.
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    const found = resolveSelection(document_, blocks, "iiiiiiiiii", "1.1.0");
+
+    expect(found?.isBlock).toBe(false);
+    expect(found?.block.type).toBe("table");
+    expect(found?.block.path).toEqual(["blocks", 2]);
+    expect(found?.trail).toEqual(["列", "第 1 项"]);
+    expect(found?.fields.map((field) => field.key)).toEqual([
+      "key",
+      "label",
+      "cellKind",
+      "align",
+    ]);
+  });
+
+  it("resolves a citation entry to its own fields", () => {
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    const found = resolveSelection(document_, blocks, "ffffffffff", "1.1.0");
+
+    expect(found?.isBlock).toBe(false);
+    expect(found?.block.type).toBe("citation");
+    expect(found?.fields.map((field) => field.key)).toContain("source");
+  });
+
+  it("has nothing to say about a handle the document does not carry", () => {
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    expect(
+      resolveSelection(document_, blocks, "zzzzzzzzzz", "1.1.0")
+    ).toBeUndefined();
   });
 });
 

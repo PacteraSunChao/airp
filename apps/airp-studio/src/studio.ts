@@ -11,9 +11,12 @@
 import type { AirpDiagnostic } from "@airp/diagnostics";
 import {
   createValue,
+  type FieldShape,
   fromJsonPointer,
+  indexDocumentAtIds,
   insertValue,
   type NodePath,
+  pathOfAtId,
   readBlockShape,
   removeValue,
   resolveDiagnosticLocations,
@@ -23,6 +26,7 @@ import {
   type ValueShape,
 } from "@airp/editor-core";
 import type { SchemaVersion } from "@airp/protocol";
+import { fieldLabel } from "./field-labels.js";
 
 /** Shape kinds a form renders as a control; the rest are structured. */
 const SCALAR_KINDS = new Set<ValueShape["kind"]>([
@@ -218,6 +222,103 @@ export function primaryTextField(
     }
   }
   return undefined;
+}
+
+/** A selected node: a block, or a structured object inside one. */
+export interface NodeSelection {
+  /** The handle the node carries, when it has one. */
+  atId?: string;
+  /** The block that owns the node (the node itself, when it is a block). */
+  block: BlockEntry;
+  /** Fields declared for the node, in schema order; empty for a scalar. */
+  fields: FieldSpec[];
+  /** Whether the node is the block rather than something inside it. */
+  isBlock: boolean;
+  /** Path of the node, which is the block's path when `isBlock`. */
+  path: NodePath;
+  /** Labels from the block down to the node, for the panel to show. */
+  trail: string[];
+}
+
+/** The shape of a field of a shape, or `undefined` when there is no such field. */
+function fieldAt(
+  fields: readonly FieldSpec[],
+  key: string | number
+): FieldSpec | undefined {
+  return typeof key === "string"
+    ? fields.find((field) => field.key === key)
+    : undefined;
+}
+
+/**
+ * Walk a block's shape down to `relative`, the path *under* the block, and
+ * return the fields declared for the node that sits there.
+ *
+ * A handle can point at a table column or a checklist entry just as well as at a
+ * block, and the panel has to show whatever was clicked. The schema walk is what
+ * turns "this path" into "these fields".
+ */
+function fieldsBelow(
+  document: unknown,
+  block: BlockEntry,
+  relative: NodePath,
+  schemaVersion: SchemaVersion
+): { fields: FieldSpec[]; trail: string[] } {
+  let fields = blockFieldSpecs(document, block.path, schemaVersion);
+  let shape: ValueShape | undefined;
+  const trail: string[] = [];
+  for (const key of relative) {
+    const field = fieldAt(fields, key);
+    if (field !== undefined) {
+      shape = field.shape;
+      trail.push(fieldLabel(block.type, field.key));
+    } else if (shape?.kind === "array") {
+      shape = shape.items;
+      trail.push(`第 ${Number(key) + 1} 项`);
+    } else {
+      return { fields: [], trail };
+    }
+    fields = shape?.kind === "object" ? shape.fields.map(toSpec) : [];
+  }
+  return { fields, trail };
+}
+
+function toSpec(field: FieldShape): FieldSpec {
+  return { key: field.key, required: field.required, shape: field.shape };
+}
+
+/** Resolve a handle to the node it names, block or structured object. */
+export function resolveSelection(
+  document: unknown,
+  blocks: readonly BlockEntry[],
+  atId: string,
+  schemaVersion: SchemaVersion
+): NodeSelection | undefined {
+  const path = pathOfAtId(indexDocumentAtIds(document), atId);
+  if (path === undefined) {
+    return undefined;
+  }
+  // The deepest block that contains the node is the one whose fields describe
+  // it: a table column is described by the table's `columns` field.
+  const block = blockAncestors(blocks, path).at(-1);
+  if (block === undefined) {
+    return undefined;
+  }
+  const relative = path.slice(block.path.length);
+  const { fields, trail } = fieldsBelow(
+    document,
+    block,
+    relative,
+    schemaVersion
+  );
+  return {
+    atId,
+    block,
+    fields,
+    isBlock: relative.length === 0,
+    path,
+    trail,
+  };
 }
 
 function coerce(shape: ValueShape, text: string, name: string): unknown {

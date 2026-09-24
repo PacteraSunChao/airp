@@ -15,9 +15,8 @@ import { appendFields, renderFields } from "./fields.js";
 import {
   type BlockEntry,
   blockAncestors,
-  blockFieldSpecs,
   type DiagnosticEntry,
-  type FieldSpec,
+  type NodeSelection,
   readAt,
 } from "./studio.js";
 import { renderTableGrid, type TableGridActions } from "./table-grid.js";
@@ -42,7 +41,7 @@ export interface InspectorContext {
   document: unknown;
   host: FieldHost;
   schemaVersion: SchemaVersion;
-  selected?: BlockEntry;
+  selection?: NodeSelection;
 }
 
 function element<K extends keyof HTMLElementTagNameMap>(
@@ -143,7 +142,8 @@ function breadcrumb(
   context: InspectorContext,
   actions: InspectorActions
 ): HTMLElement {
-  const chain = blockAncestors(context.blocks, context.selected?.path ?? []);
+  const selection = context.selection;
+  const chain = blockAncestors(context.blocks, selection?.path ?? []);
   const row = element("div", "breadcrumb");
   for (const [index, block] of chain.entries()) {
     if (index > 0) {
@@ -166,48 +166,61 @@ function breadcrumb(
     }
     row.append(chip);
   }
+  // An item is not a block, so its own steps are shown but not clickable: the
+  // handles the canvas reports are what selects them.
+  for (const step of selection?.isBlock === false ? selection.trail : []) {
+    const separator = element("span", "breadcrumb-sep");
+    separator.textContent = "›";
+    const chip = element("span", "breadcrumb-chip is-item");
+    chip.textContent = step;
+    row.append(separator, chip);
+  }
   return row;
 }
 
 function blockHeader(
-  selected: BlockEntry,
+  selection: NodeSelection,
   actions: InspectorActions
 ): HTMLElement {
+  const selected = selection.block;
   const wrapper = element("div");
   const row = element("div", "title-row");
   const pill = element("span", "type-pill");
   pill.textContent = blockLabel(selected.type);
-  if (selected.atId !== undefined) {
-    wrapper.setAttribute("data-selected-at-id", selected.atId);
+  // The *selected* handle, which is an item's when an item is what was clicked.
+  const nodeAtId = selection.atId ?? selected.atId;
+  if (nodeAtId !== undefined) {
+    wrapper.setAttribute("data-selected-at-id", nodeAtId);
   }
   const actionsRow = element("div", "actions");
   const up = element("button", "btn btn-ghost btn-icon");
   up.type = "button";
   up.title = "上移";
   up.setAttribute("aria-label", "上移");
-  up.disabled = !selected.inArray;
+  up.disabled = !(selection.isBlock && selected.inArray);
   up.append(icon("ri-arrow-up-line"));
   up.addEventListener("click", () => actions.move(-1));
   const down = element("button", "btn btn-ghost btn-icon");
   down.type = "button";
   down.title = "下移";
   down.setAttribute("aria-label", "下移");
-  down.disabled = !selected.inArray;
+  down.disabled = !(selection.isBlock && selected.inArray);
   down.append(icon("ri-arrow-down-line"));
   down.addEventListener("click", () => actions.move(1));
   const remove = element("button", "btn btn-ghost btn-icon btn-action-danger");
   remove.type = "button";
   remove.title = "删除这个块";
   remove.setAttribute("aria-label", "删除这个块");
-  remove.disabled = !selected.inArray;
+  remove.disabled = !(selection.isBlock && selected.inArray);
   remove.append(icon("ri-delete-bin-line"));
   remove.addEventListener("click", () => actions.remove());
   actionsRow.append(up, down, remove);
   row.append(pill, actionsRow);
   wrapper.append(row);
-  if (selected.atId !== undefined) {
+  const atId = selection.atId ?? selected.atId;
+  if (atId !== undefined) {
     const handle = element("div", "hint");
-    handle.textContent = `句柄 ${selected.atId}`;
+    handle.textContent = `句柄 ${atId}`;
     wrapper.append(handle);
   }
   return wrapper;
@@ -226,7 +239,7 @@ export function renderInspector(
   actions: InspectorActions
 ): void {
   container.replaceChildren();
-  container.append(panelHead("字段", context.selected ? "已选中" : "文档"));
+  container.append(panelHead("字段", context.selection ? "已选中" : "文档"));
 
   const body = element("div", "inspector-body");
   body.append(issuesBlock(context.diagnostics, actions));
@@ -242,8 +255,8 @@ export function renderInspector(
   );
   body.append(meta);
 
-  const { selected } = context;
-  if (selected === undefined) {
+  const { selection } = context;
+  if (selection === undefined) {
     const hint = element("p", "hint");
     hint.textContent = "在中间画布上点一个块，或从左侧积木块里添加一个。";
     body.append(hint);
@@ -251,15 +264,10 @@ export function renderInspector(
     const section = element("div", "inspector-section");
     section.append(
       breadcrumb(context, actions),
-      blockHeader(selected, actions)
+      blockHeader(selection, actions)
     );
     const fields = element("div");
-    const specs: readonly FieldSpec[] = blockFieldSpecs(
-      context.document,
-      selected.path,
-      context.schemaVersion
-    );
-    renderBlockFields(fields, context, selected, specs, actions);
+    renderBlockFields(fields, context, selection, actions);
     section.append(fields);
     body.append(section);
   }
@@ -278,12 +286,19 @@ const GRID_KEYS = new Set(["columns", "rows"]);
 function renderBlockFields(
   container: HTMLElement,
   context: InspectorContext,
-  selected: BlockEntry,
-  specs: readonly FieldSpec[],
+  selection: NodeSelection,
   actions: InspectorActions
 ): void {
-  if (selected.type !== "table") {
-    renderFields(container, specs, selected.path, context.host);
+  const specs = selection.fields;
+  const selected = selection.block;
+  if (!(selected.type === "table" && selection.isBlock)) {
+    if (specs.length === 0) {
+      const note = element("p", "hint");
+      note.textContent = "这个节点没有可编辑的字段，改它所属的块即可。";
+      container.append(note);
+      return;
+    }
+    renderFields(container, specs, selection.path, context.host);
     return;
   }
   const rowsShape = specs.find((spec) => spec.key === "rows")?.shape;

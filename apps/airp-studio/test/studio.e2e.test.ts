@@ -27,6 +27,7 @@ const SECTION_AT_ID = "aaaaaaaaaa";
 const PARAGRAPH_AT_ID = "bbbbbbbbbb";
 const TABLE_AT_ID = "hhhhhhhhhh";
 const TABLE_PATH = "/blocks/2";
+const TABLE_ROW_AT_ID = "kkkkkkkkkk";
 
 let browser: Browser;
 let server: ViteDevServer;
@@ -79,8 +80,11 @@ async function selectedAtId(
     .getAttribute("data-selected-at-id");
 }
 
-/** Click a block on the rendered canvas, the way an author would. */
-async function clickBlock(
+/**
+ * Select a block the way an author reaches one that covers its children: click
+ * inside it on the canvas, then step back out through the ancestor breadcrumb.
+ */
+async function selectBlock(
   page: Awaited<ReturnType<Browser["newPage"]>>,
   atId: string
 ): Promise<void> {
@@ -89,6 +93,10 @@ async function clickBlock(
     .locator(`[data-airp-id="${atId}"]`)
     .first()
     .click();
+  const ancestor = page.locator(`[data-ancestor-at-id="${atId}"]`);
+  if ((await ancestor.count()) > 0) {
+    await ancestor.first().click();
+  }
   await page.waitForSelector(`[data-selected-at-id="${atId}"]`);
 }
 
@@ -104,7 +112,7 @@ describe("studio app", () => {
     }, STATUS_RE.source);
     expect(await page.locator("#status").innerText()).toContain("校验通过");
 
-    await clickBlock(page, PARAGRAPH_AT_ID);
+    await selectBlock(page, PARAGRAPH_AT_ID);
     const paragraph = page.locator("[data-field-path]").first();
     await paragraph.fill("改写后的正文。");
 
@@ -188,6 +196,30 @@ describe("studio app", () => {
     await page.close();
   }, 60_000);
 
+  it("selects the table row under the pointer, not the whole table", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    // A cell carries no handle of its own; the row it belongs to does, so the
+    // click resolves to that row and the panel says where it is.
+    await page
+      .frameLocator("#canvas")
+      .locator(`[data-airp-id="${TABLE_ROW_AT_ID}"]`)
+      .first()
+      .click();
+    await page.waitForSelector(`[data-selected-at-id="${TABLE_ROW_AT_ID}"]`);
+    expect(await page.locator(".breadcrumb-chip").allInnerTexts()).toEqual([
+      "表格",
+      "行",
+      "第 1 项",
+    ]);
+
+    await page.click(`[data-ancestor-at-id="${TABLE_AT_ID}"]`);
+    await page.waitForSelector(`[data-selected-at-id="${TABLE_AT_ID}"]`);
+    await page.close();
+  }, 60_000);
+
   it("opens every 1.1.0 fixture and lists its blocks", async () => {
     const page = await openPage();
     // Mermaid figures need the Node-side renderer, so a document containing one
@@ -248,7 +280,7 @@ describe("studio app", () => {
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles("#file", FIXTURE);
-    await clickBlock(page, TABLE_AT_ID);
+    await selectBlock(page, TABLE_AT_ID);
 
     const grid = `[data-table-grid="${TABLE_PATH}"]`;
     expect(
@@ -277,7 +309,7 @@ describe("studio app", () => {
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles("#file", FIXTURE);
-    await clickBlock(page, TABLE_AT_ID);
+    await selectBlock(page, TABLE_AT_ID);
 
     const grid = `[data-table-grid="${TABLE_PATH}"]`;
     const header = `${grid} .table-easy-row.head`;
@@ -338,7 +370,7 @@ describe("studio app", () => {
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles("#file", FIXTURE);
-    await clickBlock(page, PARAGRAPH_AT_ID);
+    await selectBlock(page, PARAGRAPH_AT_ID);
     expect(await selectedAtId(page)).toBe(PARAGRAPH_AT_ID);
     // The paragraph is inside the first section, so the chain back out is there
     // to click: a block that covers its parent cannot be clicked directly.

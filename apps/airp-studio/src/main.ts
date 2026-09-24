@@ -50,8 +50,10 @@ import {
   documentText,
   dropArrayItem,
   listBlocks,
+  type NodeSelection,
   primaryTextField,
   readAt,
+  resolveSelection,
   setScalarText,
 } from "./studio.js";
 import "./styles/index.css";
@@ -115,6 +117,14 @@ const workspace = element<HTMLElement>("workspace");
 let state: StudioState | undefined;
 let paintTimer: ReturnType<typeof setTimeout> | undefined;
 let fieldsVisible = true;
+/**
+ * Bumped whenever the document under the shell changes.
+ *
+ * Validation and rendering are async, so a refresh started for one document can
+ * land after another one was opened — and would then write that older status
+ * (or worse, that older HTML) over the new one.
+ */
+let generation = 0;
 /** The in-place editor, while one is open. */
 let inline: { close: () => void } | undefined;
 /** Edits made while the in-place editor held the canvas frozen. */
@@ -132,11 +142,18 @@ function run(task: Promise<unknown>): void {
   });
 }
 
-function selectedBlock(): BlockEntry | undefined {
+/**
+ * What the panel is showing: a block, or a structured object inside one.
+ *
+ * A click on the canvas reports whatever handle was under the pointer, and the
+ * schema decides what that node's fields are — a table row is as addressable as
+ * the table itself.
+ */
+function selection(): NodeSelection | undefined {
   const atId = state?.selectedAtId;
-  return atId === undefined
+  return state === undefined || atId === undefined
     ? undefined
-    : state?.blocks.find((block) => block.atId === atId);
+    : resolveSelection(state.document, state.blocks, atId, state.schemaVersion);
 }
 
 /** A blank 1.1.0 report, so the editor opens on something editable. */
@@ -183,8 +200,13 @@ async function paintCanvas(): Promise<void> {
   if (state === undefined) {
     return;
   }
+  const mine = generation;
+  const html = await documentHtml(state.document);
+  if (mine !== generation || state === undefined) {
+    return;
+  }
   setExportEnabled(true);
-  canvas.render(await documentHtml(state.document));
+  canvas.render(html);
   canvas.highlight(state.selectedAtId);
   const writable = state.handle === undefined ? "" : " · 可写回";
   setStatus(
@@ -199,7 +221,11 @@ async function refresh(): Promise<void> {
   if (state === undefined) {
     return;
   }
+  const mine = generation;
   const validation = await validateDocument(state.document);
+  if (mine !== generation || state === undefined) {
+    return;
+  }
   state.diagnostics = diagnosticEntries(
     state.document,
     validation.diagnostics,
@@ -207,7 +233,7 @@ async function refresh(): Promise<void> {
   );
   state.valid = validation.ok;
   state.blocks = listBlocks(state.document, state.schemaVersion);
-  if (selectedBlock() === undefined) {
+  if (selection() === undefined) {
     state.selectedAtId = undefined;
   }
   paintInspector();
@@ -292,7 +318,7 @@ function paintInspector(): void {
     return;
   }
   const caret = captureCaret();
-  const selected = selectedBlock();
+  const current = selection();
   renderInspector(
     inspector,
     {
@@ -301,7 +327,7 @@ function paintInspector(): void {
       document: state.document,
       host: fieldHost(),
       schemaVersion: state.schemaVersion,
-      ...(selected === undefined ? {} : { selected }),
+      ...(current === undefined ? {} : { selection: current }),
     },
     {
       addColumn: (tablePath, columnShape) => addColumn(tablePath, columnShape),
@@ -341,8 +367,9 @@ function setMeta(key: string, text: string): void {
 }
 
 function moveSelected(delta: number): void {
-  const block = selectedBlock();
-  if (state === undefined || block === undefined) {
+  const current = selection();
+  const block = current?.block;
+  if (state === undefined || block === undefined || current?.isBlock !== true) {
     return;
   }
   try {
@@ -354,8 +381,9 @@ function moveSelected(delta: number): void {
 }
 
 function removeSelected(): void {
-  const block = selectedBlock();
-  if (state === undefined || block === undefined) {
+  const current = selection();
+  const block = current?.block;
+  if (state === undefined || block === undefined || current?.isBlock !== true) {
     return;
   }
   try {
@@ -412,8 +440,10 @@ function addColumn(tablePath: NodePath, columnShape: ValueShape): void {
 
 /** Where a new block should go: after the selection, else at the end. */
 function insertAfterPath(): NodePath | undefined {
-  const block = selectedBlock();
-  return block?.inArray === true ? block.path : undefined;
+  const current = selection();
+  return current?.isBlock === true && current.block.inArray
+    ? current.block.path
+    : undefined;
 }
 
 /** Add a block: after `after` when given, else appended to the report. */
@@ -472,7 +502,7 @@ function fieldHost(): FieldHost {
       ).document;
       run(refresh());
     },
-    blockType: selectedBlock()?.type ?? "",
+    blockType: selection()?.block.type ?? "",
     document: state?.document,
     dropItem: (arrayPath, index) => {
       if (state === undefined) {
@@ -604,9 +634,13 @@ function openText(
   }
   const problem = versionProblem(loaded.value.document);
   if (problem !== undefined) {
+    // Anything still in flight belongs to the document being replaced; drop it
+    // so its status cannot land on top of this refusal.
+    generation += 1;
     setStatus(problem);
     return;
   }
+  generation += 1;
   state = {
     blocks: [],
     diagnostics: [],
