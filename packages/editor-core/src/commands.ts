@@ -130,8 +130,11 @@ function rekeyAtIds(value: unknown, used: Set<string>): unknown {
  * collides with `document` or with another one inside the copy. Nodes that
  * declare no handle keep none: which nodes need one is the schema's call.
  */
-export function withUniqueAtIds(value: unknown, document: unknown): unknown {
-  return rekeyAtIds(value, new Set(indexDocumentAtIds(document).byAtId.keys()));
+export function withUniqueAtIds<T>(value: T, document: unknown): T {
+  return rekeyAtIds(
+    value,
+    new Set(indexDocumentAtIds(document).byAtId.keys())
+  ) as T;
 }
 
 /** Read the value at `path`. */

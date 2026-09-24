@@ -16,6 +16,7 @@ export {
   setValue,
   withUniqueAtIds,
 } from "./commands.js";
+export { createBlock } from "./create-block.js";
 export {
   type AtIdOccurrence,
   atIdAtPath,

@@ -51,12 +51,19 @@ export interface ObjectShape {
   fields: readonly FieldShape[];
   kind: "object";
   open: boolean;
+  /**
+   * Whether the schema requires a machine handle on this object, e.g. a
+   * `TableColumn` does and a free-form `meta` does not.
+   */
+  requiresHandle: boolean;
 }
 
 export interface BlockShape {
   /** Schema definition carrying this block, e.g. `TableBlock`. */
   def: string;
   fields: readonly FieldShape[];
+  /** Whether the schema requires a machine handle on this block. */
+  requiresHandle: boolean;
   type: string;
 }
 
@@ -234,7 +241,12 @@ function readObjectShape(
     }
   }
 
-  const shape: ObjectShape = { kind: "object", fields: [], open: false };
+  const shape: ObjectShape = {
+    fields: [],
+    kind: "object",
+    open: false,
+    requiresHandle: false,
+  };
   if (def !== undefined) {
     ctx.pending.set(def, shape);
   }
@@ -268,6 +280,7 @@ function readObjectShape(
 
   shape.fields = fields;
   shape.open = open || fields.length === 0;
+  shape.requiresHandle = required.has("@id");
 
   if (def !== undefined) {
     ctx.pending.delete(def);
@@ -316,7 +329,12 @@ function buildCatalog(schemaVersion: SchemaVersion): BlockCatalog {
   };
   for (const [def, type] of typeByDef) {
     const shape = readObjectShape(def, defs[def] ?? {}, ctx);
-    byType.set(type, { def, fields: shape.fields, type });
+    byType.set(type, {
+      def,
+      fields: shape.fields,
+      requiresHandle: shape.requiresHandle,
+      type,
+    });
   }
 
   return { byType, types };

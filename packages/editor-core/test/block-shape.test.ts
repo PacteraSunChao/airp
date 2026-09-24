@@ -222,15 +222,36 @@ describe("readBlockShape", () => {
   it("reports open objects whose keys live elsewhere", () => {
     const rows = arrayItemsOf(fieldOf(readShape("table"), "rows").shape);
 
-    expect(rows).toEqual({ kind: "object", fields: [], open: true });
+    expect(rows).toEqual({
+      kind: "object",
+      fields: [],
+      open: true,
+      requiresHandle: true,
+    });
     expect(fieldOf(readShape("table"), "footerRow").shape).toEqual({
       kind: "object",
       fields: [],
       open: true,
+      requiresHandle: true,
     });
 
     const items = arrayItemsOf(fieldOf(readShape("collection"), "items").shape);
     const meta = objectOf(items).fields.find((field) => field.key === "meta");
-    expect(meta?.shape).toEqual({ kind: "object", fields: [], open: true });
+    expect(meta?.shape).toEqual({
+      kind: "object",
+      fields: [],
+      open: true,
+      requiresHandle: false,
+    });
+  });
+
+  it("reports whether a node needs a machine handle", () => {
+    const column = objectOf(
+      arrayItemsOf(fieldOf(readShape("table"), "columns").shape)
+    );
+
+    expect(column.requiresHandle).toBe(true);
+    expect(readShape("paragraph").requiresHandle).toBe(true);
+    expect(readBlockShape("paragraph", "1.0.0")?.requiresHandle).toBe(false);
   });
 });
