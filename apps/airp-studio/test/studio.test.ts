@@ -11,6 +11,7 @@ import {
   dropArrayItem,
   isScalarShape,
   listBlocks,
+  primaryTextField,
   readAt,
   setScalarText,
   visibleDiagnostics,
@@ -354,5 +355,40 @@ describe("documentText", () => {
 
     expect(text.endsWith("\n")).toBe(true);
     expect(JSON.parse(text)).toEqual(document);
+  });
+});
+
+describe("primaryTextField", () => {
+  it("picks the text the block is mostly made of", () => {
+    const document_ = readDocument();
+    const blocks = listBlocks(document_, "1.1.0");
+    const paragraph = blocks.find((block) => block.type === "paragraph");
+    if (paragraph === undefined) {
+      throw new Error("fixture has no paragraph");
+    }
+    expect(primaryTextField(document_, paragraph.path, "1.1.0")).toMatchObject({
+      key: "text",
+      shape: { kind: "markdown" },
+    });
+  });
+
+  it("offers nothing for a block with no text of its own", () => {
+    const document_ = {
+      blocks: [{ "@id": "aaaaaaaaaa", type: "divider" }],
+      i18n: { locale: "zh-CN" },
+      meta: { title: "t" },
+      schemaVersion: "1.1.0",
+    };
+    expect(primaryTextField(document_, ["blocks", 0], "1.1.0")).toBeUndefined();
+  });
+
+  it("skips a string field the document does not actually carry", () => {
+    const document_ = {
+      blocks: [{ "@id": "aaaaaaaaaa", type: "heading", level: 2 }],
+      i18n: { locale: "zh-CN" },
+      meta: { title: "t" },
+      schemaVersion: "1.1.0",
+    };
+    expect(primaryTextField(document_, ["blocks", 0], "1.1.0")).toBeUndefined();
   });
 });

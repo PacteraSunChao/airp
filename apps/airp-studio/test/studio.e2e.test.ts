@@ -154,6 +154,40 @@ describe("studio app", () => {
     await page.close();
   }, 60_000);
 
+  it("edits a block in place on the canvas", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    await page
+      .frameLocator("#canvas")
+      .locator(`[data-airp-id="${PARAGRAPH_AT_ID}"]`)
+      .first()
+      .dblclick();
+
+    // Double clicking the rendered paragraph puts a control on top of it, so the
+    // author keeps looking at the report while typing.
+    const overlay = page.locator(".inline-editor");
+    await overlay.waitFor({ timeout: 10_000 });
+    expect(await overlay.inputValue()).toContain("Body with");
+
+    await overlay.fill("就地改过的正文。");
+    await page.keyboard.press("Escape");
+    await overlay.waitFor({ state: "detached" });
+
+    await page.waitForFunction(
+      () =>
+        (
+          document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+            ?.body?.textContent ?? ""
+        ).includes("就地改过的正文。") === true,
+      null,
+      { timeout: 10_000 }
+    );
+    expect(await page.locator("#status").innerText()).toContain("校验通过");
+    await page.close();
+  }, 60_000);
+
   it("opens every 1.1.0 fixture and lists its blocks", async () => {
     const page = await openPage();
     // Mermaid figures need the Node-side renderer, so a document containing one

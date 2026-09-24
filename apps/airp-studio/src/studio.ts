@@ -195,6 +195,31 @@ export function blockFieldSpecs(
   }));
 }
 
+/**
+ * The one field worth editing straight on the canvas.
+ *
+ * A rendered block is mostly its text, so a click on it should be able to reach
+ * that text without a detour through a panel. Only a string the author typed is
+ * a candidate: enums, numbers and structured fields still belong in the panel,
+ * where the control says what the value means.
+ */
+export function primaryTextField(
+  document: unknown,
+  path: NodePath,
+  schemaVersion: SchemaVersion
+): { key: string; shape: ValueShape } | undefined {
+  for (const field of blockFieldSpecs(document, path, schemaVersion)) {
+    const kind = field.shape.kind;
+    if (kind !== "markdown" && kind !== "plain" && kind !== "string") {
+      continue;
+    }
+    if (typeof readAt(document, [...path, field.key]) === "string") {
+      return { key: field.key, shape: field.shape };
+    }
+  }
+  return undefined;
+}
+
 function coerce(shape: ValueShape, text: string, name: string): unknown {
   if (shape.kind === "boolean") {
     return text === "true";

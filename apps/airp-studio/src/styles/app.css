@@ -1120,3 +1120,26 @@
   gap: 6px;
   padding-top: 2px;
 }
+
+/* —— Editing in place on the canvas —— */
+.inline-editor {
+  position: absolute;
+  z-index: 20;
+  padding: 5px 8px;
+  font: inherit;
+  color: var(--fg);
+  outline: none;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 0 0 3px rgba(15, 107, 92, 0.14),
+    var(--shadow);
+}
+.inline-editor.is-multiline {
+  line-height: 1.5;
+  resize: vertical;
+}
+.inline-editor.is-single {
+  height: auto;
+}

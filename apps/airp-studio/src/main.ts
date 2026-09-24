@@ -28,7 +28,7 @@ import { loadDocumentJson } from "@airp/loader";
 import { hasSchemaVersion, type SchemaVersion } from "@airp/protocol";
 import { type AirpDocumentSnapshot, renderDocument } from "@airp/renderer";
 import { validateDocument } from "@airp/validate";
-import { createCanvas } from "./canvas.js";
+import { createCanvas, type NodeBox } from "./canvas.js";
 import type { FieldHost } from "./fields.js";
 import {
   canWriteBack,
@@ -38,6 +38,7 @@ import {
   pickSaveHandle,
   writeDocument,
 } from "./file-access.js";
+import { openInlineEditor } from "./inline-editor.js";
 import { renderInspector } from "./inspector.js";
 import { renderPalette } from "./palette.js";
 import { insertBlockAfter, moveBlock, removeBlock } from "./structure.js";
@@ -49,6 +50,7 @@ import {
   documentText,
   dropArrayItem,
   listBlocks,
+  primaryTextField,
   readAt,
   setScalarText,
 } from "./studio.js";
@@ -91,6 +93,7 @@ function element<T extends HTMLElement>(id: string): T {
 }
 
 const canvasFrame = element<HTMLIFrameElement>("canvas");
+const canvasWrap = canvasFrame.parentElement ?? canvasFrame;
 const exportHtmlButton = element<HTMLButtonElement>("export-html");
 const exportJsonButton = element<HTMLButtonElement>("export-json");
 const exportMarkdownButton = element<HTMLButtonElement>("export-md");
@@ -112,6 +115,10 @@ const workspace = element<HTMLElement>("workspace");
 let state: StudioState | undefined;
 let paintTimer: ReturnType<typeof setTimeout> | undefined;
 let fieldsVisible = true;
+/** The in-place editor, while one is open. */
+let inline: { close: () => void } | undefined;
+/** Edits made while the in-place editor held the canvas frozen. */
+let inlineDirty = false;
 
 function setStatus(message: string): void {
   statusNode.textContent = message;
@@ -214,6 +221,21 @@ function schedule(task: () => Promise<void>): void {
   paintTimer = setTimeout(() => {
     run(task());
   }, REPAINT_DEBOUNCE_MS);
+}
+
+/**
+ * Editing in place holds the canvas still.
+ *
+ * A repaint reloads the iframe, which would move the node out from under the
+ * overlay on every keystroke — so the canvas is left as it was and brought up to
+ * date once the overlay closes.
+ */
+function scheduleUnlessInline(task: () => Promise<void>): void {
+  if (inline !== undefined) {
+    inlineDirty = true;
+    return;
+  }
+  schedule(task);
 }
 
 /**
@@ -472,7 +494,7 @@ function fieldHost(): FieldHost {
       }
       // Re-validate and repaint: the status line has to follow what was typed.
       // The caret survives because every control is tagged with its path.
-      schedule(refresh);
+      scheduleUnlessInline(refresh);
     },
     setValueAt: (path, value) => {
       if (state === undefined) {
@@ -484,10 +506,76 @@ function fieldHost(): FieldHost {
   };
 }
 
+/**
+ * Double clicking a node edits its text on the canvas itself.
+ *
+ * Only a text field the author typed can be edited this way; a block whose first
+ * string is a label, or one with no text at all, is selected and left to the
+ * panel, which knows what kind of control the value needs.
+ */
+function editInPlace(atId: string, box: NodeBox): void {
+  if (state === undefined) {
+    return;
+  }
+  selectAtId(atId);
+  const block = state.blocks.find((entry) => entry.atId === atId);
+  if (block === undefined) {
+    return;
+  }
+  const field = primaryTextField(
+    state.document,
+    block.path,
+    state.schemaVersion
+  );
+  if (field === undefined) {
+    return;
+  }
+  inline?.close();
+  inlineDirty = false;
+  const path = [...block.path, field.key];
+  const handle = openInlineEditor(
+    canvasWrap,
+    {
+      box,
+      multiline: field.shape.kind === "markdown",
+      value: String(readAt(state.document, path) ?? ""),
+    },
+    {
+      onClose: () => {
+        inline = undefined;
+        if (inlineDirty) {
+          inlineDirty = false;
+          run(refresh());
+        }
+      },
+      onInput: (text) => {
+        if (state === undefined) {
+          return;
+        }
+        try {
+          state.document = setScalarText(
+            state.document,
+            path,
+            field.shape,
+            text
+          );
+        } catch (error) {
+          setStatus(error instanceof Error ? error.message : String(error));
+        }
+        // The canvas is held still while the overlay is open, so this only marks
+        // it as needing a repaint the moment the overlay closes.
+        scheduleUnlessInline(refresh);
+      },
+    }
+  );
+  inline = handle;
+}
+
 const canvas = createCanvas(canvasFrame, {
-  onActivate: (atId) => selectAtId(atId),
   onClear: () => selectAtId(undefined),
   onDrop: (atId, type) => addBlockAfterAtId(atId, type),
+  onEdit: (atId, box) => editInPlace(atId, box),
+  onSelect: (atId) => selectAtId(atId),
 });
 
 /** Refuse anything this editor cannot honestly edit. */

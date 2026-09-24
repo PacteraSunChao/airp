@@ -27,13 +27,39 @@ const HIGHLIGHT_CSS = `
 }
 `;
 
+/** Where a node sits in the canvas frame's own coordinates. */
+export interface NodeBox {
+  height: number;
+  left: number;
+  top: number;
+  width: number;
+}
+
 export interface CanvasOptions {
-  /** A node on the canvas was activated (click or double click). */
-  onActivate(atId: string, event: MouseEvent): void;
   /** The click landed outside any annotated node. */
   onClear(): void;
   /** A palette item was dropped on the node carrying `atId` (or the page). */
   onDrop(atId: string | undefined, blockType: string): void;
+  /** A node was double clicked: the author wants to edit it where it is. */
+  onEdit(atId: string, box: NodeBox): void;
+  /** A node was clicked. */
+  onSelect(atId: string, box: NodeBox): void;
+}
+
+/** The element's box relative to the iframe's own viewport. */
+function boxOf(frame: HTMLIFrameElement, element: Element): NodeBox {
+  const rect = element.getBoundingClientRect();
+  const frameRect = frame.getBoundingClientRect();
+  return {
+    height: rect.height,
+    left: rect.left - frameRect.left,
+    top: rect.top - frameRect.top,
+    width: rect.width,
+  };
+}
+
+function annotated(target: EventTarget | null): Element | null {
+  return (target as Element | null)?.closest("[data-airp-id]") ?? null;
 }
 
 export interface CanvasHandle {
@@ -90,29 +116,24 @@ export function createCanvas(
     });
     document_.addEventListener("click", (event) => {
       const mouse = event as MouseEvent;
-      const anchor = (mouse.target as Element | null)?.closest("a[href]");
       // A report is full of links; in the editor a click means "edit this",
       // never "navigate away from my document".
-      if (anchor !== null) {
+      if ((mouse.target as Element | null)?.closest("a[href]") != null) {
         mouse.preventDefault();
       }
-      const target = (mouse.target as Element | null)?.closest(
-        "[data-airp-id]"
-      );
+      const target = annotated(mouse.target);
       const atId = target?.getAttribute("data-airp-id");
-      if (atId === undefined || atId === null) {
+      if (target === null || atId === undefined || atId === null) {
         options.onClear();
         return;
       }
-      options.onActivate(atId, mouse);
+      options.onSelect(atId, boxOf(frame, target));
     });
     document_.addEventListener("dblclick", (event) => {
-      const target = (event.target as Element | null)?.closest(
-        "[data-airp-id]"
-      );
+      const target = annotated(event.target);
       const atId = target?.getAttribute("data-airp-id");
-      if (atId !== undefined && atId !== null) {
-        options.onActivate(atId, event as MouseEvent);
+      if (target !== null && atId !== undefined && atId !== null) {
+        options.onEdit(atId, boxOf(frame, target));
       }
     });
 
