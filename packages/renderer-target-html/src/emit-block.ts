@@ -5,6 +5,10 @@ import { createLocaleFormatContext, isBlockBase } from "@airp/renderer-shared";
 import { RENDERER_TARGETS_HTML_UNKNOWN_BLOCK_TYPE } from "./diagnostic-codes.js";
 import { BLOCK_HANDLERS, setEmitBlockRef } from "./emit-handlers.js";
 import type { EmitContext } from "./emit-helpers.js";
+import {
+  injectMachineHandle,
+  readBlockHandle,
+} from "./shared/inject-machine-handle.js";
 
 export type { EmitContext } from "./emit-helpers.js";
 
@@ -33,12 +37,22 @@ export function emitBlock(
       ),
     ]);
   }
-  return handler(block, ctx, levelOffset);
+  const html = handler(block, ctx, levelOffset);
+  if (ctx.machineHandles !== true) {
+    return html;
+  }
+  const handle = readBlockHandle(block);
+  return handle === undefined ? html : injectMachineHandle(html, handle);
 }
 
 setEmitBlockRef(emitBlock);
 
 export interface EmitBlocksOptions {
+  /**
+   * Emit each block's Machine Handle (`@id`) as `data-airp-id`, so a host can
+   * map rendered DOM back to document nodes. Off unless asked for.
+   */
+  machineHandles?: boolean;
   takeHighlightedCode?: () => string | undefined;
   takeMermaidSvg?: () => string;
 }
@@ -66,6 +80,7 @@ export function emitBlocks(
     tocEntries,
     tabsSeq: { next: 0 },
     topSectionCount: 0,
+    machineHandles: options.machineHandles,
     takeMermaidSvg: options.takeMermaidSvg,
     takeHighlightedCode: options.takeHighlightedCode,
   };

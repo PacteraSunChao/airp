@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `@airp/editor-core`: Machine Handle addressing (`indexDocumentAtIds`, JSON Pointer helpers), write-back serialization, schema-derived block shapes (`readBlockShape`, `listBlockTypes`), pure document mutations (`setValue`, `insertValue`, `removeValue`, `moveValue`, `duplicateValue`), new-block seeding (`createBlock`), and validation-diagnostic locations (`resolveDiagnosticLocations`), as the base for host-side editing
+- `@airp/renderer-target-html`: opt-in Machine Handles in the rendered HTML (`targetOptions.machineHandles`), which add each block's `@id` as `data-airp-id`, so a host can map a rendered node back to the document node it came from; the option is off by default and a render that does not ask for it is unchanged
 - Machine Handle SSOT in `@airp/protocol`: `AT_ID_ALPHABET`, `AT_ID_LENGTH`, `AT_ID_PATTERN`, `isAtId`, `generateAtId`
 
 ## [1.1.3] - 2026-09-24

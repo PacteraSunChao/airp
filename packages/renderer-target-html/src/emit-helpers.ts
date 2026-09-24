@@ -40,6 +40,11 @@ export type EmitContext = LocaleFormatContext & {
    * Provided by the Node HTML entry; isomorphic falls back to escaped plain.
    */
   takeHighlightedCode?: () => string | undefined;
+  /**
+   * Emit each block's Machine Handle as `data-airp-id`. Requested through
+   * `targetOptions.machineHandles`; off by default.
+   */
+  machineHandles?: boolean;
 };
 
 export interface WrapBlockOptions {
