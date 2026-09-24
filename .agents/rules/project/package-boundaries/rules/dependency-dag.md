@@ -25,6 +25,7 @@ writer              → utils
 protocol            → utils | diagnostics
 diagnostics         → utils（类型级）
 editor-core         → protocol | utils | diagnostics
+airp-studio（web）  → loader | validate | renderer | protocol | utils | diagnostics | editor-core（仅 `.` 入口）
 
 test-kit / repo-guard → 旁路；不被业务包依赖
 ```
@@ -36,6 +37,7 @@ test-kit / repo-guard → 旁路；不被业务包依赖
 | isomorphic | protocol, editor-core, renderer-contract, renderer-shared, renderer-target-markdown, diagnostics（主面）；validate（`.`，无 Mermaid） |
 | dual | utils, loader, writer, validate, renderer, renderer-target-html（`.` 同构壳；`./node` 含 Mermaid） |
 | node | validate-cli, renderer-cli, renderer-vscode, test-kit, repo-guard, typescript-config |
+| web | airp-studio（静态站点；只依赖各包 `.` 入口） |
 
 ## 运行时 API 与入口
 
@@ -54,6 +56,7 @@ test-kit / repo-guard → 旁路；不被业务包依赖
 - ❌ 循环依赖
 - ❌ 逆层依赖（例如 `protocol` → `validate` / `loader` / `writer` / `renderer`；`validate` → `loader` / `writer`；`renderer-contract` → `renderer` / `renderer-shared` / `renderer-target-*`；`utils` → `diagnostics`）
 - ❌ 同构入口依赖 `*/node` 或 platform=`node` 的业务包
+- ❌ web 宿主依赖 `*/node` 或 platform=`node` 的业务包（浏览器闭包）
 - ❌ 独立组装包 `renderer-targets`（名单与编排在 `renderer`）
 - ❌ `packages/*` 依赖 `apps/*`（与 `registry://rules.code-styles` → module-placement 一致）
 

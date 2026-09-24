@@ -2,13 +2,14 @@
 
 包路径、platform 与一句话职责；主调用链与 Ctx。准入见 [package-roles](./package-roles.md)；依赖见 [dependency-dag](./dependency-dag.md)；失败通道见 `registry://rules.failure-channels`。
 
-## platform 三类
+## platform 四类
 
 | platform | 定义 |
 |----------|------|
 | `isomorphic` | 同构专用。默认入口禁止 `node:*`，禁止依赖任何包的 Node 入口。 |
 | `node` | Node 专用。不考虑浏览器闭包。 |
 | `dual` | 同构 + Node。`.` 最大化浏览器可用能力；无法同构的进 `./node`（或等价）。浏览器与同构调用方只 import `.`。 |
+| `web` | 浏览器专用宿主。产物是静态站点；不参与包依赖图，只依赖各包的 `.` 入口，禁止 `node:*` 与 `*/node`。 |
 
 分类看 **exports 面**，不看未导出的构建脚本。新增包先定 platform；改 dual 时能同构的符号进 `.`。
 
@@ -34,6 +35,7 @@
 | `apps/validate-cli` | `@airp/validate-cli` | node | CLI：读路径 → validate/node → 人话/JSON；bin `airp-validate` |
 | `apps/renderer-cli` | `@airp/renderer-cli` | node | CLI：`export` / `watch` / `worker`；bin `airp-render` |
 | `apps/renderer-vscode` | `airp-renderer-vscode` | node | VS Code：Custom Editor 渲染单个 `*.airp.json` |
+| `apps/airp-studio` | `airp-studio` | web | 浏览器宿主：表单驱动编辑 + 实时预览 + 回写；本地静态站点 |
 
 † diagnostics 主面同构；类型级可依赖 utils。
 
