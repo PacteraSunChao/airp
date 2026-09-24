@@ -100,9 +100,9 @@ button {
 }
 
 /*
- * `hidden` must win over a layout `display`: the modal backdrop, the field panel
- * and the reopen button all set `display`, and without this they stay on screen
- * (and swallow clicks) while marked hidden.
+ * `hidden` must win over a layout `display`: the field panel and the reopen
+ * button both set `display`, and without this they stay on screen (and swallow
+ * clicks) while marked hidden.
  */
 [hidden] {
   display: none !important;

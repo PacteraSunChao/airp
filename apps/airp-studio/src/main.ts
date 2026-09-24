@@ -100,10 +100,8 @@ const exportHtmlButton = element<HTMLButtonElement>("export-html");
 const exportJsonButton = element<HTMLButtonElement>("export-json");
 const exportMarkdownButton = element<HTMLButtonElement>("export-md");
 const fileInput = element<HTMLInputElement>("file");
-const fullscreenButton = element<HTMLButtonElement>("fullscreen");
 const importButton = element<HTMLButtonElement>("import");
 const inspector = element<HTMLElement>("inspector");
-const modal = element<HTMLElement>("modal");
 const newButton = element<HTMLButtonElement>("new");
 const palette = element<HTMLElement>("palette");
 const resizeHandle = element<HTMLButtonElement>("resize");
@@ -156,14 +154,29 @@ function selection(): NodeSelection | undefined {
     : resolveSelection(state.document, state.blocks, atId, state.schemaVersion);
 }
 
-/** A blank 1.1.0 report, so the editor opens on something editable. */
+/**
+ * A new report, valid from the first paint.
+ *
+ * A blank document is not a valid one: `blocks` has `minItems: 1`, and `meta`
+ * requires `kind` and `createdAt`. Starting from an empty shell therefore opened
+ * on three validation problems the author had not caused. The block is seeded
+ * through `createBlock`, so it carries a handle and whatever else the schema
+ * requires — and a paragraph is valid while still empty, because
+ * `MarkdownString` has no content floor.
+ */
 function emptyDocument(): unknown {
-  return {
-    blocks: [],
+  const document_ = {
+    blocks: [] as unknown[],
     i18n: { locale: DEFAULT_LOCALE },
-    meta: { title: DEFAULT_TITLE },
+    meta: {
+      createdAt: new Date().toISOString(),
+      kind: "generic",
+      title: DEFAULT_TITLE,
+    },
     schemaVersion: SCHEMA_VERSION,
   };
+  document_.blocks.push(createBlock("paragraph", SCHEMA_VERSION, document_));
+  return document_;
 }
 
 function failurePage(message: string): string {
@@ -189,7 +202,6 @@ function setExportEnabled(enabled: boolean): void {
   saveButton.disabled = !enabled;
   exportJsonButton.disabled = !enabled;
   validateButton.disabled = !enabled;
-  fullscreenButton.disabled = !enabled;
   exportHtmlButton.disabled = !enabled;
   exportMarkdownButton.disabled = !enabled;
 }
@@ -721,31 +733,6 @@ function setFieldsVisible(visible: boolean): void {
   toggleFieldsButton.title = visible ? "隐藏字段面板" : "显示字段面板";
 }
 
-function openFullscreen(): void {
-  if (state === undefined) {
-    return;
-  }
-  run(
-    documentHtml(state.document).then((html) => {
-      modal.replaceChildren();
-      const frame = document.createElement("iframe");
-      frame.className = "modal-frame";
-      frame.title = "文档预览";
-      frame.srcdoc = html;
-      const close = document.createElement("button");
-      close.type = "button";
-      close.className = "btn btn-ghost modal-close";
-      close.textContent = "关闭";
-      close.addEventListener("click", () => {
-        modal.hidden = true;
-        modal.replaceChildren();
-      });
-      modal.append(frame, close);
-      modal.hidden = false;
-    })
-  );
-}
-
 /** Drag the divider to give the field panel more or less room. */
 function wireResize(): void {
   let startWidth = DEFAULT_PANEL_WIDTH;
@@ -792,7 +779,6 @@ function wireToolbar(): void {
     setStatus("已下载 .airp.json");
   });
   validateButton.addEventListener("click", () => run(refresh()));
-  fullscreenButton.addEventListener("click", () => openFullscreen());
   exportHtmlButton.addEventListener("click", () => run(exportAs("html")));
   exportMarkdownButton.addEventListener("click", () =>
     run(exportAs("markdown"))
