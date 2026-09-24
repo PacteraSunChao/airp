@@ -25,3 +25,7 @@ export {
 } from "./document-index.js";
 export { fromJsonPointer, type NodePath, toJsonPointer } from "./paths.js";
 export { serializeDocument } from "./serialize.js";
+export {
+  type DiagnosticLocation,
+  resolveDiagnosticLocations,
+} from "./validation-bridge.js";

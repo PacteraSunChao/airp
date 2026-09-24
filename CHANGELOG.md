@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `@airp/editor-core`: Machine Handle addressing (`indexDocumentAtIds`, JSON Pointer helpers), write-back serialization, schema-derived block shapes (`readBlockShape`, `listBlockTypes`), and pure document mutations (`setValue`, `insertValue`, `removeValue`, `moveValue`, `duplicateValue`), as the base for host-side editing
+- `@airp/editor-core`: Machine Handle addressing (`indexDocumentAtIds`, JSON Pointer helpers), write-back serialization, schema-derived block shapes (`readBlockShape`, `listBlockTypes`), pure document mutations (`setValue`, `insertValue`, `removeValue`, `moveValue`, `duplicateValue`), and validation-diagnostic locations (`resolveDiagnosticLocations`), as the base for host-side editing
 - Machine Handle SSOT in `@airp/protocol`: `AT_ID_ALPHABET`, `AT_ID_LENGTH`, `AT_ID_PATTERN`, `isAtId`, `generateAtId`
 
 ## [1.1.3] - 2026-09-24

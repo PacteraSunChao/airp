@@ -20,12 +20,14 @@
     "fix": "pnpm typecheck && pnpm dlx ultracite@7.4.2 fix"
   },
   "dependencies": {
+    "@airp/diagnostics": "workspace:*",
     "@airp/protocol": "workspace:*",
     "@airp/utils": "workspace:*"
   },
   "devDependencies": {
     "@airp/test-kit": "workspace:*",
     "@airp/typescript-config": "workspace:*",
+    "@airp/validate": "workspace:*",
     "vitest": "4.1.11"
   }
 }
