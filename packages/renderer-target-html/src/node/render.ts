@@ -6,6 +6,7 @@ import type {
 import { assembleHtmlDocument } from "../assemble.js";
 import { emitDocumentBody } from "../emit-document.js";
 import { renderMermaidError } from "../shared/render-mermaid-error.js";
+import { resolveHtmlTargetOptions } from "../shared/target-options.js";
 import { collectCodeSources } from "./collect-code-sources.js";
 import { collectMermaidSources } from "./collect-mermaid-sources.js";
 import { highlightCodeHtml } from "./highlight-code.js";
@@ -66,6 +67,11 @@ export async function renderHtml(
     ctx.document,
     locale,
     {
+      // The Node entry assembles the body itself, so it has to forward the
+      // target options the caller asked for; otherwise `machineHandles` would
+      // work through one entry point and silently do nothing through the other.
+      machineHandles: resolveHtmlTargetOptions(ctx.targetOptions)
+        .machineHandles,
       takeMermaidSvg: () => {
         const markup = mermaidMarkups[mermaidIndex];
         mermaidIndex += 1;

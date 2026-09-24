@@ -2,7 +2,19 @@ import type { SchemaVersion, VersionRegistry } from "@airp/protocol";
 import { citationItemsHtml100 } from "./v1-0-0.js";
 import { citationItemsHtml110 } from "./v1-1-0.js";
 
-export type CitationItemsHtmlEmitter = (items: unknown[]) => string;
+/**
+ * Options a version emitter may read. `machineHandles` is opt-in for the same
+ * reason it is everywhere else: a render that does not ask for handles has to
+ * stay byte-identical to what this target always produced.
+ */
+export interface CitationItemsHtmlOptions {
+  machineHandles?: boolean;
+}
+
+export type CitationItemsHtmlEmitter = (
+  items: unknown[],
+  options: CitationItemsHtmlOptions
+) => string;
 
 const CITATION_ITEMS_HTML = {
   "1.0.0": citationItemsHtml100,

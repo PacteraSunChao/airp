@@ -32,6 +32,7 @@ import {
   tabsStorageKey,
 } from "./shared/client-storage-keys.js";
 import { escapeHtml } from "./shared/escape-html.js";
+import { itemHandleAttr } from "./shared/inject-machine-handle.js";
 import {
   countUnifiedDiffStats,
   renderCodeDiffSplitBody,
@@ -188,7 +189,11 @@ function mermaidFigure(
   if (markup.includes('data-mermaid-error="true"')) {
     return markup;
   }
+  const atId = diagramBlock["@id"];
   return renderSvgViewer({
+    ...(ctx.machineHandles === true && typeof atId === "string"
+      ? { atId }
+      : {}),
     svg: markup,
     minHeight: MERMAID_VIEWER_MIN_HEIGHT_PX,
     storageKey: svgViewerStorageKey(
@@ -319,7 +324,7 @@ function emitCollectionMetricItem(
       : "";
     footer = `<div class="mt-3 pt-2 border-t text-xs flex items-center justify-between gap-2" style="border-color: var(--border-color); color: var(--text-muted)">${desc}${meta}</div>`;
   }
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)" data-collection-item="true"><div>${title}${value}</div>${footer}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"${itemHandleAttr(ctx, item)} data-collection-item="true"><div>${title}${value}</div>${footer}</div>`;
 }
 
 function emitCollectionChipItem(
@@ -336,9 +341,9 @@ function emitCollectionChipItem(
   }
   const tone = typeof item.tone === "string" ? item.tone : "neutral";
   if (tone === "accent") {
-    return `<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800" data-collection-chip="true" data-tone="accent">${title}</span>`;
+    return `<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800" data-collection-chip="true"${itemHandleAttr(ctx, item)} data-tone="accent">${title}</span>`;
   }
-  return `<span class="px-2.5 py-1 rounded-full text-xs font-medium border" data-collection-chip="true" data-tone="${attr(tone)}" style="background-color: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-secondary)">${title}</span>`;
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-medium border" data-collection-chip="true"${itemHandleAttr(ctx, item)} data-tone="${attr(tone)}" style="background-color: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-secondary)">${title}</span>`;
 }
 
 function emitCollectionPanelItem(
@@ -355,7 +360,7 @@ function emitCollectionPanelItem(
   const children = Array.isArray(item.children)
     ? `<div class="p-3.5 rounded-lg border border-dashed text-xs space-y-2" style="background-color: var(--bg-subtle); border-color: var(--border-color); color: var(--text-secondary)">${emitChildren(asBlocks(item.children), ctx, levelOffset)}</div>`
     : "";
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} space-y-2" data-collection-item="true">${title}${desc}${children}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} space-y-2"${itemHandleAttr(ctx, item)} data-collection-item="true">${title}${desc}${children}</div>`;
 }
 
 function emitCollectionCompactItem(
@@ -368,7 +373,7 @@ function emitCollectionCompactItem(
   const valueHtml = value
     ? `<span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase px-2 py-0.5 rounded border" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)">${value}</span>`
     : "";
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex items-center justify-between gap-3" style="background-color: var(--bg-surface); border-color: var(--border-color)" data-collection-item="true"><span class="text-sm font-medium" style="color: var(--text-main)">${title}</span>${valueHtml}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex items-center justify-between gap-3" style="background-color: var(--bg-surface); border-color: var(--border-color)"${itemHandleAttr(ctx, item)} data-collection-item="true"><span class="text-sm font-medium" style="color: var(--text-main)">${title}</span>${valueHtml}</div>`;
 }
 
 function emitCollectionCardItem(
@@ -381,7 +386,7 @@ function emitCollectionCardItem(
   const desc = item.description
     ? `<div class="text-xs mt-1" style="color: var(--text-secondary)">${formatRichHtml(ctx, item.description)}</div>`
     : "";
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border" style="background-color: var(--bg-surface); border-color: var(--border-color)" data-collection-item="true">${title}${desc}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border" style="background-color: var(--bg-surface); border-color: var(--border-color)"${itemHandleAttr(ctx, item)} data-collection-item="true">${title}${desc}</div>`;
 }
 
 function emitCollectionStatItem(
@@ -400,7 +405,7 @@ function emitCollectionStatItem(
     valuePlain.length === 0
       ? ""
       : `<span class="text-2xl font-bold font-mono" style="color: var(--text-main)" data-collection-value="true">${valuePlain}</span>`;
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex items-baseline gap-2" style="background-color: var(--bg-surface); border-color: var(--border-color)" data-collection-item="true">${value}${unit}${title}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex items-baseline gap-2" style="background-color: var(--bg-surface); border-color: var(--border-color)"${itemHandleAttr(ctx, item)} data-collection-item="true">${value}${unit}${title}</div>`;
 }
 
 const COLLECTION_SURFACE =
@@ -543,7 +548,7 @@ function emitMetricCard(
     footer = `<div class="mt-3 pt-2 border-t text-[11px]" data-metric-desc="true" style="border-color: var(--border-color); color: var(--text-muted)">${formatRichHtml(ctx, metric.description)}</div>`;
   }
   const toneAttr = tone ? ` data-tone="${attr(tone)}"` : "";
-  return `<div class="min-w-0 flex-1 basis-full sm:basis-[calc(50%-0.5rem)] lg:basis-[calc(25%-0.75rem)] p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)" data-metric="true"${toneAttr}><div data-metric-body="true">${title}${value}</div>${footer}</div>`;
+  return `<div class="min-w-0 flex-1 basis-full sm:basis-[calc(50%-0.5rem)] lg:basis-[calc(25%-0.75rem)] p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"${itemHandleAttr(ctx, metric)} data-metric="true"${toneAttr}><div data-metric-body="true">${title}${value}</div>${footer}</div>`;
 }
 
 const emitHero: EmitHandler = (block, ctx) => {
@@ -826,7 +831,7 @@ const emitChecklist: EmitHandler = (block, ctx) =>
           typeof item.status === "string" && item.status.length > 0
             ? renderStatusBadge(item.status, { scale: "90" })
             : "";
-        return `<div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3" data-checked="${checked}"><div class="flex min-w-0 items-start gap-3"><input type="checkbox" class="mt-1 rounded text-sky-600 dark:text-sky-400 focus:ring-sky-500 border-slate-300 dark:border-slate-600 shrink-0" disabled${item.checked ? " checked" : ""} /><div class="min-w-0 [overflow-wrap:anywhere]"><div class="${labelClass}" data-check-label="true" style="color: var(--text-main)">${formatRichHtml(ctx, item.label)}</div>${note}</div></div>${status}</div>`;
+        return `<div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3"${itemHandleAttr(ctx, raw)} data-checked="${checked}"><div class="flex min-w-0 items-start gap-3"><input type="checkbox" class="mt-1 rounded text-sky-600 dark:text-sky-400 focus:ring-sky-500 border-slate-300 dark:border-slate-600 shrink-0" disabled${item.checked ? " checked" : ""} /><div class="min-w-0 [overflow-wrap:anywhere]"><div class="${labelClass}" data-check-label="true" style="color: var(--text-main)">${formatRichHtml(ctx, item.label)}</div>${note}</div></div>${status}</div>`;
       })
       .join(""),
     {
@@ -843,7 +848,7 @@ const emitDefinitionList: EmitHandler = (block, ctx) =>
     asBlocks(block.items)
       .map((raw) => {
         const item = raw as { definition: unknown; term: unknown };
-        return `<div class="p-3.5 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4"><dt class="font-mono font-bold text-xs sm:w-28 text-sky-600 dark:text-sky-400 flex-shrink-0">${formatPlain(ctx, loc(item.term))}</dt><dd class="text-xs leading-relaxed" style="color: var(--text-secondary)">${formatRichHtml(ctx, item.definition)}</dd></div>`;
+        return `<div class="p-3.5 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4"${itemHandleAttr(ctx, raw)}><dt class="font-mono font-bold text-xs sm:w-28 text-sky-600 dark:text-sky-400 flex-shrink-0">${formatPlain(ctx, loc(item.term))}</dt><dd class="text-xs leading-relaxed" style="color: var(--text-secondary)">${formatRichHtml(ctx, item.definition)}</dd></div>`;
       })
       .join(""),
     {
@@ -858,7 +863,7 @@ const emitTable: EmitHandler = (block, ctx) => {
   const header = cols
     .map(
       (c) =>
-        `<th class="py-2.5 px-4" scope="col">${formatPlain(ctx, loc(c.label))}</th>`
+        `<th class="py-2.5 px-4" scope="col"${itemHandleAttr(ctx, c)}>${formatPlain(ctx, loc(c.label))}</th>`
     )
     .join("");
   const bodyRows = asBlocks(block.rows)
@@ -870,7 +875,7 @@ const emitTable: EmitHandler = (block, ctx) => {
             `<td class="py-2.5 px-4">${cellTextHtml(record[c.key], ctx)}</td>`
         )
         .join("");
-      return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">${cells}</tr>`;
+      return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40"${itemHandleAttr(ctx, row)}>${cells}</tr>`;
     })
     .join("");
   let inner = `<table class="w-full text-left text-xs sm:text-sm border-collapse">`;
@@ -886,7 +891,7 @@ const emitTable: EmitHandler = (block, ctx) => {
           `<td class="py-2.5 px-4">${cellTextHtml(footerRow[c.key], ctx)}</td>`
       )
       .join("");
-    inner += `<tfoot><tr class="border-t font-medium" style="border-color: var(--border-color); background-color: var(--bg-subtle)">${footerCells}</tr></tfoot>`;
+    inner += `<tfoot><tr class="border-t font-medium"${itemHandleAttr(ctx, block.footerRow)} style="border-color: var(--border-color); background-color: var(--bg-subtle)">${footerCells}</tr></tfoot>`;
   }
   inner += "</table>";
   return wrapBlock("table", inner, {
@@ -958,7 +963,7 @@ function emitKeyValueInline(
 ): string {
   const cells = items
     .map((item) => {
-      return `<div class="${keyValueEqualItemClass()}" data-kv-item="true"><span class="block text-xs mb-0.5" style="color: var(--text-muted)">${formatPlain(ctx, loc(item.key))}</span><span class="text-xs font-medium [overflow-wrap:anywhere]" style="color: var(--text-main)">${formatRichHtml(ctx, item.value)}</span></div>`;
+      return `<div class="${keyValueEqualItemClass()}"${itemHandleAttr(ctx, item)} data-kv-item="true"><span class="block text-xs mb-0.5" style="color: var(--text-muted)">${formatPlain(ctx, loc(item.key))}</span><span class="text-xs font-medium [overflow-wrap:anywhere]" style="color: var(--text-main)">${formatRichHtml(ctx, item.value)}</span></div>`;
     })
     .join("");
   return `<div class="${keyValueEqualRowClass()}" data-kv-grid="true">${cells}</div>`;
@@ -970,7 +975,7 @@ function emitKeyValueStacked(
 ): string {
   const cards = items
     .map((item) => {
-      return `<div class="${keyValueEqualItemClass()} p-3 rounded-lg border" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)" data-kv-item="true"><div class="text-xs font-semibold mb-1" style="color: var(--text-main)">${formatPlain(ctx, loc(item.key))}</div><div class="text-xs [overflow-wrap:anywhere]" style="color: var(--text-secondary)">${formatRichHtml(ctx, item.value)}</div></div>`;
+      return `<div class="${keyValueEqualItemClass()} p-3 rounded-lg border" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"${itemHandleAttr(ctx, item)} data-kv-item="true"><div class="text-xs font-semibold mb-1" style="color: var(--text-main)">${formatPlain(ctx, loc(item.key))}</div><div class="text-xs [overflow-wrap:anywhere]" style="color: var(--text-secondary)">${formatRichHtml(ctx, item.value)}</div></div>`;
     })
     .join("");
   return `<div class="${keyValueEqualRowClass()}" data-kv-grid="true">${cards}</div>`;
@@ -987,7 +992,7 @@ function emitKeyValueRows(
       const borderStyle = isLast
         ? ""
         : ' style="border-color: var(--border-subtle)"';
-      return `<div class="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3 text-xs py-1${borderClass}"${borderStyle} data-kv-item="true"><span style="color: var(--text-secondary)">${formatPlain(ctx, loc(item.key))}</span><span class="min-w-0 [overflow-wrap:anywhere]" style="color: var(--text-main)">${formatRichHtml(ctx, item.value)}</span></div>`;
+      return `<div class="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3 text-xs py-1${borderClass}"${borderStyle}${itemHandleAttr(ctx, item)} data-kv-item="true"><span style="color: var(--text-secondary)">${formatPlain(ctx, loc(item.key))}</span><span class="min-w-0 [overflow-wrap:anywhere]" style="color: var(--text-main)">${formatRichHtml(ctx, item.value)}</span></div>`;
     })
     .join("");
 }
@@ -1045,7 +1050,7 @@ const emitStatusBoard: EmitHandler = (block, ctx) =>
         const detail = item.detail
           ? `<div class="text-[11px]" data-status-board-detail="true" style="color: var(--text-muted)">${formatRichHtml(ctx, item.detail)}</div>`
           : "";
-        return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3" data-status-board-item="true" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"><div class="min-w-0 [overflow-wrap:anywhere]" data-status-board-copy="true"><div class="text-xs font-medium" data-status-board-label="true" style="color: var(--text-main)">${formatPlain(ctx, loc(item.label))}</div>${detail}</div>${renderStatusBadge(item.status)}</div>`;
+        return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3"${itemHandleAttr(ctx, item)} data-status-board-item="true" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"><div class="min-w-0 [overflow-wrap:anywhere]" data-status-board-copy="true"><div class="text-xs font-medium" data-status-board-label="true" style="color: var(--text-main)">${formatPlain(ctx, loc(item.label))}</div>${detail}</div>${renderStatusBadge(item.status)}</div>`;
       })
       .join("")}</div>`,
     {
@@ -1196,7 +1201,7 @@ function emitFileTreeNodeRow(
   } else if (node.annotation) {
     trailing = `<span class="text-[11px]" style="color: var(--text-muted)" data-file-tree-annotation="true">${formatPlain(ctx, node.annotation)}</span>`;
   }
-  const row = `<div class="flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 py-0.5 px-1 rounded ${indent}" data-file-tree-node="true" data-change="${attr(change)}"><span class="flex items-center gap-2 ${nameClass}"${fileTreeNameStyle(deleted, isDir)}>${icon}<span data-file-tree-name="true">${escapeHtml(nameText)}</span></span>${trailing}</div>`;
+  const row = `<div class="flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 py-0.5 px-1 rounded ${indent}"${itemHandleAttr(ctx, node)} data-file-tree-node="true" data-change="${attr(change)}"><span class="flex items-center gap-2 ${nameClass}"${fileTreeNameStyle(deleted, isDir)}>${icon}<span data-file-tree-name="true">${escapeHtml(nameText)}</span></span>${trailing}</div>`;
   const nested =
     kids && kids.length > 0 ? emitFileTreeRows(kids, ctx, depth + 1) : "";
   return `${row}${nested}`;
@@ -1215,7 +1220,7 @@ const emitFileTree: EmitHandler = (block, ctx) => {
   const title = block.caption
     ? formatPlain(ctx, block.caption)
     : escapeHtml(root.name);
-  const chrome = `<div class="flex items-center gap-2 mb-3 font-semibold pb-2 border-b" data-file-tree-chrome="true" style="color: var(--text-main); border-color: var(--border-color)">${renderIcon("folders", { className: "w-4 h-4 text-sky-500 shrink-0" })}<span data-file-tree-title="true">${title}</span></div>`;
+  const chrome = `<div class="flex items-center gap-2 mb-3 font-semibold pb-2 border-b"${itemHandleAttr(ctx, root)} data-file-tree-chrome="true" style="color: var(--text-main); border-color: var(--border-color)">${renderIcon("folders", { className: "w-4 h-4 text-sky-500 shrink-0" })}<span data-file-tree-title="true">${title}</span></div>`;
   const nodes =
     Array.isArray(root.children) && root.children.length > 0
       ? (root.children as FileTreeNode[])
@@ -1288,7 +1293,7 @@ const emitFileChangeList: EmitHandler = (block, ctx) => {
         ? formatRichHtml(ctx, item.note)
         : `<span style="color: var(--text-muted)">—</span>`;
       const visual = FILE_CHANGE_VISUAL[item.change] ?? "neutral";
-      return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40" data-file-change="${attr(item.change)}"><td class="${pathClass}">${escapeHtml(item.path)}</td><td class="py-2.5 px-4 text-center">${renderStatusBadge(visual, { label: item.change })}</td><td class="py-2.5 px-4">${note}</td>${fileChangeSizeCell(item)}</tr>`;
+      return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40"${itemHandleAttr(ctx, item)} data-file-change="${attr(item.change)}"><td class="${pathClass}">${escapeHtml(item.path)}</td><td class="py-2.5 px-4 text-center">${renderStatusBadge(visual, { label: item.change })}</td><td class="py-2.5 px-4">${note}</td>${fileChangeSizeCell(item)}</tr>`;
     })
     .join("");
   return wrapBlock(
@@ -1356,7 +1361,7 @@ function emitArchitectureModuleCard(
       metaRow = `<div class="mt-4 pt-2 border-t ${borderTop} text-[11px] font-mono flex items-center justify-between" style="color: var(--text-muted)" data-architecture-meta="true"><span>${escapeHtml(key)}</span><span class="text-sky-600 dark:text-sky-400">${escapeHtml(String(value))}</span></div>`;
     }
   }
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border ${frame} flex flex-col justify-between" data-architecture-module="true"${styleAttr}><div class="space-y-1.5"><div class="flex items-center justify-between gap-2"><span class="${titleClass}"${titleStyle}>${title}</span>${badge}</div>${desc}</div>${metaRow}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border ${frame} flex flex-col justify-between"${itemHandleAttr(ctx, item)} data-architecture-module="true"${styleAttr}><div class="space-y-1.5"><div class="flex items-center justify-between gap-2"><span class="${titleClass}"${titleStyle}>${title}</span>${badge}</div>${desc}</div>${metaRow}</div>`;
 }
 
 const emitArchitectureOverview: EmitHandler = (block, ctx) => {
@@ -1401,7 +1406,7 @@ const emitFlowSteps: EmitHandler = (block, ctx) => {
         ? `<div class="text-[11px] mt-1" style="color: var(--text-muted)" data-step-desc="true">${formatRichHtml(ctx, step.description)}</div>`
         : "";
       const active = step.status === "in_progress" ? " border-sky-400" : "";
-      return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border${active} flex flex-col justify-between" data-flow-step="true" style="background-color: var(--bg-subtle); border-color: var(--border-color)"><div class="flex items-center justify-between mb-2"><span class="font-mono text-xs font-bold text-sky-600 dark:text-sky-400" data-step-ordinal="true">${ordinal}</span>${status}</div><div class="text-xs font-semibold" data-step-title="true" style="color: var(--text-main)">${escapeHtml(title)}</div>${desc}</div>`;
+      return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border${active} flex flex-col justify-between"${itemHandleAttr(ctx, step)} data-flow-step="true" style="background-color: var(--bg-subtle); border-color: var(--border-color)"><div class="flex items-center justify-between mb-2"><span class="font-mono text-xs font-bold text-sky-600 dark:text-sky-400" data-step-ordinal="true">${ordinal}</span>${status}</div><div class="text-xs font-semibold" data-step-title="true" style="color: var(--text-main)">${escapeHtml(title)}</div>${desc}</div>`;
     })
     .join("");
   return wrapBlock(
@@ -1438,7 +1443,7 @@ const emitDecision: EmitHandler = (block, ctx) => {
     inner += `<div class="flex flex-wrap gap-2 pt-1" data-decision-options="true" data-max-columns="3">${options
       .map((raw) => {
         const opt = raw as { cons?: unknown; label: unknown; pros?: unknown };
-        let card = `<div class="${THREE_COLUMN_ITEM_CLASS} p-2.5 rounded-lg border space-y-1" data-decision-option="true" style="background-color: var(--bg-subtle); border-color: var(--border-color)"><div class="font-medium" data-option-label="true" style="color: var(--text-main)">${formatPlain(ctx, opt.label)}</div>`;
+        let card = `<div class="${THREE_COLUMN_ITEM_CLASS} p-2.5 rounded-lg border space-y-1"${itemHandleAttr(ctx, opt)} data-decision-option="true" style="background-color: var(--bg-subtle); border-color: var(--border-color)"><div class="font-medium" data-option-label="true" style="color: var(--text-main)">${formatPlain(ctx, opt.label)}</div>`;
         if (opt.pros) {
           card += `<div class="text-[11px] text-emerald-600" data-option-pros="true"><span>${prosLabel}</span> ${formatRichHtml(ctx, opt.pros)}</div>`;
         }
@@ -1643,7 +1648,7 @@ const emitTimeline: EmitHandler = (block, ctx) => {
         ev.status === "done" || ev.status === "pass"
           ? "bg-emerald-500 ring-emerald-100 dark:ring-emerald-900/60"
           : "bg-sky-500 ring-sky-100 dark:ring-sky-900/60";
-      return `<div class="relative flex items-start gap-4" data-timeline-event="true" data-event-status="${attr(ev.status ?? "neutral")}"><div class="w-4 h-4 rounded-full ${dotTone} ring-4 mt-1 flex-shrink-0 z-10" data-timeline-dot="true" aria-hidden="true"></div><div class="min-w-0 [overflow-wrap:anywhere]" data-timeline-body="true"><div class="flex flex-wrap items-center gap-2" data-timeline-meta="true">${date}${status}</div><div class="text-xs font-semibold mt-0.5" data-timeline-title="true" style="color: var(--text-main)">${formatPlain(ctx, loc(ev.title))}</div>${desc}</div></div>`;
+      return `<div class="relative flex items-start gap-4"${itemHandleAttr(ctx, ev)} data-timeline-event="true" data-event-status="${attr(ev.status ?? "neutral")}"><div class="w-4 h-4 rounded-full ${dotTone} ring-4 mt-1 flex-shrink-0 z-10" data-timeline-dot="true" aria-hidden="true"></div><div class="min-w-0 [overflow-wrap:anywhere]" data-timeline-body="true"><div class="flex flex-wrap items-center gap-2" data-timeline-meta="true">${date}${status}</div><div class="text-xs font-semibold mt-0.5" data-timeline-title="true" style="color: var(--text-main)">${formatPlain(ctx, loc(ev.title))}</div>${desc}</div></div>`;
     })
     .join("");
   return wrapBlock(
@@ -1691,7 +1696,7 @@ function emitRoadmapPhaseCard(
   if (phase.goals?.length) {
     body += `<ul class="text-xs space-y-1 pl-4 list-disc" style="color: var(--text-secondary)" data-phase-goals="true">${phase.goals.map((g) => `<li>${formatRichHtml(ctx, g)}</li>`).join("")}</ul>`;
   }
-  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between ${borderClass}" data-roadmap-phase="true"${current ? ' data-current="true"' : ""} style="${style}"><div>${body}</div>${timeframe}</div>`;
+  return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between ${borderClass}"${itemHandleAttr(ctx, phase)} data-roadmap-phase="true"${current ? ' data-current="true"' : ""} style="${style}"><div>${body}</div>${timeframe}</div>`;
 }
 
 const emitRoadmap: EmitHandler = (block, ctx) =>
@@ -1741,7 +1746,7 @@ const emitRequirementTrace: EmitHandler = (block, ctx) => {
           status: string;
           summary?: unknown;
         };
-        return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40"><td class="py-2.5 px-4 font-mono font-semibold text-sky-600 dark:text-sky-400"><code>${escapeHtml(item.reqId)}</code></td><td class="py-2.5 px-4">${item.summary ? formatPlain(ctx, loc(item.summary)) : ""}</td><td class="py-2.5 px-4 text-center">${renderStatusBadge(item.status)}</td><td class="py-2.5 px-4 font-mono text-[11px]">${item.evidence ? formatRichHtml(ctx, item.evidence) : ""}</td></tr>`;
+        return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40"${itemHandleAttr(ctx, item)}><td class="py-2.5 px-4 font-mono font-semibold text-sky-600 dark:text-sky-400"><code>${escapeHtml(item.reqId)}</code></td><td class="py-2.5 px-4">${item.summary ? formatPlain(ctx, loc(item.summary)) : ""}</td><td class="py-2.5 px-4 text-center">${renderStatusBadge(item.status)}</td><td class="py-2.5 px-4 font-mono text-[11px]">${item.evidence ? formatRichHtml(ctx, item.evidence) : ""}</td></tr>`;
       })
       .join("")}</tbody></table>`,
     {
@@ -1771,7 +1776,7 @@ const emitTestResult: EmitHandler = (block, ctx) => {
       } else if (suite.passed > 0) {
         visual = "pass";
       }
-      return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border flex items-center justify-between" style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"><div><div class="text-xs font-medium" style="color: var(--text-main)">${escapeHtml(suite.name)}</div><div class="text-[11px] ${failed > 0 ? "text-rose-500" : "text-emerald-600"}">${escapeHtml(detail)}</div>${suite.notes ? `<div class="text-[11px] mt-1" style="color: var(--text-muted)">${formatRichHtml(ctx, suite.notes)}</div>` : ""}</div>${renderStatusBadge(visual, { scale: "75" })}</div>`;
+      return `<div class="${THREE_COLUMN_ITEM_CLASS} p-3 rounded-lg border flex items-center justify-between"${itemHandleAttr(ctx, suite)} style="background-color: var(--bg-subtle); border-color: var(--border-subtle)"><div><div class="text-xs font-medium" style="color: var(--text-main)">${escapeHtml(suite.name)}</div><div class="text-[11px] ${failed > 0 ? "text-rose-500" : "text-emerald-600"}">${escapeHtml(detail)}</div>${suite.notes ? `<div class="text-[11px] mt-1" style="color: var(--text-muted)">${formatRichHtml(ctx, suite.notes)}</div>` : ""}</div>${renderStatusBadge(visual, { scale: "75" })}</div>`;
     })
     .join("");
   return wrapBlock(
@@ -1814,7 +1819,7 @@ const emitApiInventory: EmitHandler = (block, ctx) => {
         typeof ep.status === "string" && ep.status.length > 0
           ? renderStatusBadge(ep.status)
           : "";
-      return `<div class="p-3.5 flex flex-col items-start sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition" data-api-endpoint="true" data-method="${attr(method)}"><div class="flex items-start sm:items-center gap-3 min-w-0 max-w-full"><span class="px-2 py-0.5 rounded font-mono text-[11px] font-bold shrink-0 ${methodClass}">${escapeHtml(method)}</span><span class="font-mono text-xs font-semibold min-w-0 [overflow-wrap:anywhere]" style="color: var(--text-main)">${escapeHtml(ep.path)}</span>${summary}</div>${status}</div>`;
+      return `<div class="p-3.5 flex flex-col items-start sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition"${itemHandleAttr(ctx, ep)} data-api-endpoint="true" data-method="${attr(method)}"><div class="flex items-start sm:items-center gap-3 min-w-0 max-w-full"><span class="px-2 py-0.5 rounded font-mono text-[11px] font-bold shrink-0 ${methodClass}">${escapeHtml(method)}</span><span class="font-mono text-xs font-semibold min-w-0 [overflow-wrap:anywhere]" style="color: var(--text-main)">${escapeHtml(ep.path)}</span>${summary}</div>${status}</div>`;
     })
     .join("");
   return wrapBlock("apiInventory", rows, {
@@ -1838,7 +1843,7 @@ const emitLinkList: EmitHandler = (block, ctx) => {
       const desc = link.description
         ? `<p class="text-xs" style="color: var(--text-secondary)">${formatRichHtml(ctx, link.description)}</p>`
         : "";
-      return `<a class="p-3.5 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition group" href="${attr(link.href)}" rel="noopener noreferrer" target="_blank"><div class="space-y-1"><div class="text-xs sm:text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:underline flex items-center gap-1.5"><span>${formatPlain(ctx, loc(link.label))}</span>${externalIcon}</div>${desc}</div></a>`;
+      return `<a class="p-3.5 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition group"${itemHandleAttr(ctx, link)} href="${attr(link.href)}" rel="noopener noreferrer" target="_blank"><div class="space-y-1"><div class="text-xs sm:text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:underline flex items-center gap-1.5"><span>${formatPlain(ctx, loc(link.label))}</span>${externalIcon}</div>${desc}</div></a>`;
     })
     .join("");
   return wrapBlock("linkList", inner, {
@@ -1854,7 +1859,7 @@ const emitGlossary: EmitHandler = (block, ctx) =>
     asBlocks(block.terms)
       .map((raw) => {
         const term = raw as { definition: unknown; term: unknown };
-        return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between space-y-1.5" style="background-color: var(--bg-surface); border-color: var(--border-color)"><span class="font-mono font-bold text-sm text-sky-600 dark:text-sky-400">${formatPlain(ctx, loc(term.term))}</span><div class="text-xs leading-relaxed" style="color: var(--text-secondary)">${formatRichHtml(ctx, term.definition)}</div></div>`;
+        return `<div class="${THREE_COLUMN_ITEM_CLASS} p-4 rounded-xl border flex flex-col justify-between space-y-1.5"${itemHandleAttr(ctx, term)} style="background-color: var(--bg-surface); border-color: var(--border-color)"><span class="font-mono font-bold text-sm text-sky-600 dark:text-sky-400">${formatPlain(ctx, loc(term.term))}</span><div class="text-xs leading-relaxed" style="color: var(--text-secondary)">${formatRichHtml(ctx, term.definition)}</div></div>`;
       })
       .join(""),
     {
@@ -1866,7 +1871,9 @@ const emitGlossary: EmitHandler = (block, ctx) =>
 const emitCitation: EmitHandler = (block, ctx) =>
   wrapBlock(
     "citation",
-    citationItemsHtmlFor(ctx.schemaVersion)(asBlocks(block.items)),
+    citationItemsHtmlFor(ctx.schemaVersion)(asBlocks(block.items), {
+      machineHandles: ctx.machineHandles,
+    }),
     {
       className: "space-y-2.5",
     }
@@ -1975,7 +1982,7 @@ const emitTabs: EmitHandler = (block, ctx) => {
         childHeadingCtx(ctx, ctx.headingLevel),
         0
       );
-      return `<section class="space-y-3" id="${panelId}" role="tabpanel" aria-labelledby="${tabId}" data-tab-label="${attr(ctx.t(loc(panel.label)))}" data-tabs-panel="true"${index === 0 ? "" : " hidden"}>${body}</section>`;
+      return `<section class="space-y-3"${itemHandleAttr(ctx, raw)} id="${panelId}" role="tabpanel" aria-labelledby="${tabId}" data-tab-label="${attr(ctx.t(loc(panel.label)))}" data-tabs-panel="true"${index === 0 ? "" : " hidden"}>${body}</section>`;
     })
     .join("");
   const inner = `<div class="flex items-center border-b px-3 pt-2 gap-1 overflow-x-auto" role="tablist" aria-orientation="horizontal" data-tabs-list="true" style="border-color: var(--border-color); background-color: var(--bg-subtle)">${tabs}</div><div class="p-4" data-tabs-panels="true">${panelHtml}</div>`;

@@ -1,11 +1,15 @@
 import { escapeHtml } from "../shared/escape-html.js";
+import type { CitationItemsHtmlOptions } from "./registry.js";
 
 function attr(value: string): string {
   return escapeHtml(value);
 }
 
 /** schema 1.0.0 citation items: display and DOM id use business `id`. */
-export function citationItemsHtml100(items: unknown[]): string {
+export function citationItemsHtml100(
+  items: unknown[],
+  _options: CitationItemsHtmlOptions
+): string {
   return items
     .map((raw) => {
       const item = raw as { id: string; locator?: string; source: string };

@@ -32,6 +32,28 @@ export function injectMachineHandle(html: string, atId: string): string {
   return `${html.slice(0, cut)} data-airp-id="${escapeHtml(atId)}"${html.slice(cut)}`;
 }
 
+/**
+ * `data-airp-id` for a structured object *inside* a block — a table column, a
+ * checklist entry, a tabs panel. Same contract as the block attribute: only when
+ * the host asked for handles, and only for an object that actually carries one.
+ *
+ * An item is emitted by its block's own handler, so unlike the block case there
+ * is nothing central to hook: each handler interpolates this into the element it
+ * renders the item as.
+ */
+export function itemHandleAttr(
+  ctx: { machineHandles?: boolean },
+  item: unknown
+): string {
+  if (ctx.machineHandles !== true) {
+    return "";
+  }
+  const atId = (item as { "@id"?: unknown } | null | undefined)?.["@id"];
+  return typeof atId === "string" && atId.length > 0
+    ? ` data-airp-id="${escapeHtml(atId)}"`
+    : "";
+}
+
 /** The handle a block carries, or `undefined` when it has none to emit. */
 export function readBlockHandle(block: {
   [key: string]: unknown;
