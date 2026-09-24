@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `@airp/editor-core`: Machine Handle addressing (`indexDocumentAtIds`, JSON Pointer helpers) and write-back serialization, as the base for host-side editing
+- Machine Handle SSOT in `@airp/protocol`: `AT_ID_ALPHABET`, `AT_ID_LENGTH`, `AT_ID_PATTERN`, `isAtId`, `generateAtId`
+
 ## [1.1.3] - 2026-09-24
 
 ### Added
@@ -46,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HTML and Markdown render targets with locale selection, themes, and Mermaid diagrams
 - Multilingual project READMEs
 
+[Unreleased]: https://github.com/maosong-ai/airp/compare/v1.1.3...HEAD
 [1.1.3]: https://github.com/maosong-ai/airp/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/maosong-ai/airp/compare/v1.0.0...v1.1.2
 [1.0.0]: https://github.com/maosong-ai/airp/releases/tag/v1.0.0

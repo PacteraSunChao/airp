@@ -24,6 +24,7 @@ loader              → protocol | utils | diagnostics
 writer              → utils
 protocol            → utils | diagnostics
 diagnostics         → utils（类型级）
+editor-core         → protocol | utils | diagnostics
 
 test-kit / repo-guard → 旁路；不被业务包依赖
 ```
@@ -32,7 +33,7 @@ test-kit / repo-guard → 旁路；不被业务包依赖
 
 | platform | 包 |
 |----------|-----|
-| isomorphic | protocol, renderer-contract, renderer-shared, renderer-target-markdown, diagnostics（主面）；validate（`.`，无 Mermaid） |
+| isomorphic | protocol, editor-core, renderer-contract, renderer-shared, renderer-target-markdown, diagnostics（主面）；validate（`.`，无 Mermaid） |
 | dual | utils, loader, writer, validate, renderer, renderer-target-html（`.` 同构壳；`./node` 含 Mermaid） |
 | node | validate-cli, renderer-cli, renderer-vscode, test-kit, repo-guard, typescript-config |
 

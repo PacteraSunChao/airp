@@ -1,5 +1,12 @@
 // biome-ignore lint/performance/noBarrelFile: package public API entry point
 export {
+  AT_ID_ALPHABET,
+  AT_ID_LENGTH,
+  AT_ID_PATTERN,
+  generateAtId,
+  isAtId,
+} from "./at-id";
+export {
   type AirpSchemaSet,
   getSchemaSet,
   schemaUriBase,

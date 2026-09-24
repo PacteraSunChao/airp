@@ -19,6 +19,7 @@ const NODE_BUILTIN_RE = /from\s+["']node:/;
  */
 const CROSS_PLATFORM_SRC = [
   "packages/protocol/src",
+  "packages/editor-core/src",
   "packages/validate/src",
   "packages/renderer/src",
   "packages/renderer-contract/src",

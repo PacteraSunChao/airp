@@ -27,6 +27,7 @@
 | `packages/renderer-target-html` | `@airp/renderer-target-html` | dual | `.`：AIRP 积木块 HTML + 阅读器壳；`./node`：Mermaid→SVG |
 | `packages/renderer-target-markdown` | `@airp/renderer-target-markdown` | isomorphic | Markdown 降级可读输出 |
 | `packages/renderer` | `@airp/renderer` | dual | 封闭 `rendererTargetCatalog`（`html` \| `markdown`）、编排入口 |
+| `packages/editor-core` | `@airp/editor-core` | isomorphic | 编辑模型基础：`@id` 寻址与 JSON Pointer；回写序列化 |
 | `packages/test-kit` | `@airp/test-kit` | node | 测试共享 case、fixture 路径与 runner |
 | `packages/repo-guard` | `@airp/repo-guard` | node | 仓库门禁脚本 |
 | `packages/typescript-config` | `@airp/typescript-config` | node | 共享 TypeScript preset |
