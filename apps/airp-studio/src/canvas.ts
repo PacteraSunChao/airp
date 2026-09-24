@@ -14,6 +14,46 @@ const SELECTED_ATTR = "data-airp-selected";
 const HOVER_ATTR = "data-airp-hover";
 const ANY_MARK = `[${SELECTED_ATTR}],[${HOVER_ATTR}]`;
 
+/**
+ * Painted inside the frame so it lines up with the rendered report. The app's
+ * own stylesheet cannot reach across the frame boundary, so this mirrors the
+ * palette's ink colour.
+ */
+const INDICATOR_CSS = `
+[data-airp-insert] {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  right: 16px;
+  left: 16px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+[data-airp-insert] .insert-indicator-line {
+  flex: 1;
+  height: 2px;
+  background: #0f6b5c;
+  border-radius: 2px;
+}
+[data-airp-insert] .insert-indicator-dot {
+  width: 7px;
+  height: 7px;
+  background: #0f6b5c;
+  border-radius: 50%;
+}
+[data-airp-insert] .insert-indicator-label {
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  background: #0f6b5c;
+  border-radius: 6px;
+}
+`;
+
 const HIGHLIGHT_CSS = `
 [${SELECTED_ATTR}] {
   outline: 2px solid #0f6b5c;
@@ -81,6 +121,54 @@ function readScrollY(frame: HTMLIFrameElement): number {
   return frame.contentWindow?.scrollY ?? 0;
 }
 
+/** Whether the drag in flight is one this canvas knows how to accept. */
+function isPaletteDrag(event: DragEvent): boolean {
+  return [...(event.dataTransfer?.types ?? [])].includes(PALETTE_DRAG_TYPE);
+}
+
+/**
+ * Show where a dragged block will land: directly under the block the pointer is
+ * over, because that is where the shell inserts it. Nothing is shown when the
+ * pointer is not over a block — the drop then appends to the end of the report.
+ */
+function paintIndicator(
+  frame: HTMLIFrameElement,
+  target: Element | null
+): void {
+  const document_ = frame.contentDocument;
+  if (document_ === null) {
+    return;
+  }
+  if (target === null) {
+    clearIndicator();
+    return;
+  }
+  const rect = target.getBoundingClientRect();
+  const scrollY = frame.contentWindow?.scrollY ?? 0;
+  let indicator = document_.querySelector<HTMLElement>("[data-airp-insert]");
+  if (indicator === null) {
+    indicator = document_.createElement("div");
+    indicator.setAttribute("data-airp-insert", "after");
+    for (const className of ["insert-indicator-dot", "insert-indicator-line"]) {
+      const part = document_.createElement("span");
+      part.className = className;
+      indicator.append(part);
+    }
+    const label = document_.createElement("span");
+    label.className = "insert-indicator-label";
+    label.textContent = "插入到此后";
+    indicator.append(label);
+    document_.body.append(indicator);
+  }
+  indicator.style.top = `${rect.bottom + scrollY}px`;
+}
+
+function clearIndicator(): void {
+  for (const frame of document.querySelectorAll("iframe")) {
+    frame.contentDocument?.querySelector("[data-airp-insert]")?.remove();
+  }
+}
+
 export function createCanvas(
   frame: HTMLIFrameElement,
   options: CanvasOptions
@@ -105,7 +193,7 @@ export function createCanvas(
       return;
     }
     const style = document_.createElement("style");
-    style.textContent = HIGHLIGHT_CSS;
+    style.textContent = `${HIGHLIGHT_CSS}${INDICATOR_CSS}`;
     document_.head.append(style);
 
     document_.addEventListener("mouseover", (event) => {
@@ -140,16 +228,29 @@ export function createCanvas(
     // A block dragged out of the palette lands where it was dropped: the handle
     // under the pointer says which block it should follow.
     document_.addEventListener("dragover", (event) => {
-      event.preventDefault();
+      const over = event as DragEvent;
+      over.preventDefault();
+      if (!isPaletteDrag(over)) {
+        return;
+      }
+      paintIndicator(frame, annotated(over.target));
     });
+    document_.addEventListener("dragleave", (event) => {
+      // Leaving the document entirely: drop the indicator rather than strand it.
+      if (event.target === document_.documentElement) {
+        clearIndicator();
+      }
+    });
+    document_.addEventListener("dragend", () => clearIndicator());
     document_.addEventListener("drop", (event) => {
       const drop = event as DragEvent;
       drop.preventDefault();
+      clearIndicator();
       const type = drop.dataTransfer?.getData(PALETTE_DRAG_TYPE);
       if (type === undefined || type.length === 0) {
         return;
       }
-      const target = (drop.target as Element | null)?.closest("[data-airp-id]");
+      const target = annotated(drop.target);
       options.onDrop(target?.getAttribute("data-airp-id") ?? undefined, type);
     });
 

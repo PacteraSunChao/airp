@@ -23,6 +23,8 @@ const APP_ROOT = path.resolve(
 const FIXTURE = documentPath("valid", "section-at-id-1.1.0.airp.json");
 /** The status line a completed refresh writes: `<file> · <n> 个块 · …`. */
 const STATUS_RE = /·\s*\d+ 个块\s*·/;
+/** The block count inside the status line. */
+const BLOCK_COUNT_RE = /·\s*(\d+) 个块/;
 const SECTION_AT_ID = "aaaaaaaaaa";
 const PARAGRAPH_AT_ID = "bbbbbbbbbb";
 const TABLE_AT_ID = "hhhhhhhhhh";
@@ -68,6 +70,14 @@ async function openPage(): Promise<Awaited<ReturnType<Browser["newPage"]>>> {
     target.showSaveFilePicker = undefined;
   });
   return page;
+}
+
+/** How many blocks the status line says the document has. */
+async function blockCount(
+  page: Awaited<ReturnType<Browser["newPage"]>>
+): Promise<number> {
+  const status = await page.locator("#status").innerText();
+  return Number(BLOCK_COUNT_RE.exec(status)?.[1] ?? "0");
 }
 
 /** Which block the field panel is currently showing. */
@@ -217,6 +227,81 @@ describe("studio app", () => {
 
     await page.click(`[data-ancestor-at-id="${TABLE_AT_ID}"]`);
     await page.waitForSelector(`[data-selected-at-id="${TABLE_AT_ID}"]`);
+    await page.close();
+  }, 60_000);
+
+  it("shows where a dragged block will land, and lands it there", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    await page.waitForSelector('[data-selected-at-id="aaaaaaaaaa"]');
+
+    // A palette drag has to be simulated: Playwright cannot carry a drag across
+    // an iframe boundary, and the point here is the canvas's own reaction to it.
+    const before = await blockCount(page);
+    await page.evaluate((atId) => {
+      const frame = document.querySelector<HTMLIFrameElement>("#canvas");
+      const target = frame?.contentDocument?.querySelector(
+        `[data-airp-id="${atId}"]`
+      );
+      if (!(frame && target)) {
+        throw new Error("missing canvas or target");
+      }
+      const data = new DataTransfer();
+      data.setData("application/x-airp-block-type", "paragraph");
+      const rect = target.getBoundingClientRect();
+      const drag = (type: string): DragEvent =>
+        new DragEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          clientX: rect.left + 12,
+          clientY: rect.bottom - 2,
+          dataTransfer: data,
+        });
+      target.dispatchEvent(drag("dragover"));
+    }, PARAGRAPH_AT_ID);
+
+    const indicator = page
+      .frameLocator("#canvas")
+      .locator("[data-airp-insert]");
+    await indicator.waitFor({ timeout: 10_000 });
+    expect(await indicator.innerText()).toContain("插入到此后");
+
+    await page.evaluate((atId) => {
+      const frame = document.querySelector<HTMLIFrameElement>("#canvas");
+      const target = frame?.contentDocument?.querySelector(
+        `[data-airp-id="${atId}"]`
+      );
+      if (!target) {
+        throw new Error("missing target");
+      }
+      const data = new DataTransfer();
+      data.setData("application/x-airp-block-type", "paragraph");
+      const rect = target.getBoundingClientRect();
+      target.dispatchEvent(
+        new DragEvent("drop", {
+          bubbles: true,
+          cancelable: true,
+          clientX: rect.left + 12,
+          clientY: rect.bottom - 2,
+          dataTransfer: data,
+        })
+      );
+    }, PARAGRAPH_AT_ID);
+
+    await page.waitForFunction(
+      (count) => {
+        const frame = document.querySelector<HTMLIFrameElement>("#canvas");
+        return (
+          (frame?.contentDocument?.querySelectorAll("[data-airp-id]").length ??
+            0) > count
+        );
+      },
+      before,
+      { timeout: 10_000 }
+    );
+    expect(await blockCount(page)).toBe(before + 1);
     await page.close();
   }, 60_000);
 
