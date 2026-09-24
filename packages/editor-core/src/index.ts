@@ -1,5 +1,13 @@
 // biome-ignore lint/performance/noBarrelFile: package public API entry point
 export {
+  type BlockShape,
+  type FieldShape,
+  listBlockTypes,
+  type ObjectShape,
+  readBlockShape,
+  type ValueShape,
+} from "./block-shape.js";
+export {
   type AtIdOccurrence,
   atIdAtPath,
   type DocumentAtIdIndex,
