@@ -103,3 +103,18 @@ export function createBlock(
   withRequiredFields(block, shape.fields, { document, schemaVersion });
   return withUniqueAtIds(block, document);
 }
+
+/**
+ * A value that satisfies `shape`, with fresh handles on the nodes that need one.
+ *
+ * The generic half of `createBlock`: a host uses it to add an array item — a
+ * table column, a checklist entry — or a nested object, and gets the required
+ * fields seeded exactly the way a new block is.
+ */
+export function createValue(
+  shape: ValueShape,
+  schemaVersion: SchemaVersion,
+  document: unknown
+): unknown {
+  return seedValue(shape, { document, schemaVersion });
+}

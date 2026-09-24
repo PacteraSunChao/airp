@@ -5,6 +5,7 @@ import { validateDocument } from "@airp/validate";
 import { describe, expect, it } from "vitest";
 import {
   createBlock,
+  createValue,
   indexDocumentAtIds,
   listBlockTypes,
   readBlockShape,
@@ -211,5 +212,59 @@ describe("createBlock", () => {
     // therefore invalid — and flagged — until the author types into it.
     expect(result.ok).toBe(false);
     expect(complaints).toContain("minLength");
+  });
+});
+
+describe("createValue", () => {
+  it("seeds a nested object with its own handle", () => {
+    const document = readDocument();
+    const columns = readBlockShape("table", VERSION)?.fields.find(
+      (field) => field.key === "columns"
+    )?.shape;
+    if (columns?.kind !== "array") {
+      throw new Error("table.columns is not an array");
+    }
+
+    const column = createValue(columns.items, VERSION, document) as Record<
+      string,
+      unknown
+    >;
+
+    expect(column["@id"]).toMatch(AT_ID_PATTERN);
+    expect(column.key).toBe("");
+    expect(column.label).toBe("");
+    expect(
+      indexDocumentAtIds(document).byAtId.has(column["@id"] as string)
+    ).toBe(false);
+  });
+
+  it("seeds scalars and arrays straight from a shape", () => {
+    const document = readDocument();
+
+    expect(createValue({ kind: "markdown" }, VERSION, document)).toBe("");
+    expect(
+      createValue(
+        { kind: "enum", values: ["second", "first"] },
+        VERSION,
+        document
+      )
+    ).toBe("second");
+    expect(
+      createValue(
+        { kind: "array", items: { kind: "plain" }, minItems: 2 },
+        VERSION,
+        document
+      )
+    ).toEqual(["", ""]);
+  });
+
+  it("seeds a nested block through createBlock", () => {
+    expect(
+      createValue(
+        { kind: "block", types: ["paragraph"] },
+        VERSION,
+        readDocument()
+      )
+    ).toMatchObject({ type: "paragraph", text: "" });
   });
 });

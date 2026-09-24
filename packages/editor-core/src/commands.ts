@@ -159,7 +159,8 @@ export function setValue(
  * Insert `value` at `index` of the array at `path`.
  *
  * Handles inside `value` are re-issued, because inserted content is new by
- * definition.
+ * definition — so a caller that needs the inserted handle reads it back from the
+ * returned document rather than from the value it passed in.
  */
 export function insertValue(
   document: unknown,
