@@ -22,6 +22,7 @@ import {
   listBlockTypes,
   type NodePath,
   setValue,
+  type ValueShape,
 } from "@airp/editor-core";
 import { loadDocumentJson } from "@airp/loader";
 import { hasSchemaVersion, type SchemaVersion } from "@airp/protocol";
@@ -48,6 +49,7 @@ import {
   documentText,
   dropArrayItem,
   listBlocks,
+  readAt,
   setScalarText,
 } from "./studio.js";
 import "./styles/index.css";
@@ -280,6 +282,7 @@ function paintInspector(): void {
       ...(selected === undefined ? {} : { selected }),
     },
     {
+      addColumn: (tablePath, columnShape) => addColumn(tablePath, columnShape),
       move: (delta) => moveSelected(delta),
       remove: () => removeSelected(),
       selectAtId: (atId) => selectAtId(atId),
@@ -340,6 +343,49 @@ function removeSelected(): void {
   } catch (error) {
     setStatus(error instanceof Error ? error.message : String(error));
   }
+}
+
+/**
+ * Add a column to the table at `tablePath`.
+ *
+ * The new column gets a key nothing else uses: a row is an object keyed by the
+ * columns, so two columns sharing the empty key would fight over one cell. The
+ * label stays empty on purpose — naming the column is the author's job, and
+ * `PlainString`'s content floor says so in the issues list.
+ */
+function addColumn(tablePath: NodePath, columnShape: ValueShape): void {
+  if (state === undefined) {
+    return;
+  }
+  const columnsPath = [...tablePath, "columns"];
+  const appended = appendArrayItem(
+    state.document,
+    columnsPath,
+    columnShape,
+    state.schemaVersion
+  );
+  const columns = readAt(appended.document, columnsPath);
+  const used = new Set(
+    (Array.isArray(columns) ? columns : []).map((column) =>
+      typeof (column as { key?: unknown })?.key === "string"
+        ? (column as { key: string }).key
+        : ""
+    )
+  );
+  let key = "";
+  for (let index = 1; key.length === 0; index += 1) {
+    const candidate = `col${index}`;
+    if (!used.has(candidate)) {
+      key = candidate;
+    }
+  }
+  const addedIndex = Array.isArray(columns) ? columns.length - 1 : 0;
+  state.document = setValue(
+    appended.document,
+    [...columnsPath, addedIndex, "key"],
+    key
+  );
+  run(refresh());
 }
 
 /** Where a new block should go: after the selection, else at the end. */

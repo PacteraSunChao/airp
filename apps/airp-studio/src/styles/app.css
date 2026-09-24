@@ -1097,3 +1097,26 @@
   background: var(--ok-soft);
   border-color: rgba(31, 122, 77, 0.22);
 }
+
+/* —— Table grid (rows are objects keyed by the table's columns) —— */
+.table-head-cell {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+.table-head-cell .inline-input {
+  min-width: 0;
+}
+.table-key {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.table-easy-foot {
+  display: flex;
+  gap: 6px;
+  padding-top: 2px;
+}

@@ -72,6 +72,12 @@ importers:
       '@airp/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@types/jsdom':
+        specifier: ^21.1.7
+        version: 21.1.7
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
       playwright:
         specifier: ^1.63.0
         version: 1.63.0

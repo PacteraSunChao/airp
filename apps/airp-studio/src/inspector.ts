@@ -7,19 +7,24 @@
  * can be changed and one place it is displayed.
  */
 
+import type { NodePath, ValueShape } from "@airp/editor-core";
 import type { SchemaVersion } from "@airp/protocol";
 import { blockLabel } from "./block-catalog.js";
 import type { FieldHost } from "./fields.js";
-import { renderFields } from "./fields.js";
+import { appendFields, renderFields } from "./fields.js";
 import {
   type BlockEntry,
   blockAncestors,
   blockFieldSpecs,
   type DiagnosticEntry,
   type FieldSpec,
+  readAt,
 } from "./studio.js";
+import { renderTableGrid, type TableGridActions } from "./table-grid.js";
 
 export interface InspectorActions {
+  /** Add a table column carrying a key nothing else uses. */
+  addColumn(tablePath: NodePath, columnShape: ValueShape): void;
   /** Move the selected block inside its own array. */
   move(delta: number): void;
   /** Remove the selected block. */
@@ -254,12 +259,97 @@ export function renderInspector(
       selected.path,
       context.schemaVersion
     );
-    renderFields(fields, specs, selected.path, context.host);
+    renderBlockFields(fields, context, selected, specs, actions);
     section.append(fields);
     body.append(section);
   }
 
   container.append(body);
+}
+
+/** Column and row field names the grid owns instead of the generic walker. */
+const GRID_KEYS = new Set(["columns", "rows"]);
+
+/**
+ * A table's `rows` are objects keyed by its `columns`, so the generic walker has
+ * no fields to render for them; the grid takes over those two and everything
+ * else on the block still goes through the schema.
+ */
+function renderBlockFields(
+  container: HTMLElement,
+  context: InspectorContext,
+  selected: BlockEntry,
+  specs: readonly FieldSpec[],
+  actions: InspectorActions
+): void {
+  if (selected.type !== "table") {
+    renderFields(container, specs, selected.path, context.host);
+    return;
+  }
+  const rowsShape = specs.find((spec) => spec.key === "rows")?.shape;
+  const columnShape = specs.find((spec) => spec.key === "columns")?.shape;
+  const isArray = (
+    shape: ValueShape | undefined
+  ): shape is Extract<ValueShape, { kind: "array" }> => shape?.kind === "array";
+  if (!(isArray(rowsShape) && isArray(columnShape))) {
+    renderFields(container, specs, selected.path, context.host);
+    return;
+  }
+  const asRecords = (value: unknown): Record<string, unknown>[] =>
+    Array.isArray(value)
+      ? value.filter(
+          (item): item is Record<string, unknown> =>
+            typeof item === "object" && item !== null
+        )
+      : [];
+  const gridActions: TableGridActions = {
+    addColumn: () => actions.addColumn(selected.path, columnShape.items),
+    addRow: () =>
+      context.host.addItem([...selected.path, "rows"], rowsShape.items),
+    dropColumn: (index) =>
+      context.host.dropItem([...selected.path, "columns"], index),
+    dropRow: (index) =>
+      context.host.dropItem([...selected.path, "rows"], index),
+    setCell: (rowIndex, key, text) =>
+      context.host.setText(
+        [...selected.path, "rows", rowIndex, key],
+        { kind: "markdown" },
+        text
+      ),
+    setColumnLabel: (index, text) =>
+      context.host.setText(
+        [...selected.path, "columns", index, "label"],
+        { kind: "plain" },
+        text
+      ),
+  };
+  // Keep the block's own field order: the grid stands where `columns` sits.
+  for (const spec of specs) {
+    if (!GRID_KEYS.has(spec.key)) {
+      appendFields(container, [spec], selected.path, context.host);
+      continue;
+    }
+    if (spec.key === "columns") {
+      const label = element("div", "easy-field-head");
+      const name = element("label", "field-label");
+      name.textContent = "表格内容";
+      const hint = element("span", "easy-tip");
+      hint.textContent = "列名与单元格";
+      label.append(name, hint);
+      const wrapper = element("div");
+      renderTableGrid(wrapper, {
+        actions: gridActions,
+        columns: asRecords(
+          readAt(context.document, [...selected.path, "columns"])
+        ),
+        path: selected.path,
+        rows: asRecords(readAt(context.document, [...selected.path, "rows"])),
+      });
+      const field = element("div", "easy-field");
+      field.append(label, wrapper);
+      container.append(field);
+    }
+  }
 }
 
 function readMeta(document_: unknown, key: string): unknown {

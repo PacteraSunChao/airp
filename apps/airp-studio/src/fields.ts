@@ -333,7 +333,24 @@ function renderField(
   );
 }
 
-/** Every declared field of a node, in schema order. */
+/**
+ * Add the fields to whatever is already in `container`, in schema order.
+ *
+ * A host that interleaves its own markup between fields needs this: it cannot
+ * call `renderFields` once per field, because that clears the container first.
+ */
+export function appendFields(
+  container: HTMLElement,
+  fields: readonly FieldSpec[],
+  path: NodePath,
+  host: FieldHost
+): void {
+  for (const field of fields) {
+    renderField(container, field, [...path, field.key], host);
+  }
+}
+
+/** Every declared field of a node, in schema order, replacing the container. */
 export function renderFields(
   container: HTMLElement,
   fields: readonly FieldSpec[],
@@ -341,12 +358,11 @@ export function renderFields(
   host: FieldHost
 ): void {
   container.replaceChildren();
-  for (const field of fields) {
-    renderField(container, field, [...path, field.key], host);
-  }
   if (fields.length === 0) {
     const empty = element("p", "hint");
     empty.textContent = "这个块没有可编辑的字段。";
     container.append(empty);
+    return;
   }
+  appendFields(container, fields, path, host);
 }

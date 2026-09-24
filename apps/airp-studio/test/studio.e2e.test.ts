@@ -26,7 +26,7 @@ const STATUS_RE = /·\s*\d+ 个块\s*·/;
 const SECTION_AT_ID = "aaaaaaaaaa";
 const PARAGRAPH_AT_ID = "bbbbbbbbbb";
 const TABLE_AT_ID = "hhhhhhhhhh";
-const TABLE_COLUMNS = "/blocks/2/columns";
+const TABLE_PATH = "/blocks/2";
 
 let browser: Browser;
 let server: ViteDevServer;
@@ -209,28 +209,59 @@ describe("studio app", () => {
     await page.close();
   }, 60_000);
 
-  it("adds a table column on the field panel and removes it again", async () => {
+  it("edits table cells in the grid and shows them on the canvas", async () => {
     const page = await openPage();
     await page.goto(url, { waitUntil: "load" });
 
     await page.setInputFiles("#file", FIXTURE);
     await clickBlock(page, TABLE_AT_ID);
 
-    const columns = `[data-array-path="${TABLE_COLUMNS}"]`;
-    const count = `${columns} [data-array-item]`;
-    expect(await page.locator(count).count()).toBe(2);
+    const grid = `[data-table-grid="${TABLE_PATH}"]`;
+    expect(
+      await page.locator(`${grid} .table-easy-row.head input`).count()
+    ).toBe(2);
+    expect(await page.locator(`${grid} [data-table-row]`).count()).toBe(2);
 
-    await page.click(`${columns} [data-add-item]`);
+    // The whole point of the grid: a cell is a cell, not raw JSON.
+    await page
+      .locator('[data-field-path="/blocks/2/rows/0/name"]')
+      .fill("gamma");
+    await page.waitForFunction(
+      () =>
+        (
+          document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+            ?.body?.textContent ?? ""
+        ).includes("gamma") === true,
+      null,
+      { timeout: 10_000 }
+    );
+    await page.close();
+  }, 60_000);
+
+  it("adds a table column, names it, and removes it again", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", FIXTURE);
+    await clickBlock(page, TABLE_AT_ID);
+
+    const grid = `[data-table-grid="${TABLE_PATH}"]`;
+    const header = `${grid} .table-easy-row.head`;
+    expect(await page.locator(`${header} input`).count()).toBe(2);
+
+    await page.click(`${grid} [data-add-column]`);
     await page.waitForFunction(
       (selector) => document.querySelectorAll(selector).length === 3,
-      count
+      `${header} input`
     );
-    // A new column is seeded empty, so the content floor on `label` flags it —
-    // and only it: the union noise the renderer's `oneOf` produces is filtered
-    // out of the panel on purpose.
+    // A new column gets a key (rows are keyed by it) but no label, so the
+    // content floor on `label` flags exactly it — and only it: the union noise
+    // the renderer's `oneOf` produces is filtered out of the panel on purpose.
     expect(await page.locator("#status").innerText()).toContain("1 条校验问题");
+    expect(await page.locator(`${header} .table-key`).last().innerText()).toBe(
+      "col1"
+    );
 
-    // `key` accepts an empty string, so the content floor is on `label`.
     await page
       .locator('[data-field-path="/blocks/2/columns/2/label"]')
       .fill("备注");
@@ -240,10 +271,30 @@ describe("studio app", () => {
         true
     );
 
-    await page.locator(count).last().locator("[data-drop-item]").click();
+    // A new row is seeded with a handle and an empty cell per column.
+    await page.click(`${grid} [data-add-row]`);
+    await page.waitForFunction(
+      (selector) => document.querySelectorAll(selector).length === 3,
+      `${grid} [data-table-row]`
+    );
+    await page
+      .locator(`${grid} [data-table-row="2"] input`)
+      .first()
+      .fill("delta");
+
+    await page
+      .locator(`${grid} [data-table-row="2"] .btn-remove`)
+      .first()
+      .click();
     await page.waitForFunction(
       (selector) => document.querySelectorAll(selector).length === 2,
-      count
+      `${grid} [data-table-row]`
+    );
+
+    await page.click(`${grid} [data-drop-column="2"]`);
+    await page.waitForFunction(
+      (selector) => document.querySelectorAll(selector).length === 2,
+      `${header} input`
     );
     await page.close();
   }, 60_000);

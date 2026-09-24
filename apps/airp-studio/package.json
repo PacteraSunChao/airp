@@ -27,6 +27,8 @@
   "devDependencies": {
     "@airp/test-kit": "workspace:*",
     "@airp/typescript-config": "workspace:*",
+    "@types/jsdom": "^21.1.7",
+    "jsdom": "^26.1.0",
     "playwright": "^1.63.0",
     "vite": "8.3.0",
     "vitest": "4.1.11"
