@@ -7,7 +7,7 @@
  * the edit.
  */
 
-import { readdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { serializeDocument } from "@airp/editor-core";
@@ -31,11 +31,45 @@ const TABLE_AT_ID = "hhhhhhhhhh";
 const TABLE_PATH = "/blocks/2";
 const TABLE_ROW_AT_ID = "kkkkkkkkkk";
 
+/**
+ * A 1.1.0 document with a code block, since no checked-in fixture pairs them.
+ * Written next to the test run, so nothing under `fixtures/` is touched.
+ */
+const CODE_FIXTURE = path.join(APP_ROOT, ".tmp", "code-1-1-0.airp.json");
+
+/** Ask the dev server's render service for a document, as the canvas does. */
+async function renderThroughService(text: string): Promise<string> {
+  const response = await fetch(`${url}__airp/render`, {
+    body: JSON.stringify({
+      document: JSON.parse(text),
+      machineHandles: true,
+      target: "html",
+    }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const result = (await response.json()) as { body?: string };
+  return result.body ?? "";
+}
+
 let browser: Browser;
 let server: ViteDevServer;
 let url: string;
 
 beforeAll(async () => {
+  const withCode = JSON.parse(readFileSync(FIXTURE, "utf8")) as {
+    blocks: unknown[];
+  };
+  withCode.blocks.push({
+    "@id": "zzzzzzzzzz",
+    code: "const answer: number = 42;\n// a comment\n",
+    filename: "sample.ts",
+    language: "ts",
+    type: "code",
+  });
+  mkdirSync(path.dirname(CODE_FIXTURE), { recursive: true });
+  writeFileSync(CODE_FIXTURE, `${JSON.stringify(withCode, null, 2)}\n`);
+
   server = await createServer({ root: APP_ROOT, server: { port: 0 } });
   await server.listen();
   const [local] = server.resolvedUrls?.local ?? [];
@@ -70,6 +104,24 @@ async function openPage(): Promise<Awaited<ReturnType<Browser["newPage"]>>> {
     target.showSaveFilePicker = undefined;
   });
   return page;
+}
+
+/**
+ * Wait for the status line to settle on a phrase.
+ *
+ * Since the canvas is rendered by the render service, the status line is written
+ * only after that round trip — so reading it right after a DOM change races it.
+ */
+async function waitForStatus(
+  page: Awaited<ReturnType<Browser["newPage"]>>,
+  text: string
+): Promise<void> {
+  await page.waitForFunction(
+    (needle) =>
+      document.querySelector("#status")?.textContent?.includes(needle) === true,
+    text,
+    { timeout: 20_000 }
+  );
 }
 
 /** How many blocks the status line says the document has. */
@@ -120,7 +172,7 @@ describe("studio app", () => {
       const status = document.querySelector("#status")?.textContent ?? "";
       return new RegExp(pattern).test(status);
     }, STATUS_RE.source);
-    expect(await page.locator("#status").innerText()).toContain("校验通过");
+    await waitForStatus(page, "校验通过");
 
     await selectBlock(page, PARAGRAPH_AT_ID);
     const paragraph = page.locator("[data-field-path]").first();
@@ -166,9 +218,9 @@ describe("studio app", () => {
       "#file",
       documentPath("valid", "minimal.airp.json")
     );
-    expect(await page.locator("#status").innerText()).toContain(
-      "只支持 schema 1.1.0"
-    );
+    // Reading the picked file is async, so the refusal lands after the startup
+    // document's first paint: wait for it instead of racing it.
+    await waitForStatus(page, "只支持 schema 1.1.0");
     await page.close();
   }, 60_000);
 
@@ -338,7 +390,7 @@ describe("studio app", () => {
     await page.close();
   }, 180_000);
 
-  it("says why a Mermaid document cannot be drawn on the canvas", async () => {
+  it("draws a diagram, and shows the Renderer's own bytes while doing it", async () => {
     const page = await openPage();
     await page.goto(url, { waitUntil: "load" });
 
@@ -346,19 +398,52 @@ describe("studio app", () => {
       "#file",
       documentPath("valid", "mermaid-ok-1.1.0.airp.json")
     );
+    // The canvas used to say "画布渲染失败" here: Mermaid needs the Renderer's
+    // Node pipeline, which is exactly what the render service runs.
     await page.waitForFunction(
       () =>
         (
           document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
-            ?.body?.textContent ?? ""
-        ).includes("画布渲染失败") === true,
+            ?.body?.innerHTML ?? ""
+        ).includes("svg-viewer") === true,
       null,
-      { timeout: 10_000 }
+      { timeout: 20_000 }
     );
-    // The document is still loaded and still editable.
-    expect(await page.locator("#status").innerText()).toMatch(STATUS_RE);
+
+    // What the browser is showing must be the service's answer, byte for byte —
+    // not something the page rendered for itself.
+    const shown = await page.evaluate(
+      () => document.querySelector<HTMLIFrameElement>("#canvas")?.srcdoc ?? ""
+    );
+    const fromService = await renderThroughService(
+      readFileSync(documentPath("valid", "mermaid-ok-1.1.0.airp.json"), "utf8")
+    );
+    expect(shown).not.toContain("画布渲染失败");
+    expect(shown).toBe(fromService);
     await page.close();
-  }, 60_000);
+  }, 120_000);
+
+  it("highlights code the way the Renderer does", async () => {
+    const page = await openPage();
+    await page.goto(url, { waitUntil: "load" });
+
+    await page.setInputFiles("#file", CODE_FIXTURE);
+    await page.waitForFunction(
+      () =>
+        (
+          document.querySelector<HTMLIFrameElement>("#canvas")?.contentDocument
+            ?.body?.innerHTML ?? ""
+        ).includes("shiki-themes") === true,
+      null,
+      { timeout: 20_000 }
+    );
+    expect(
+      await page.evaluate(
+        () => document.querySelector<HTMLIFrameElement>("#canvas")?.srcdoc ?? ""
+      )
+    ).toBe(await renderThroughService(readFileSync(CODE_FIXTURE, "utf8")));
+    await page.close();
+  }, 120_000);
 
   it("edits table cells in the grid and shows them on the canvas", async () => {
     const page = await openPage();
@@ -408,7 +493,7 @@ describe("studio app", () => {
     // A new column gets a key (rows are keyed by it) but no label, so the
     // content floor on `label` flags exactly it — and only it: the union noise
     // the renderer's `oneOf` produces is filtered out of the panel on purpose.
-    expect(await page.locator("#status").innerText()).toContain("1 条校验问题");
+    await waitForStatus(page, "1 条校验问题");
     expect(await page.locator(`${header} .table-key`).last().innerText()).toBe(
       "col1"
     );

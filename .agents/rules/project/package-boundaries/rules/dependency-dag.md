@@ -25,7 +25,8 @@ writer              → utils
 protocol            → utils | diagnostics
 diagnostics         → utils（类型级）
 editor-core         → protocol | utils | diagnostics
-airp-studio（web）  → loader | validate | renderer | protocol | utils | diagnostics | editor-core（仅 `.` 入口）
+airp-studio（web）  → loader | validate | protocol | utils | diagnostics | editor-core（浏览器面，仅 `.` 入口）
+airp-studio 渲染服务 → renderer/node/render（Node 侧 harness，不在浏览器面内）
 
 test-kit / repo-guard → 旁路；不被业务包依赖
 ```
@@ -37,7 +38,7 @@ test-kit / repo-guard → 旁路；不被业务包依赖
 | isomorphic | protocol, editor-core, renderer-contract, renderer-shared, renderer-target-markdown, diagnostics（主面）；validate（`.`，无 Mermaid） |
 | dual | utils, loader, writer, validate, renderer, renderer-target-html（`.` 同构壳；`./node` 含 Mermaid） |
 | node | validate-cli, renderer-cli, renderer-vscode, test-kit, repo-guard, typescript-config |
-| web | airp-studio（静态站点；只依赖各包 `.` 入口） |
+| web | airp-studio（静态站点；浏览器面只依赖各包 `.` 入口，另有一个 Node 侧本地渲染 harness） |
 
 ## 运行时 API 与入口
 

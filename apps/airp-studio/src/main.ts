@@ -26,7 +26,6 @@ import {
 } from "@airp/editor-core";
 import { loadDocumentJson } from "@airp/loader";
 import { hasSchemaVersion, type SchemaVersion } from "@airp/protocol";
-import { type AirpDocumentSnapshot, renderDocument } from "@airp/renderer";
 import { validateDocument } from "@airp/validate";
 import { createCanvas, type NodeBox } from "./canvas.js";
 import type { FieldHost } from "./fields.js";
@@ -41,6 +40,7 @@ import {
 import { openInlineEditor } from "./inline-editor.js";
 import { renderInspector } from "./inspector.js";
 import { renderPalette } from "./palette.js";
+import { renderViaService } from "./render-client.js";
 import { insertBlockAfter, moveBlock, removeBlock } from "./structure.js";
 import {
   appendArrayItem,
@@ -166,24 +166,23 @@ function emptyDocument(): unknown {
   };
 }
 
-function failurePage(codes: readonly string[]): string {
+function failurePage(message: string): string {
   return `<body style="font:14px -apple-system,sans-serif;padding:24px;color:#b91c1c">
     <p><strong>画布渲染失败</strong>（文档内容仍然保留，可继续编辑）：</p>
-    <ul>${codes.map((code) => `<li><code>${code}</code></li>`).join("")}</ul>
+    <p>${message.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</p>
   </body>`;
 }
 
-/** The document as the renderer produces it, handles included. */
+/**
+ * The document exactly as the AIRP Renderer produces it.
+ *
+ * The rendering happens in the local service, not here: the canvas has to show
+ * the same bytes the Renderer would export, and a browser-side render cannot
+ * promise that.
+ */
 async function documentHtml(document_: unknown): Promise<string> {
-  const rendered = await renderDocument(
-    document_ as AirpDocumentSnapshot,
-    "html",
-    { targetOptions: { machineHandles: true } }
-  );
-  if (rendered.ok) {
-    return String(rendered.value.files[0]?.body ?? "");
-  }
-  return failurePage(rendered.diagnostics.map((diagnostic) => diagnostic.code));
+  const rendered = await renderViaService(document_, "html", true);
+  return rendered.ok ? rendered.body : failurePage(rendered.message);
 }
 
 function setExportEnabled(enabled: boolean): void {
@@ -693,15 +692,12 @@ async function exportAs(kind: "html" | "markdown"): Promise<void> {
   if (state === undefined) {
     return;
   }
-  const rendered = await renderDocument(
-    state.document as AirpDocumentSnapshot,
-    kind === "html" ? "html" : "markdown",
-    {}
+  const rendered = await renderViaService(
+    state.document,
+    kind === "html" ? "html" : "markdown"
   );
   if (!rendered.ok) {
-    setStatus(
-      `导出失败：${rendered.diagnostics.map((d) => d.code).join("、")}`
-    );
+    setStatus(`导出失败：${rendered.message}`);
     return;
   }
   const name = state.fileName
@@ -710,7 +706,7 @@ async function exportAs(kind: "html" | "markdown"): Promise<void> {
   const isHtml = kind === "html";
   downloadDocument(
     `${name}.${isHtml ? "html" : "md"}`,
-    String(rendered.value.files[0]?.body ?? ""),
+    rendered.body,
     isHtml ? "text/html" : "text/markdown"
   );
   setStatus(isHtml ? "已导出 HTML" : "已导出 Markdown");

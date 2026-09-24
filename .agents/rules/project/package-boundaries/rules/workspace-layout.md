@@ -9,7 +9,7 @@
 | `isomorphic` | 同构专用。默认入口禁止 `node:*`，禁止依赖任何包的 Node 入口。 |
 | `node` | Node 专用。不考虑浏览器闭包。 |
 | `dual` | 同构 + Node。`.` 最大化浏览器可用能力；无法同构的进 `./node`（或等价）。浏览器与同构调用方只 import `.`。 |
-| `web` | 浏览器专用宿主。产物是静态站点；不参与包依赖图，只依赖各包的 `.` 入口，禁止 `node:*` 与 `*/node`。 |
+| `web` | 浏览器专用宿主。产物是静态站点；不参与包依赖图，只依赖各包的 `.` 入口，浏览器面禁止 `node:*` 与各包的 Node 入口。宿主若需要一个 Node 侧的本地 harness（如 Studio 的渲染服务），该 harness 放在浏览器面之外——门禁只扫浏览器面。 |
 
 分类看 **exports 面**，不看未导出的构建脚本。新增包先定 platform；改 dual 时能同构的符号进 `.`。
 
@@ -35,7 +35,7 @@
 | `apps/validate-cli` | `@airp/validate-cli` | node | CLI：读路径 → validate/node → 人话/JSON；bin `airp-validate` |
 | `apps/renderer-cli` | `@airp/renderer-cli` | node | CLI：`export` / `watch` / `worker`；bin `airp-render` |
 | `apps/renderer-vscode` | `airp-renderer-vscode` | node | VS Code：Custom Editor 渲染单个 `*.airp.json` |
-| `apps/airp-studio` | `airp-studio` | web | 浏览器宿主：表单驱动编辑 + 实时预览 + 回写；本地静态站点 |
+| `apps/airp-studio` | `airp-studio` | web | 浏览器宿主：国风编辑器（渲染产物即画布、点选即编辑）+ 回写；画布由本地渲染服务用 Renderer 自己的 Node 实现渲染 |
 
 † diagnostics 主面同构；类型级可依赖 utils。
 
