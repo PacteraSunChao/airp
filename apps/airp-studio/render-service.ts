@@ -82,9 +82,11 @@ export async function renderForStudio(
     renderDocument = await load();
   } catch (error) {
     return {
+      // The first run on a clean checkout is the common way to get here: the
+      // HTML target's Node entry is a build artifact, so say what to build.
       message: `本地渲染服务无法加载 Renderer：${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }（若刚克隆仓库，先执行 pnpm --filter @airp/renderer-target-html build）`,
       ok: false,
     };
   }
